@@ -5,7 +5,7 @@ import { environment } from '@environments/environment';
 import {
   CargarCodigosRequest,
   CodigosCargadosResponse,
-} from '@core/models/CodigoVirtual/codigoVirtualModels';
+} from '@core/models/codigovirtual/codigoVirtualModels';
 
 @Service()
 export class CodigosAdminService {

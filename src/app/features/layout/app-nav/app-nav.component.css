@@ -28,6 +28,78 @@
   position: relative;
 }
 
+.settings-menu-item {
+  position: relative;
+}
+
+.custom-navbar .custom-navbar-cta .settings-menu-trigger {
+  border: 0;
+  background: transparent;
+  color: inherit;
+}
+
+.settings-menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 1050;
+  min-width: 180px;
+  padding: 8px;
+  background: #fff;
+  border: 1px solid rgba(59, 93, 80, 0.12);
+  border-radius: 10px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+  animation: settings-menu-enter 180ms ease both;
+}
+
+@keyframes settings-menu-enter {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.settings-menu p,
+.language-settings p {
+  margin: 0;
+  padding: 8px;
+  color: #3b5d50;
+  font-weight: 600;
+}
+
+.settings-menu button,
+.language-settings button {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #3b5d50;
+  text-align: left;
+}
+
+.settings-menu button:hover,
+.settings-menu button:focus-visible,
+.language-settings button:hover,
+.language-settings button:focus-visible,
+.settings-menu button[aria-pressed="true"],
+.language-settings button[aria-pressed="true"] {
+  background: #f1f5f3;
+  color: #263f36;
+}
+
+.language-settings {
+  margin: 8px 16px;
+  padding: 8px;
+  border-top: 1px solid rgba(59, 93, 80, 0.12);
+}
+
 .custom-navbar .custom-navbar-cta .admin-menu-trigger {
   border: 0;
   background: transparent;
@@ -91,8 +163,10 @@
 
 @media (prefers-reduced-motion: reduce) {
   .admin-menu,
-  .admin-menu a {
+  .admin-menu a,
+  .settings-menu {
     transition: none;
+    animation: none;
   }
 }
 

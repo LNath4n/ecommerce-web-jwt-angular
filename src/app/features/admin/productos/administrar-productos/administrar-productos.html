@@ -2,8 +2,8 @@
   <div class="container">
 
     <div class="d-flex align-items-center justify-content-between mb-4">
-      <h2 class="section-title mb-0">Administrar productos</h2>
-      <span class="admin-contador">{{ productos().length }} productos</span>
+      <h2 class="section-title mb-0">{{ 'ADMIN_PRODUCTS.TITLE' | translate }}</h2>
+      <span class="admin-contador">{{ 'ADMIN_PRODUCTS.PRODUCTS_COUNT' | translate: { count: productos().length } }}</span>
     </div>
 
     <div class="row g-4">
@@ -13,7 +13,9 @@
         <div class="admin-card admin-form-sticky">
 
           <div class="d-flex align-items-center justify-content-between mb-3">
-            <h3 class="h5 mb-0">{{ editandoId() !== null ? 'Editar producto' : 'Nuevo producto' }}</h3>
+            <h3 class="h5 mb-0">
+              {{ (editandoId() !== null ? 'ADMIN_PRODUCTS.EDIT_PRODUCT' : 'ADMIN_PRODUCTS.NEW_PRODUCT') | translate }}
+            </h3>
             @if (editandoId() !== null) {
             <span class="admin-badge">ID {{ editandoId() }}</span>
             }
@@ -27,25 +29,25 @@
             </div>
 
             <div class="mb-3">
-              <label class="form-label" for="nombre">Nombre *</label>
+              <label class="form-label" for="nombre">{{ 'ADMIN_PRODUCTS.NAME' | translate }} *</label>
               <input id="nombre" name="nombre" class="form-control" [(ngModel)]="form.nombre" required />
             </div>
 
             <div class="mb-3">
-              <label class="form-label" for="descripcion">Descripción</label>
+              <label class="form-label" for="descripcion">{{ 'ADMIN_PRODUCTS.DESCRIPTION' | translate }}</label>
               <input id="descripcion" name="descripcion" class="form-control" [(ngModel)]="form.descripcion" />
             </div>
 
             <div class="row g-3 mb-3">
               <div class="col-6">
-                <label class="form-label" for="plataforma">Plataforma</label>
+                <label class="form-label" for="plataforma">{{ 'ADMIN_PRODUCTS.PLATFORM' | translate }}</label>
                 <input id="plataforma" name="plataforma" class="form-control" [(ngModel)]="form.plataforma" />
               </div>
               <div class="col-6">
-                <label class="form-label" for="tipo">Tipo *</label>
+                <label class="form-label" for="tipo">{{ 'ADMIN_PRODUCTS.TYPE' | translate }} *</label>
                 <select id="tipo" name="tipo" class="form-select" [(ngModel)]="form.tipo" required>
                   @for (tipo of tiposProducto; track tipo) {
-                  <option [value]="tipo">{{ tipo }}</option>
+                  <option [value]="tipo">{{ ('ADMIN_PRODUCTS.TYPES.' + tipo) | translate }}</option>
                   }
                 </select>
               </div>
@@ -53,13 +55,13 @@
 
             <div class="row g-3 mb-3">
               <div class="col-6">
-                <label class="form-label" for="region">Región</label>
+                <label class="form-label" for="region">{{ 'ADMIN_PRODUCTS.REGION' | translate }}</label>
                 <input id="region" name="region" class="form-control" [(ngModel)]="form.region" />
               </div>
               <div class="col-6">
-                <label class="form-label" for="categoriaId">Categoría</label>
+                <label class="form-label" for="categoriaId">{{ 'ADMIN_PRODUCTS.CATEGORY' | translate }}</label>
                 <select id="categoriaId" name="categoriaId" class="form-select" [(ngModel)]="form.categoriaId">
-                  <option [ngValue]="null">Sin categoría</option>
+                  <option [ngValue]="null">{{ 'ADMIN_PRODUCTS.NO_CATEGORY' | translate }}</option>
                   @for (categoria of categorias(); track categoria.id) {
                   <option [ngValue]="categoria.id">{{ categoria.nombre }}</option>
                   }
@@ -69,49 +71,52 @@
 
             <div class="row g-3 mb-3">
               <div class="col-6">
-                <label class="form-label" for="valorNominal">Valor nominal</label>
+                <label class="form-label" for="valorNominal">{{ 'ADMIN_PRODUCTS.FACE_VALUE' | translate }}</label>
                 <input id="valorNominal" name="valorNominal" type="number" step="0.01" min="0" class="form-control"
                   [(ngModel)]="form.valorNominal" />
               </div>
               <div class="col-6">
-                <label class="form-label" for="moneda">Moneda</label>
+                <label class="form-label" for="moneda">{{ 'ADMIN_PRODUCTS.CURRENCY' | translate }}</label>
                 <input id="moneda" name="moneda" maxlength="3" class="form-control" [(ngModel)]="form.moneda" />
               </div>
             </div>
 
             <div class="row g-3 mb-3">
               <div class="col-6">
-                <label class="form-label" for="precioVenta">Precio de venta *</label>
+                <label class="form-label" for="precioVenta">{{ 'ADMIN_PRODUCTS.SALE_PRICE' | translate }} *</label>
                 <input id="precioVenta" name="precioVenta" type="number" step="0.01" min="0" class="form-control"
                   [(ngModel)]="form.precioVenta" required />
               </div>
               <div class="col-6">
-                <label class="form-label" for="precioCosto">Precio de costo</label>
+                <label class="form-label" for="precioCosto">{{ 'ADMIN_PRODUCTS.COST_PRICE' | translate }}</label>
                 <input id="precioCosto" name="precioCosto" type="number" step="0.01" min="0" class="form-control"
                   [(ngModel)]="form.precioCosto" />
               </div>
             </div>
 
             <div class="mb-3">
-              <label class="form-label" for="instruccionesCanje">Instrucciones de canje</label>
+              <label class="form-label" for="instruccionesCanje">
+                {{ 'ADMIN_PRODUCTS.REDEMPTION_INSTRUCTIONS' | translate }}
+              </label>
               <textarea id="instruccionesCanje" name="instruccionesCanje" class="form-control" rows="3"
                 [(ngModel)]="form.instruccionesCanje"></textarea>
             </div>
 
             <div class="form-check mb-3">
               <input id="activo" name="activo" type="checkbox" class="form-check-input" [(ngModel)]="form.activo" />
-              <label class="form-check-label" for="activo">Producto activo</label>
+              <label class="form-check-label" for="activo">{{ 'ADMIN_PRODUCTS.ACTIVE_PRODUCT' | translate }}</label>
             </div>
 
             <!-- Imagen -->
             <div class="mb-4">
-              <label class="form-label" for="imagen">Imagen</label>
+              <label class="form-label" for="imagen">{{ 'ADMIN_PRODUCTS.IMAGE' | translate }}</label>
               @if (vistaPrevia(); as src) {
               <div class="mb-2">
-                <img [src]="src" alt="Vista previa" class="img-fluid rounded d-block" style="max-height: 160px;">
+                <img [src]="src" [alt]="'ADMIN_PRODUCTS.IMAGE_PREVIEW' | translate"
+                  class="img-fluid rounded d-block" style="max-height: 160px;">
                 @if (editandoId() !== null && !archivoImagen) {
                 <button type="button" class="btn btn-outline-black btn-sm mt-2" (click)="quitarImagen()">
-                  <svg lucideImageOff [size]="16"></svg> Quitar imagen
+                  <svg lucideImageOff [size]="16"></svg> {{ 'ADMIN_PRODUCTS.REMOVE_IMAGE' | translate }}
                 </button>
                 }
               </div>
@@ -123,11 +128,13 @@
             </div>
 
             <button type="submit" class="btn btn-primary w-100" [disabled]="f.invalid">
-              {{ editandoId() !== null ? 'Actualizar' : 'Crear' }}
+              {{ (editandoId() !== null ? 'ADMIN_PRODUCTS.UPDATE' : 'ADMIN_PRODUCTS.CREATE') | translate }}
             </button>
 
             @if (editandoId() !== null) {
-            <button type="button" class="btn btn-outline-black w-100 mt-2" (click)="cancelar()">Cancelar</button>
+            <button type="button" class="btn btn-outline-black w-100 mt-2" (click)="cancelar()">
+              {{ 'ADMIN_PRODUCTS.CANCEL' | translate }}
+            </button>
             }
           </form>
         </div>
@@ -141,14 +148,18 @@
           <div class="admin-toolbar">
             <div class="admin-buscador">
               <svg lucideSearch [size]="18"></svg>
-              <input type="text" class="form-control" placeholder="Buscar por descripción, código o marca."
+              <input type="text" class="form-control"
+                [placeholder]="'ADMIN_PRODUCTS.SEARCH_PLACEHOLDER' | translate"
                 name="busqueda" [(ngModel)]="textoBusqueda" (keyup.enter)="buscar()" />
               @if (textoBusqueda) {
-              <button type="button" class="admin-buscador-limpiar" aria-label="Limpiar búsqueda"
+              <button type="button" class="admin-buscador-limpiar"
+                [attr.aria-label]="'ADMIN_PRODUCTS.CLEAR_SEARCH' | translate"
                 (click)="limpiarBusqueda()">&times;</button>
               }
             </div>
-            <button type="button" class="btn btn-primary btn-sm" (click)="buscar()">Buscar</button>
+            <button type="button" class="btn btn-primary btn-sm" (click)="buscar()">
+              {{ 'ADMIN_PRODUCTS.SEARCH' | translate }}
+            </button>
           </div>
 
           <div class="table-responsive">
@@ -156,12 +167,12 @@
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Imagen</th>
+                  <th>{{ 'ADMIN_PRODUCTS.IMAGE' | translate }}</th>
                   <th>SKU</th>
-                  <th>Nombre</th>
-                  <th>Plataforma / tipo</th>
-                  <th class="text-end">Precio</th>
-                  <th class="text-end">Stock</th>
+                  <th>{{ 'ADMIN_PRODUCTS.NAME' | translate }}</th>
+                  <th>{{ 'ADMIN_PRODUCTS.PLATFORM_TYPE' | translate }}</th>
+                  <th class="text-end">{{ 'ADMIN_PRODUCTS.PRICE' | translate }}</th>
+                  <th class="text-end">{{ 'ADMIN_PRODUCTS.STOCK' | translate }}</th>
                   <th></th>
                 </tr>
               </thead>
@@ -177,17 +188,21 @@
                   </td>
                   <td>{{ p.sku }}</td>
                   <td class="fw-semibold">{{ p.nombre }}</td>
-                  <td>{{ p.plataforma || '—' }} · {{ p.tipo }}</td>
+                  <td>{{ p.plataforma || '—' }} · {{ ('ADMIN_PRODUCTS.TYPES.' + p.tipo) | translate }}</td>
                   <td class="text-end">${{ p.precioVenta }}</td>
                   <td class="text-end">{{ p.stock }}</td>
                   <td class="text-end text-nowrap">
-                    <button type="button" class="admin-btn-icono" title="Editar" aria-label="Editar"
+                    <button type="button" class="admin-btn-icono"
+                      [attr.title]="'ADMIN_PRODUCTS.EDIT' | translate"
+                      [attr.aria-label]="'ADMIN_PRODUCTS.EDIT' | translate"
                       (click)="editar(p)">
                       <svg lucidePencil [size]="18"></svg>
                     </button>
                     <button type="button" class="btn btn-outline-black btn-sm me-1"
-                      (click)="desactivar(p.id)">Desactivar</button>
-                    <button type="button" class="admin-btn-icono admin-btn-peligro" title="Borrar" aria-label="Borrar"
+                      (click)="desactivar(p.id)">{{ 'ADMIN_PRODUCTS.DEACTIVATE' | translate }}</button>
+                    <button type="button" class="admin-btn-icono admin-btn-peligro"
+                      [attr.title]="'ADMIN_PRODUCTS.DELETE' | translate"
+                      [attr.aria-label]="'ADMIN_PRODUCTS.DELETE' | translate"
                       (click)="borrar(p.id)">
                       <svg lucideTrash2 [size]="18"></svg>
                     </button>
@@ -195,7 +210,7 @@
                 </tr>
                 } @empty {
                 <tr>
-                  <td colspan="9" class="text-center py-5">No hay productos</td>
+                  <td colspan="9" class="text-center py-5">{{ 'ADMIN_PRODUCTS.EMPTY' | translate }}</td>
                 </tr>
                 }
               </tbody>
@@ -204,12 +219,16 @@
 
           <!-- Paginación -->
           <div class="admin-paginacion">
-            <span class="admin-paginacion-info">Página {{ paginaActual() + 1 }} de {{ totalPaginas() }}</span>
+            <span class="admin-paginacion-info">
+              {{ 'ADMIN_PRODUCTS.PAGE_OF' | translate: { current: paginaActual() + 1, total: totalPaginas() } }}
+            </span>
 
-            <nav aria-label="Paginación de productos">
+            <nav [attr.aria-label]="'ADMIN_PRODUCTS.PRODUCTS_PAGINATION' | translate">
               <ul class="pagination mb-0">
                 <li class="page-item" [class.disabled]="paginaActual() === 0">
-                  <button type="button" class="page-link" aria-label="Anterior" (click)="irAPagina(paginaActual() - 1)">
+                  <button type="button" class="page-link"
+                    [attr.aria-label]="'ADMIN_PRODUCTS.PREVIOUS' | translate"
+                    (click)="irAPagina(paginaActual() - 1)">
                     <svg lucideChevronLeft [size]="16"></svg>
                   </button>
                 </li>
@@ -221,7 +240,8 @@
                 }
 
                 <li class="page-item" [class.disabled]="paginaActual() >= totalPaginas() - 1">
-                  <button type="button" class="page-link" aria-label="Siguiente"
+                  <button type="button" class="page-link"
+                    [attr.aria-label]="'ADMIN_PRODUCTS.NEXT' | translate"
                     (click)="irAPagina(paginaActual() + 1)">
                     <svg lucideChevronRight [size]="16"></svg>
                   </button>

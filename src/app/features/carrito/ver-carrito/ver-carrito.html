@@ -4,7 +4,7 @@
     <div class="row justify-content-between">
       <div class="col-lg-5">
         <div class="intro-excerpt">
-          <h1>Carrito</h1>
+          <h1>{{ 'CART.TITLE' | translate }}</h1>
         </div>
       </div>
     </div>
@@ -25,12 +25,12 @@
           <table class="table">
             <thead>
               <tr>
-                <th class="product-thumbnail">Imagen</th>
-                <th class="product-name">Producto</th>
-                <th class="product-price">Precio</th>
-                <th class="product-quantity">Cantidad</th>
-                <th class="product-total">Total</th>
-                <th class="product-remove">Quitar</th>
+                <th class="product-thumbnail">{{ 'CART.IMAGE' | translate }}</th>
+                <th class="product-name">{{ 'CART.PRODUCT' | translate }}</th>
+                <th class="product-price">{{ 'CART.PRICE' | translate }}</th>
+                <th class="product-quantity">{{ 'CART.QUANTITY' | translate }}</th>
+                <th class="product-total">{{ 'CART.TOTAL' | translate }}</th>
+                <th class="product-remove">{{ 'CART.REMOVE' | translate }}</th>
               </tr>
             </thead>
             <tbody>
@@ -52,20 +52,23 @@
                 <td>
                   <div class="input-group mb-3 d-flex align-items-center quantity-container" style="max-width: 120px;">
                     <div class="input-group-prepend">
-                      <button class="btn btn-outline-black decrease" type="button" [disabled]="item.cantidad <= 1"
+                      <button class="btn btn-outline-black decrease" type="button"
+                        [attr.aria-label]="'CART.DECREASE_QUANTITY' | translate" [disabled]="item.cantidad <= 1"
                         (click)="cambiarCantidad(item, -1)">&minus;</button>
                     </div>
                     <input type="text" class="form-control text-center quantity-amount" [value]="item.cantidad" readonly
-                      aria-label="Cantidad">
+                      [attr.aria-label]="'CART.QUANTITY' | translate">
                     <div class="input-group-append">
                       <button class="btn btn-outline-black increase" type="button"
+                        [attr.aria-label]="'CART.INCREASE_QUANTITY' | translate"
                         (click)="cambiarCantidad(item, 1)">&plus;</button>
                     </div>
                   </div>
                 </td>
                 <td>{{ item.cantidad * item.precioVenta | currency:'MXN' }}</td>
                 <td>
-                  <button type="button" class="btn-quitar-carrito" aria-label="Quitar del carrito"
+                  <button type="button" class="btn-quitar-carrito"
+                    [attr.aria-label]="'CART.REMOVE_FROM_CART' | translate"
                     (click)="eliminar(item.productoId)">
                     <svg lucideTrash2 color="#fff" [size]="16"></svg>
                   </button>
@@ -87,12 +90,12 @@
           <div class="col-md-7">
             <div class="row">
               <div class="col-md-12 text-right border-bottom mb-4">
-                <h3 class="text-black h4 text-uppercase">Total del carrito</h3>
+                <h3 class="text-black h4 text-uppercase">{{ 'CART.CART_TOTAL' | translate }}</h3>
               </div>
             </div>
             <div class="row mb-3">
               <div class="col-6">
-                <span class="text-black">Subtotal</span>
+                <span class="text-black">{{ 'CART.SUBTOTAL' | translate }}</span>
               </div>
               <div class="col-6 text-end">
                 <strong class="text-black">{{ carrito.subtotal | currency:'MXN' }}</strong>
@@ -106,9 +109,9 @@
     } @else {
 
     <div class="text-center py-5">
-      <h2 class="section-title mb-3">Tu carrito está vacío</h2>
-      <p class="mb-4">Agrega productos para verlos aquí.</p>
-      <button class="btn btn-primary" (click)="seguirComprando()">Ver productos</button>
+      <h2 class="section-title mb-3">{{ 'CART.EMPTY_TITLE' | translate }}</h2>
+      <p class="mb-4">{{ 'CART.EMPTY_MESSAGE' | translate }}</p>
+      <button class="btn btn-primary" (click)="seguirComprando()">{{ 'CART.VIEW_PRODUCTS' | translate }}</button>
     </div>
 
     }

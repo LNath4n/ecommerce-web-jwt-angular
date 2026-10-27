@@ -4,11 +4,11 @@
     <div class="row justify-content-between">
       <div class="col-lg-5">
         <div class="intro-excerpt">
-          <h1>Productos</h1>
+          <h1>{{ 'PRODUCTS_PAGE.TITLE' | translate }}</h1>
           @if (isLoggedIn() && nombreUsuario()) {
-          <p class="mb-4">¡Hola, {{ nombreUsuario() }}! Encuentra tus productos favoritos.</p>
+          <p class="mb-4">{{ 'PRODUCTS_PAGE.GREETING_USER' | translate: { name: nombreUsuario() } }}</p>
           } @else {
-          <p class="mb-4">¡Bienvenido a FerreViky! Encuentra tus productos favoritos.</p>
+          <p class="mb-4">{{ 'PRODUCTS_PAGE.GREETING_GUEST' | translate }}</p>
           }
         </div>
       </div>
@@ -27,14 +27,18 @@
         <div class="buscador-barra">
           <div class="buscador-campo">
             <svg lucideSearch [size]="18"></svg>
-            <input type="text" class="form-control" placeholder="Buscar por nombre, SKU, plataforma o descripción."
-              name="busqueda" [(ngModel)]="textoBusqueda" (keyup.enter)="buscar()" />
+            <input type="text" class="form-control" [placeholder]="'PRODUCTS_PAGE.SEARCH_PLACEHOLDER' | translate"
+              name="busqueda" [(ngModel)]="textoBusqueda" (ngModelChange)="programarBusqueda($event)"
+              (keyup.enter)="buscar()" />
             @if (textoBusqueda) {
-            <button type="button" class="buscador-limpiar" aria-label="Limpiar búsqueda"
+            <button type="button" class="buscador-limpiar"
+              [attr.aria-label]="'PRODUCTS_PAGE.CLEAR_SEARCH' | translate"
               (click)="limpiarBusqueda()">&times;</button>
             }
           </div>
-          <button type="button" class="btn btn-primary" (click)="buscar()">Buscar</button>
+          <button type="button" class="btn btn-primary" (click)="buscar()">
+            {{ 'PRODUCTS_PAGE.SEARCH' | translate }}
+          </button>
         </div>
       </div>
     </div>
@@ -56,8 +60,13 @@
 
           <h3 class="product-title">{{ producto.nombre }}</h3>
           <p class="mb-1 product-description">{{ producto.descripcion || '' }}</p>
-          <p class="mb-1 product-meta">{{ producto.plataforma || producto.tipo }} · {{ producto.region || 'Global' }}</p>
-          <p class="mb-1 product-meta">SKU: {{ producto.sku }} · Stock: {{ producto.stock }}</p>
+          <p class="mb-1 product-meta">
+            {{ producto.plataforma || producto.tipo }} · {{ producto.region || ('PRODUCTS_PAGE.GLOBAL' | translate) }}
+          </p>
+          <p class="mb-1 product-meta">
+            {{ 'PRODUCTS_PAGE.SKU' | translate }}: {{ producto.sku }} ·
+            {{ 'PRODUCTS_PAGE.STOCK' | translate }}: {{ producto.stock }}
+          </p>
           <strong class="product-price">${{ producto.precioVenta }}</strong>
 
           <span class="icon-cross" (click)="$event.stopPropagation(); agregarAlCarrito(producto.id)">
@@ -67,20 +76,36 @@
       </div>
       } @empty {
       <div class="col-12 text-center">
-        <p>No hay productos disponibles.</p>
+        @if (errorCarga()) {
+        <p>{{ 'PRODUCTS_PAGE.LOAD_ERROR' | translate }}</p>
+        <button type="button" class="btn btn-primary" (click)="reintentarCarga()">
+          {{ 'PRODUCTS_PAGE.RETRY' | translate }}
+        </button>
+        } @else {
+        <p>{{ 'PRODUCTS_PAGE.EMPTY' | translate }}</p>
+        }
       </div>
       }
 
     </div>
 
+    @if (errorCarga() && productos().length > 0) {
+    <div class="text-center">
+      <p>{{ 'PRODUCTS_PAGE.LOAD_ERROR' | translate }}</p>
+      <button type="button" class="btn btn-primary" (click)="reintentarCarga()">
+        {{ 'PRODUCTS_PAGE.RETRY' | translate }}
+      </button>
+    </div>
+    }
+
     <div #centinela style="height: 1px;"></div>
 
     @if (cargando()) {
-    <p class="text-center">Cargando más productos...</p>
+    <p class="text-center">{{ 'PRODUCTS_PAGE.LOADING_MORE' | translate }}</p>
     }
 
     @if (!hayMasPaginas && !cargando() && productos().length > 0) {
-    <p class="text-center">— Fin de productos —</p>
+    <p class="text-center">{{ 'PRODUCTS_PAGE.END_OF_PRODUCTS' | translate }}</p>
     }
   </div>
 </div>

@@ -1,14 +1,15 @@
 import { Component, inject, signal } from '@angular/core';
 import { AsyncPipe } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { catchError, map, of, startWith, switchMap } from 'rxjs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LucidePackage, LucideArrowLeft } from '@lucide/angular';
-import { ProductoPublicoResponse } from '@core/models/Producto/productoModels';
-import { ProductosService } from '@core/services/Producto/ProductosService';
-import { AuthService } from '@core/services/Auth/auth';
-import { CarritosService } from '@core/services/Carrito/CarritosService';
-import { AlertaService } from '@core/services/Modals/ModalsService';
+import { ProductoPublicoResponse } from '@core/models/producto/productoModels';
+import { ProductosService } from '@core/services/producto/ProductosService';
+import { AuthService } from '@core/services/auth/auth';
+import { CarritosService } from '@core/services/carrito/CarritosService';
+import { AlertaService } from '@core/services/modals/ModalsService';
 
 type ProductoEstado =
   | { status: 'loading' }
@@ -18,7 +19,7 @@ type ProductoEstado =
 
 @Component({
   selector: 'app-un-producto',
-  imports: [AsyncPipe, LucidePackage, LucideArrowLeft],
+  imports: [AsyncPipe, LucidePackage, LucideArrowLeft, TranslatePipe],
   templateUrl: './un-producto.html',
   styleUrl: './un-producto.css',
 })
@@ -30,6 +31,7 @@ export class UnProducto {
   private authService = inject(AuthService);
   private carritosService = inject(CarritosService);
   private alerta = inject(AlertaService);
+  private translate = inject(TranslateService);
 
   // IDs de productos cuya imagen no existe (se muestra el ícono de paquete)
   private imagenesFallidas = signal<Set<number>>(new Set());
@@ -61,19 +63,19 @@ export class UnProducto {
 
   agregarAlCarrito(idProducto: number) {
     if (!this.authService.getToken()) {
-      this.alerta.advertencia('Debes de iniciar sesion');
+      this.alerta.advertencia(this.translate.instant('PRODUCT_DETAIL.LOGIN_REQUIRED'));
       return;
     }
 
     this.carritosService.agregar({ idProducto, cantidad: 1 })
       .subscribe({
         next: () => {
-          this.alerta.exito('Se agregó correctamente al carrito.');
+          this.alerta.exito(this.translate.instant('PRODUCT_DETAIL.ADDED_TO_CART'));
         },
         error: error => {
           const mensaje = this.mensajeError(error);
           this.alerta.error(
-            mensaje ?? 'No se pudo agregar el producto al carrito. Revisa su disponibilidad e intenta de nuevo.'
+            mensaje ?? this.translate.instant('PRODUCT_DETAIL.ADD_TO_CART_ERROR')
           );
         }
       });

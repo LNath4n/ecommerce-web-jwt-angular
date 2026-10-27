@@ -6,7 +6,7 @@ import {
   CategoriaOpcionResponse,
   PageResponse,
   ProductoPublicoResponse,
-} from '@core/models/Producto/productoModels';
+} from '@core/models/producto/productoModels';
 
 @Injectable({
   providedIn: 'root'

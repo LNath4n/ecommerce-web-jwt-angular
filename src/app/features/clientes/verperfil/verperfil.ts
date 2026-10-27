@@ -1,15 +1,16 @@
 import { Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { FormsModule, NgForm } from '@angular/forms';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { Router } from '@angular/router';
-import { AuthService } from '@core/services/Auth/auth';
-import { ClientesService } from '@core/services/Cliente/ClientesService';
-import { AlertaService } from '@core/services/Modals/ModalsService';
-import { ClienteEditarRequest, ClientePublico } from '@core/models/Cliente/clienteModels';
+import { AuthService } from '@core/services/auth/auth';
+import { ClientesService } from '@core/services/cliente/ClientesService';
+import { AlertaService } from '@core/services/modals/ModalsService';
+import { ClienteEditarRequest, ClientePublico } from '@core/models/cliente/clienteModels';
 import { LucideUser } from '@lucide/angular';
 
 @Component({
   selector: 'app-verperfil',
-  imports: [FormsModule, LucideUser],
+  imports: [FormsModule, LucideUser, TranslatePipe],
   styleUrl: './verperfil.css',
   templateUrl: './verperfil.html',
 })
@@ -18,6 +19,7 @@ export class Verperfil implements OnInit, OnDestroy {
   private authService = inject(AuthService);
   private alerta = inject(AlertaService);
   private router = inject(Router);
+  private translate = inject(TranslateService);
 
   perfil = signal<ClientePublico | null>(null);
   cargando = signal(true);
@@ -55,7 +57,7 @@ export class Verperfil implements OnInit, OnDestroy {
       },
       error: () => {
         this.cargando.set(false);
-        this.alerta.error('No se pudo cargar tu perfil.');
+        this.alerta.error(this.translate.instant('PROFILE.LOAD_ERROR'));
       }
     });
   }
@@ -79,7 +81,7 @@ export class Verperfil implements OnInit, OnDestroy {
 
     if (this.passwordNueva()) {
       if (!this.passwordVieja()) {
-        this.alerta.advertencia('Ingresa tu contraseña actual para cambiarla.');
+        this.alerta.advertencia(this.translate.instant('PROFILE.CURRENT_PASSWORD_REQUIRED'));
         return;
       }
       request.passwordVieja = this.passwordVieja();
@@ -87,7 +89,7 @@ export class Verperfil implements OnInit, OnDestroy {
     }
 
     if (Object.keys(request).length === 0) {
-      this.alerta.advertencia('No hay cambios para guardar.');
+      this.alerta.advertencia(this.translate.instant('PROFILE.NO_CHANGES'));
       return;
     }
 
@@ -101,11 +103,11 @@ export class Verperfil implements OnInit, OnDestroy {
         this.passwordVieja.set('');
         this.passwordNueva.set('');
         this.guardando.set(false);
-        this.alerta.exito('Tu perfil se actualizó correctamente.');
+        this.alerta.exito(this.translate.instant('PROFILE.SAVE_SUCCESS'));
       },
       error: () => {
         this.guardando.set(false);
-        this.alerta.error('No se pudieron guardar los cambios.');
+        this.alerta.error(this.translate.instant('PROFILE.SAVE_ERROR'));
       }
     });
   }
@@ -117,11 +119,11 @@ export class Verperfil implements OnInit, OnDestroy {
 
     input.value = '';
     if (!['image/jpeg', 'image/png'].includes(file.type)) {
-      this.alerta.error('La foto debe estar en formato JPG o PNG.');
+      this.alerta.error(this.translate.instant('PROFILE.PHOTO_FORMAT_ERROR'));
       return;
     }
     if (file.size > this.maximoFotoBytes) {
-      this.alerta.error('La foto no puede superar los 5 MB.');
+      this.alerta.error(this.translate.instant('PROFILE.PHOTO_SIZE_ERROR'));
       return;
     }
 
@@ -131,9 +133,9 @@ export class Verperfil implements OnInit, OnDestroy {
     this.fotoVistaPrevia.set(this.urlFotoTemporal);
     this.confirmandoFoto.set(true);
     this.alerta.solicitarConfirmacion(
-      'Confirmar foto',
-      '¿Quieres usar esta foto de perfil?',
-      'Sí, cambiar foto'
+      this.translate.instant('PROFILE.CONFIRM_PHOTO_TITLE'),
+      this.translate.instant('PROFILE.CONFIRM_PHOTO_MESSAGE'),
+      this.translate.instant('PROFILE.CONFIRM_PHOTO_ACTION')
     ).then(confirmada => {
       this.confirmandoFoto.set(false);
       if (confirmada) {
@@ -154,12 +156,12 @@ export class Verperfil implements OnInit, OnDestroy {
         this.perfil.set(perfil);
         this.procesandoFoto.set(false);
         this.limpiarFotoPendiente();
-        this.alerta.exito('Tu foto de perfil se actualizó.');
+        this.alerta.exito(this.translate.instant('PROFILE.PHOTO_UPDATE_SUCCESS'));
       },
       error: () => {
         this.procesandoFoto.set(false);
         this.limpiarFotoPendiente();
-        this.alerta.error('No se pudo subir la foto de perfil.');
+        this.alerta.error(this.translate.instant('PROFILE.PHOTO_UPLOAD_ERROR'));
       }
     });
   }
@@ -170,30 +172,30 @@ export class Verperfil implements OnInit, OnDestroy {
       next: perfil => {
         this.perfil.set(perfil);
         this.procesandoFoto.set(false);
-        this.alerta.exito('Se quitó tu foto de perfil.');
+        this.alerta.exito(this.translate.instant('PROFILE.PHOTO_REMOVE_SUCCESS'));
       },
       error: () => {
         this.procesandoFoto.set(false);
-        this.alerta.error('No se pudo quitar la foto de perfil.');
+        this.alerta.error(this.translate.instant('PROFILE.PHOTO_REMOVE_ERROR'));
       }
     });
   }
 
   desactivarCuenta() {
     this.alerta.solicitarConfirmacion(
-      'Desactivar cuenta',
-      '¿Seguro que quieres desactivar tu cuenta? Tendrás que iniciar sesión nuevamente.',
-      'Desactivar cuenta'
+      this.translate.instant('PROFILE.DEACTIVATE_TITLE'),
+      this.translate.instant('PROFILE.DEACTIVATE_CONFIRM_MESSAGE'),
+      this.translate.instant('PROFILE.DEACTIVATE_TITLE')
     ).then(confirmada => {
       if (!confirmada) return;
 
       this.clientesService.desactivarCuenta().subscribe({
         next: () => {
           this.authService.clearToken();
-          this.alerta.exito('Tu cuenta se desactivó correctamente.');
+          this.alerta.exito(this.translate.instant('PROFILE.DEACTIVATE_SUCCESS'));
           this.router.navigate(['/login']);
         },
-        error: () => this.alerta.error('No se pudo desactivar tu cuenta.')
+        error: () => this.alerta.error(this.translate.instant('PROFILE.DEACTIVATE_ERROR'))
       });
     });
   }

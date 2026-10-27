@@ -3,16 +3,17 @@ import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, switchMap } from 'rxjs';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { LucideTrash2, LucidePackage } from '@lucide/angular';
-import { CarritosService } from '@core/services/Carrito/CarritosService';
-import { AlertaService } from '@core/services/Modals/ModalsService';
-import { Carrito } from '@core/models/Carrito/carritoModels';
+import { CarritosService } from '@core/services/carrito/CarritosService';
+import { AlertaService } from '@core/services/modals/ModalsService';
+import { Carrito } from '@core/models/carrito/carritoModels';
 
 type ItemCarrito = Carrito['productos'][number];
 
 @Component({
   selector: 'app-ver-carrito',
-  imports: [CommonModule, LucideTrash2, LucidePackage],
+  imports: [CommonModule, LucideTrash2, LucidePackage, TranslatePipe],
   templateUrl: './ver-carrito.html',
   styleUrl: './ver-carrito.css',
 })
@@ -20,6 +21,7 @@ export class VerCarrito {
   private carritoService = inject(CarritosService);
   private alerta = inject(AlertaService);
   private router = inject(Router);
+  private translate = inject(TranslateService);
 
   // IDs de productos cuya imagen no cargó (se muestra el ícono de paquete)
   private imagenesFallidas = signal<Set<number>>(new Set());
@@ -49,7 +51,7 @@ export class VerCarrito {
       error: error => {
         const mensaje = this.mensajeError(error);
         this.alerta.error(
-          mensaje ?? 'No se pudo actualizar la cantidad. Revisa la cantidad y el stock disponible.'
+          mensaje ?? this.translate.instant('CART.UPDATE_QUANTITY_ERROR')
         );
       }
     });
@@ -58,10 +60,10 @@ export class VerCarrito {
   eliminar(productoId: number) {
     this.carritoService.eliminar(productoId).subscribe({
       next: () => {
-        this.alerta.exito('Producto quitado del carrito.');
+        this.alerta.exito(this.translate.instant('CART.REMOVE_SUCCESS'));
         this.recargar$.next();
       },
-      error: () => this.alerta.error('No se pudo quitar el producto.')
+      error: () => this.alerta.error(this.translate.instant('CART.REMOVE_ERROR'))
     });
   }
 

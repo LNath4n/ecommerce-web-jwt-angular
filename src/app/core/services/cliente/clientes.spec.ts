@@ -5,7 +5,7 @@ import {
   provideHttpClientTesting
 } from '@angular/common/http/testing';
 import { environment } from '@environments/environment';
-import { ClientePublico } from '@core/models/Cliente/clienteModels';
+import { ClientePublico } from '@core/models/cliente/clienteModels';
 
 import { ClientesService } from './ClientesService';
 

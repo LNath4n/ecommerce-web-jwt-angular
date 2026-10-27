@@ -1,29 +1,31 @@
-import { Component, inject, signal, AfterViewInit, OnDestroy } from '@angular/core';
+import { Component, inject, signal, AfterViewInit, OnDestroy, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
+import { debounceTime, distinctUntilChanged, Subject, Subscription } from 'rxjs';
 import { LucidePackage, LucideSearch } from '@lucide/angular';
-import { ProductosService } from '@core/services/Producto/ProductosService';
-import { CarritosService } from '@core/services/Carrito/CarritosService';
-import { AuthService } from '@core/services/Auth/auth';
-import { ProductoPublicoResponse } from '@core/models/Producto/productoModels';
-import { AlertaService } from '@core/services/Modals/ModalsService';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { ProductosService } from '@core/services/producto/ProductosService';
+import { CarritosService } from '@core/services/carrito/CarritosService';
+import { AuthService } from '@core/services/auth/auth';
+import { ProductoPublicoResponse } from '@core/models/producto/productoModels';
+import { AlertaService } from '@core/services/modals/ModalsService';
 
 @Component({
   selector: 'app-todos-los-productos',
-  imports: [CommonModule, FormsModule, LucideSearch, LucidePackage],
+  imports: [CommonModule, FormsModule, LucideSearch, LucidePackage, TranslatePipe],
   templateUrl: './todos-los-productos.html',
   styleUrl: './todos-los-productos.css',
 })
-export class TodosLosProductos implements AfterViewInit, OnDestroy {
+export class TodosLosProductos implements OnInit, AfterViewInit, OnDestroy {
 
   private productosService = inject(ProductosService);
   private router = inject(Router);
   private authService = inject(AuthService);
   private carritosService = inject(CarritosService);
   private alerta = inject(AlertaService);
+  private translate = inject(TranslateService);
 
   isLoggedIn = this.authService.isLoggedIn;
   nombreUsuario = this.authService.nombre;
@@ -31,18 +33,32 @@ export class TodosLosProductos implements AfterViewInit, OnDestroy {
   private readonly tamanoPagina = 24;   // múltiplo de 2, 3 y 4: filas completas en cualquier ancho
   productos = signal<ProductoPublicoResponse[]>([]);
   cargando = signal(false);
+  errorCarga = signal(false);
   paginaActual = 0;
   hayMasPaginas = true;
 
   textoBusqueda = '';              // lo que el usuario está escribiendo
   private busquedaActiva = '';     // lo que realmente se buscó (para las páginas siguientes)
   private peticion?: Subscription;
+  private readonly cambiosBusqueda = new Subject<string>();
+  private suscripcionBusqueda?: Subscription;
 
   // IDs de productos cuya imagen no existe (se muestra el ícono de paquete)
   private imagenesFallidas = signal<Set<number>>(new Set());
 
   private scrollListener!: () => void;
   private sidenavContent!: Element;
+
+  ngOnInit() {
+    this.suscripcionBusqueda = this.cambiosBusqueda.pipe(
+      debounceTime(350),
+      distinctUntilChanged()
+    ).subscribe(termino => {
+      if (termino !== this.busquedaActiva) {
+        this.ejecutarBusqueda(termino);
+      }
+    });
+  }
 
   ngAfterViewInit() {
     this.cargarMas(); // Carga inicial
@@ -57,6 +73,7 @@ export class TodosLosProductos implements AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     this.peticion?.unsubscribe();
+    this.suscripcionBusqueda?.unsubscribe();
     this.sidenavContent?.removeEventListener('scroll', this.scrollListener);
   }
 
@@ -82,17 +99,31 @@ export class TodosLosProductos implements AfterViewInit, OnDestroy {
           this.hayMasPaginas = this.paginaActual < page.totalPages - 1;
           this.paginaActual++;
           this.cargando.set(false);
+          this.errorCarga.set(false);
         },
-        error: () => this.cargando.set(false)
+        error: () => {
+          this.cargando.set(false);
+          this.errorCarga.set(true);
+        }
       });
   }
 
   buscar() {
+    this.cambiosBusqueda.next(this.textoBusqueda);
+    this.ejecutarBusqueda(this.textoBusqueda);
+  }
+
+  programarBusqueda(termino: string) {
+    this.cambiosBusqueda.next(termino);
+  }
+
+  private ejecutarBusqueda(termino: string) {
     this.peticion?.unsubscribe();           // descarta una respuesta vieja que siga en camino
-    this.busquedaActiva = this.textoBusqueda;
+    this.busquedaActiva = termino;
     this.productos.set([]);
     this.paginaActual = 0;
     this.hayMasPaginas = true;
+    this.errorCarga.set(false);
     this.cargando.set(false);
     this.cargarMas();
   }
@@ -100,6 +131,11 @@ export class TodosLosProductos implements AfterViewInit, OnDestroy {
   limpiarBusqueda() {
     this.textoBusqueda = '';
     this.buscar();
+  }
+
+  reintentarCarga() {
+    this.errorCarga.set(false);
+    this.cargarMas();
   }
 
 
@@ -117,19 +153,19 @@ export class TodosLosProductos implements AfterViewInit, OnDestroy {
 
   agregarAlCarrito(idProducto: number) {
     if (!this.authService.getToken()) {
-      this.alerta.advertencia('Debes de iniciar sesion');
+      this.alerta.advertencia(this.translate.instant('PRODUCT_DETAIL.LOGIN_REQUIRED'));
       return;
     }
 
     this.carritosService.agregar({ idProducto, cantidad: 1 })
       .subscribe({
         next: () => {
-          this.alerta.exito('Se agregó correctamente al carrito.');
+          this.alerta.exito(this.translate.instant('PRODUCT_DETAIL.ADDED_TO_CART'));
         },
         error: error => {
           const mensaje = this.mensajeError(error);
           this.alerta.error(
-            mensaje ?? 'No se pudo agregar el producto al carrito. Revisa su disponibilidad e intenta de nuevo.'
+            mensaje ?? this.translate.instant('PRODUCT_DETAIL.ADD_TO_CART_ERROR')
           );
         }
       });

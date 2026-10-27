@@ -1,6 +1,7 @@
 import { Component, inject, signal, computed, OnInit, OnDestroy } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import {
   LucidePencil,
   LucideTrash2,
@@ -14,16 +15,17 @@ import {
   ProductoPublicoResponse,
   ProductoRequest,
   TipoProducto,
-} from '@core/models/Producto/productoModels';
-import { ProductosService } from '@core/services/Producto/ProductosService';
-import { ProductoAdminService } from '@core/services/admin/ProductoAdminService/ProductoAdminService';
-import { AlertaService } from '@core/services/Modals/ModalsService';
+} from '@core/models/producto/productoModels';
+import { ProductosService } from '@core/services/producto/ProductosService';
+import { ProductoAdminService } from '@core/services/admin/productoadminservice/ProductoAdminService';
+import { AlertaService } from '@core/services/modals/ModalsService';
 import { ComponenteConCambios } from '@core/guard/cambios-sin-guardar-guard';
 import { switchMap, of, catchError, throwError } from 'rxjs';
 
 @Component({
   imports: [
     FormsModule,
+    TranslatePipe,
     LucidePencil,
     LucideTrash2,
     LucideSearch,
@@ -39,6 +41,7 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
   private productosService = inject(ProductosService);
   private adminService = inject(ProductoAdminService);
   private alerta = inject(AlertaService);
+  private translate = inject(TranslateService);
 
   productos = signal<ProductoPublicoResponse[]>([]);
   categorias = signal<CategoriaOpcionResponse[]>([]);
@@ -80,7 +83,7 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
     this.cargar();
     this.productosService.obtenerListaDeCategorias().subscribe({
       next: categorias => this.categorias.set(categorias),
-      error: err => this.mostrarError(err, 'No se pudieron cargar las categorías'),
+      error: err => this.mostrarError(err, 'ADMIN_PRODUCTS.CATEGORIES_LOAD_ERROR'),
     });
   }
 
@@ -101,7 +104,7 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
           this.productos.set(res.content);
           this.totalPaginas.set(Math.max(res.totalPages, 1));
         },
-        error: err => this.mostrarError(err, 'No se pudieron cargar los productos'),
+        error: err => this.mostrarError(err, 'ADMIN_PRODUCTS.PRODUCTS_LOAD_ERROR'),
       });
   }
 
@@ -126,12 +129,12 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
     const archivo = input.files?.[0] ?? null;
 
     if (archivo && !['image/jpeg', 'image/png'].includes(archivo.type)) {
-      this.alerta.error('La imagen debe estar en formato JPG o PNG.');
+      this.alerta.error(this.translate.instant('ADMIN_PRODUCTS.IMAGE_FORMAT_ERROR'));
       input.value = '';
       return;
     }
     if (archivo && archivo.size > this.maxBytesImagen) {
-      this.alerta.error('La imagen no debe pasar de 5 MB.');
+      this.alerta.error(this.translate.instant('ADMIN_PRODUCTS.IMAGE_SIZE_ERROR'));
       input.value = '';
       return;
     }
@@ -162,18 +165,20 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
             this.editandoId.set(producto.id);
             this.inicial = JSON.stringify(this.form);
             this.cargar();
-            this.alerta.advertencia('El producto se guardó, pero la imagen no se pudo subir. Vuelve a intentarlo.');
+            this.alerta.advertencia(this.translate.instant('ADMIN_PRODUCTS.IMAGE_UPLOAD_RETRY'));
             return throwError(() => err);
           })
         );
       })
     ).subscribe({
       next: () => {
-        this.alerta.exito(id !== null ? 'Producto actualizado.' : 'Producto creado.');
+        this.alerta.exito(this.translate.instant(
+          id !== null ? 'ADMIN_PRODUCTS.UPDATE_SUCCESS' : 'ADMIN_PRODUCTS.CREATE_SUCCESS'
+        ));
         this.cancelar();
         this.cargar();
       },
-      error: err => this.mostrarError(err, 'No se pudo guardar el producto'),
+      error: err => this.mostrarError(err, 'ADMIN_PRODUCTS.SAVE_ERROR'),
     });
   }
 
@@ -184,45 +189,45 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
         this.reiniciarForm(datos);
         this.reiniciarImagen(imagenUrl);
       },
-      error: err => this.mostrarError(err, 'No se pudo cargar el producto'),
+      error: err => this.mostrarError(err, 'ADMIN_PRODUCTS.PRODUCT_LOAD_ERROR'),
     });
   }
 
   borrar(id: number) {
-    if (!confirm('¿Borrar producto?')) return;
+    if (!confirm(this.translate.instant('ADMIN_PRODUCTS.DELETE_CONFIRM'))) return;
     this.adminService.borrar(id).subscribe({
       next: () => {
-        this.alerta.exito('Producto borrado.');
+        this.alerta.exito(this.translate.instant('ADMIN_PRODUCTS.DELETE_SUCCESS'));
         if (this.editandoId() === id) this.cancelar();
         this.cargar();
       },
-      error: err => this.mostrarError(err, 'No se pudo borrar el producto'),
+      error: err => this.mostrarError(err, 'ADMIN_PRODUCTS.DELETE_ERROR'),
     });
   }
 
   desactivar(id: number) {
-    if (!confirm('¿Desactivar producto? Dejará de aparecer en el catálogo público.')) return;
+    if (!confirm(this.translate.instant('ADMIN_PRODUCTS.DEACTIVATE_CONFIRM'))) return;
     this.adminService.desactivar(id).subscribe({
       next: () => {
-        this.alerta.exito('Producto desactivado.');
+        this.alerta.exito(this.translate.instant('ADMIN_PRODUCTS.DEACTIVATE_SUCCESS'));
         if (this.editandoId() === id) this.cancelar();
         this.cargar();
       },
-      error: err => this.mostrarError(err, 'No se pudo desactivar el producto'),
+      error: err => this.mostrarError(err, 'ADMIN_PRODUCTS.DEACTIVATE_ERROR'),
     });
   }
 
   quitarImagen() {
     const id = this.editandoId();
     if (id === null || !this.vistaPrevia()) return;
-    if (!confirm('¿Quitar la imagen de este producto?')) return;
+    if (!confirm(this.translate.instant('ADMIN_PRODUCTS.REMOVE_IMAGE_CONFIRM'))) return;
 
     this.adminService.quitarImagen(id).subscribe({
       next: () => {
         this.reiniciarImagen(null);
-        this.alerta.exito('Imagen eliminada.');
+        this.alerta.exito(this.translate.instant('ADMIN_PRODUCTS.REMOVE_IMAGE_SUCCESS'));
       },
-      error: err => this.mostrarError(err, 'No se pudo quitar la imagen'),
+      error: err => this.mostrarError(err, 'ADMIN_PRODUCTS.REMOVE_IMAGE_ERROR'),
     });
   }
 
@@ -265,11 +270,11 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
     }
   }
 
-  private mostrarError(err: unknown, mensajeDefault: string) {
+  private mostrarError(err: unknown, mensajeDefaultKey: string) {
     if (err instanceof HttpErrorResponse && typeof err.error === 'string') {
       this.alerta.error(err.error);
       return;
     }
-    this.alerta.error(mensajeDefault);
+    this.alerta.error(this.translate.instant(mensajeDefaultKey));
   }
 }

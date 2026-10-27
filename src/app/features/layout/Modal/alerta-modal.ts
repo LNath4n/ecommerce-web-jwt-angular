@@ -1,6 +1,6 @@
 import { Component, inject } from '@angular/core';
 import { LucideCircleCheck, LucideCircleX, LucideTriangleAlert, LucideX } from '@lucide/angular';
-import { AlertaService } from '@core/services/Modals/ModalsService';
+import { AlertaService } from '@core/services/modals/ModalsService';
 
 @Component({
   selector: 'app-alerta-modal',

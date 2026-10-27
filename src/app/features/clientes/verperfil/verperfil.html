@@ -3,7 +3,7 @@
     <div class="row justify-content-between">
       <div class="col-lg-5">
         <div class="intro-excerpt">
-          <h1>Mi perfil</h1>
+          <h1>{{ 'PROFILE.TITLE' | translate }}</h1>
         </div>
       </div>
     </div>
@@ -13,15 +13,15 @@
 <div class="untree_co-section before-footer-section">
   <div class="container">
     @if (cargando()) {
-      <p class="text-center py-5">Cargando tu perfil...</p>
+      <p class="text-center py-5">{{ 'PROFILE.LOADING' | translate }}</p>
     } @else if (perfil(); as perfilActual) {
       <div class="row g-4 profile-row">
         <div class="col-12 col-lg-4 profile-column">
           <section class="profile-card text-center profile-summary">
             @if (fotoVistaPrevia() || perfilActual.fotoUrl; as fotoUrl) {
-              <img class="profile-photo" [src]="fotoUrl" alt="Foto de perfil">
+              <img class="profile-photo" [src]="fotoUrl" [alt]="'PROFILE.PHOTO_ALT' | translate">
             } @else {
-              <div class="profile-photo profile-photo-placeholder" aria-label="Sin foto de perfil">
+              <div class="profile-photo profile-photo-placeholder" [attr.aria-label]="'PROFILE.NO_PHOTO' | translate">
                 <svg lucideUser color="#fff" [size]="112" [strokeWidth]="1.5"></svg>
               </div>
             }
@@ -30,7 +30,8 @@
             <p class="text-muted mb-4">{{ perfilActual.email }}</p>
 
             <label class="btn btn-primary w-100" for="fotoPerfil">
-              {{ procesandoFoto() ? 'Subiendo foto...' : confirmandoFoto() ? 'Foto seleccionada' : 'Seleccionar foto' }}
+              {{ procesandoFoto() ? ('PROFILE.UPLOADING_PHOTO' | translate) :
+                confirmandoFoto() ? ('PROFILE.PHOTO_SELECTED' | translate) : ('PROFILE.SELECT_PHOTO' | translate) }}
             </label>
             <input id="fotoPerfil" class="visually-hidden" type="file" accept="image/png,image/jpeg"
               [disabled]="procesandoFoto() || confirmandoFoto()" (change)="seleccionarFoto($event)">
@@ -38,26 +39,26 @@
             @if (perfilActual.fotoUrl && !fotoVistaPrevia()) {
               <button class="btn btn-outline-secondary w-100 mt-2" type="button"
                 [disabled]="procesandoFoto()" (click)="quitarFoto()">
-                Quitar foto
+                {{ 'PROFILE.REMOVE_PHOTO' | translate }}
               </button>
             }
           </section>
 
           <section class="profile-card danger-zone mt-4">
-            <h2 class="h5 mb-2">Desactivar cuenta</h2>
-            <p class="mb-3">Tu cuenta se desactivará y tendrás que iniciar sesión nuevamente.</p>
+            <h2 class="h5 mb-2">{{ 'PROFILE.DEACTIVATE_TITLE' | translate }}</h2>
+            <p class="mb-3">{{ 'PROFILE.DEACTIVATE_DESCRIPTION' | translate }}</p>
             <button class="btn profile-danger-button" type="button" (click)="desactivarCuenta()">
-              Desactivar mi cuenta
+              {{ 'PROFILE.DEACTIVATE_ACTION' | translate }}
             </button>
           </section>
         </div>
 
         <div class="col-12 col-lg-8 profile-details-column">
           <section class="profile-card">
-            <h2 class="h4 section-title mb-4">Datos de la cuenta</h2>
+            <h2 class="h4 section-title mb-4">{{ 'PROFILE.ACCOUNT_DETAILS' | translate }}</h2>
             <form #perfilForm="ngForm" (ngSubmit)="guardarCambios(perfilForm)">
               <div class="mb-3">
-                <label class="form-label" for="nombre">Nombre (opcional)</label>
+                <label class="form-label" for="nombre">{{ 'PROFILE.NAME_OPTIONAL' | translate }}</label>
                 <input id="nombre" name="nombre" class="form-control" type="text"
                   #nombreControl="ngModel" [ngModel]="nombre()" (ngModelChange)="nombre.set($event ?? '')"
                   maxlength="100" [disabled]="guardando()"
@@ -65,14 +66,14 @@
                 @if (nombreControl.invalid && nombreControl.touched) {
                   <div class="invalid-feedback">
                     @if (nombreControl.hasError('maxlength')) {
-                      El nombre no puede superar los 100 caracteres.
+                      {{ 'PROFILE.NAME_MAX_LENGTH' | translate }}
                     }
                   </div>
                 }
               </div>
 
               <div class="mb-3">
-                <label class="form-label" for="email">Correo electrónico (opcional)</label>
+                <label class="form-label" for="email">{{ 'PROFILE.EMAIL_OPTIONAL' | translate }}</label>
                 <input id="email" name="email" class="form-control" type="email"
                   #emailControl="ngModel" [ngModel]="email()" (ngModelChange)="email.set($event ?? '')"
                   [disabled]="guardando()"
@@ -80,14 +81,14 @@
                 @if (emailControl.invalid && emailControl.touched) {
                   <div class="invalid-feedback">
                     @if (emailControl.hasError('email')) {
-                      Ingresa un correo electrónico válido.
+                      {{ 'PROFILE.EMAIL_INVALID' | translate }}
                     }
                   </div>
                 }
               </div>
 
               <div class="mb-4">
-                <label class="form-label" for="telefono">Teléfono (opcional)</label>
+                <label class="form-label" for="telefono">{{ 'PROFILE.PHONE_OPTIONAL' | translate }}</label>
                 <input id="telefono" name="telefono" class="form-control" type="tel"
                   #telefonoControl="ngModel" [ngModel]="telefono()" (ngModelChange)="telefono.set($event ?? '')"
                   pattern="[0-9]{10}" maxlength="10" inputmode="numeric" [disabled]="guardando()"
@@ -95,41 +96,41 @@
                 @if (telefonoControl.invalid && telefonoControl.touched) {
                   <div class="invalid-feedback">
                     @if (telefonoControl.hasError('pattern')) {
-                      El teléfono debe contener exactamente 10 dígitos.
+                      {{ 'PROFILE.PHONE_INVALID' | translate }}
                     }
                   </div>
                 }
               </div>
 
               <hr class="my-4">
-              <h3 class="h5 mb-3">Cambiar contraseña</h3>
-              <p class="text-muted">Deja estos campos vacíos si no deseas cambiarla.</p>
+              <h3 class="h5 mb-3">{{ 'PROFILE.CHANGE_PASSWORD' | translate }}</h3>
+              <p class="text-muted">{{ 'PROFILE.PASSWORD_HELP' | translate }}</p>
 
               <div class="mb-3">
-                <label class="form-label" for="passwordVieja">Contraseña actual</label>
+                <label class="form-label" for="passwordVieja">{{ 'PROFILE.CURRENT_PASSWORD' | translate }}</label>
                 <input id="passwordVieja" name="passwordVieja" class="form-control" type="password"
                   #passwordViejaControl="ngModel" autocomplete="current-password" [ngModel]="passwordVieja()"
                   (ngModelChange)="passwordVieja.set($event)" [required]="passwordNueva().length > 0"
                   [disabled]="guardando()"
                   [class.is-invalid]="passwordViejaControl.invalid && passwordViejaControl.touched">
                 @if (passwordViejaControl.invalid && passwordViejaControl.touched) {
-                  <div class="invalid-feedback">Ingresa tu contraseña actual para cambiarla.</div>
+                  <div class="invalid-feedback">{{ 'PROFILE.CURRENT_PASSWORD_REQUIRED' | translate }}</div>
                 }
               </div>
 
               <div class="mb-4">
-                <label class="form-label" for="passwordNueva">Nueva contraseña</label>
+                <label class="form-label" for="passwordNueva">{{ 'PROFILE.NEW_PASSWORD' | translate }}</label>
                 <input id="passwordNueva" name="passwordNueva" class="form-control" type="password"
                   #passwordNuevaControl="ngModel" autocomplete="new-password" [ngModel]="passwordNueva()"
                   (ngModelChange)="passwordNueva.set($event)" minlength="8" [disabled]="guardando()"
                   [class.is-invalid]="passwordNuevaControl.invalid && passwordNuevaControl.touched">
                 @if (passwordNuevaControl.invalid && passwordNuevaControl.touched) {
-                  <div class="invalid-feedback">La nueva contraseña debe tener al menos 8 caracteres.</div>
+                  <div class="invalid-feedback">{{ 'PROFILE.NEW_PASSWORD_MIN_LENGTH' | translate }}</div>
                 }
               </div>
 
               <button class="btn btn-primary" type="submit" [disabled]="guardando() || perfilForm.invalid">
-                {{ guardando() ? 'Guardando...' : 'Guardar cambios' }}
+                {{ guardando() ? ('PROFILE.SAVING' | translate) : ('PROFILE.SAVE_CHANGES' | translate) }}
               </button>
             </form>
           </section>
@@ -138,8 +139,10 @@
       </div>
     } @else {
       <div class="text-center py-5">
-        <h2 class="section-title mb-3">No se pudo cargar tu perfil</h2>
-        <button class="btn btn-primary" type="button" (click)="obtenerPerfil()">Intentar de nuevo</button>
+        <h2 class="section-title mb-3">{{ 'PROFILE.LOAD_ERROR' | translate }}</h2>
+        <button class="btn btn-primary" type="button" (click)="obtenerPerfil()">
+          {{ 'PROFILE.RETRY' | translate }}
+        </button>
       </div>
     }
   </div>

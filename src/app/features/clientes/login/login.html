@@ -5,37 +5,40 @@
     <div class="col-lg-6 d-none d-lg-flex hero login-panel">
       <div class="intro-excerpt">
         <h1>FerreViky<span class="login-dot">.</span></h1>
-        <p class="mb-4">Todo para tu obra y tu hogar en un solo lugar. Inicia sesión para ver tu carrito y tu perfil.</p>
-        <a class="btn btn-white-outline" style="cursor: pointer" (click)="regresar()">Ver productos</a>
+        <p class="mb-4">{{ 'LOGIN_PAGE.PROMO' | translate }}</p>
+        <a class="btn btn-white-outline" style="cursor: pointer" (click)="regresar()">
+          {{ 'LOGIN_PAGE.VIEW_PRODUCTS' | translate }}
+        </a>
       </div>
     </div>
 
     <!-- Formulario -->
     <div class="col-12 col-lg-6 login-form-wrap">
       <div class="login-form">
-        <h2 class="section-title mb-2">Bienvenido</h2>
-        <p class="mb-4">Ingresa tus datos para continuar.</p>
+        <h2 class="section-title mb-2">{{ 'LOGIN_PAGE.TITLE' | translate }}</h2>
+        <p class="mb-4">{{ 'LOGIN_PAGE.SUBTITLE' | translate }}</p>
 
         <div class="mb-3">
-          <label class="form-label" for="email">Email</label>
-          <input id="email" type="email" class="form-control" placeholder="correo@ejemplo.com"
+          <label class="form-label" for="email">{{ 'LOGIN_PAGE.EMAIL' | translate }}</label>
+          <input id="email" type="email" class="form-control" [placeholder]="'LOGIN_PAGE.EMAIL_PLACEHOLDER' | translate"
             autocomplete="email" [(ngModel)]="email" />
         </div>
 
         <div class="mb-4">
-          <label class="form-label" for="password">Password</label>
-          <input id="password" type="password" class="form-control" placeholder="Tu contraseña"
+          <label class="form-label" for="password">{{ 'LOGIN_PAGE.PASSWORD' | translate }}</label>
+          <input id="password" type="password" class="form-control"
+            [placeholder]="'LOGIN_PAGE.PASSWORD_PLACEHOLDER' | translate"
             autocomplete="current-password" [(ngModel)]="password" (keyup.enter)="login()" />
         </div>
 
-        <button class="btn btn-primary w-100" (click)="login()">Entrar</button>
+        <button class="btn btn-primary w-100" (click)="login()">{{ 'LOGIN_PAGE.SUBMIT' | translate }}</button>
 
         <p class="text-center mt-4 mb-2">
-          ¿No tienes cuenta?
-          <a class="more" style="cursor: pointer" (click)="irRegistro()">Regístrate</a>
+          {{ 'LOGIN_PAGE.NO_ACCOUNT' | translate }}
+          <a class="more" style="cursor: pointer" (click)="irRegistro()">{{ 'LOGIN_PAGE.REGISTER_LINK' | translate }}</a>
         </p>
         <p class="text-center mb-0">
-          <a class="more" style="cursor: pointer" (click)="regresar()">Regresar</a>
+          <a class="more" style="cursor: pointer" (click)="regresar()">{{ 'LOGIN_PAGE.BACK' | translate }}</a>
         </p>
       </div>
     </div>
