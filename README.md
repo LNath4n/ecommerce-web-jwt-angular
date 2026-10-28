@@ -1,67 +1,83 @@
-# AngularFerreViky
+# E-commerce Web: Angular + JWT
 
-Frontend for **FerreViky**, an e-commerce application for a hardware store, built with Angular. This project consumes the [Spring-FerreViky](https://github.com/LNath4n/ecommerce-api-jwt-spring-boot) REST API for authentication, product catalog, and cart features.
+Angular storefront for an e-commerce platform: product catalog, shopping cart, user profile and an admin area, protected by route guards and a JWT interceptor. It consumes the [Spring Boot REST API](https://github.com/LNath4n/ecommerce-api-jwt-spring-boot).
 
-Development is currently paused, and the frontend is not as advanced as the backend yet.
+**Live demo:** https://d23ev6ydugwou7.cloudfront.net/productos
+**Backend repo:** [ecommerce-api-jwt-spring-boot](https://github.com/LNath4n/ecommerce-api-jwt-spring-boot)
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 22.0.0.
+---
 
-## Development server
+## Key Features
 
-To start a local development server, run:
+- **Route guards**: authentication guard (cart and profile require a session), admin guard (admin area requires admin permissions) and an unsaved-changes guard.
+- **JWT handling with an HTTP interceptor**: a functional interceptor attaches the token to every API request and handles expired sessions.
+- **Signals-based state**: Angular Signals (`signal`, `computed`) for local and authentication state, with RxJS for asynchronous flows. No external state library.
+- **Standalone components and lazy-loaded routes**: routes load their components on demand.
+- **Internationalization**: Spanish and English with ngx-translate.
+- **SSR ready**: Angular SSR with an Express server is set up.
+
+---
+
+## Tech Stack
+
+| Area | Technologies |
+|------|--------------|
+| Framework | Angular 22, TypeScript |
+| State and async | Angular Signals, RxJS |
+| UI | Bootstrap 5, Angular Material, SCSS, Lucide icons |
+| i18n | ngx-translate |
+| Testing | Vitest, JSDOM |
+| Hosting | AWS (CloudFront) |
+
+---
+
+## Project Structure (core)
+
+```
+src/app/core/
+├── services/auth/       # Authentication state with Signals
+├── guard/               # Route guards
+└── interceptors/        # JWT interceptor
+```
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js and npm
+- The backend running locally (default `http://localhost:8080`), or access to a deployed API
+
+### Install and run
 
 ```bash
+npm install
 ng serve
 ```
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+Open `http://localhost:4200/`. The app reloads automatically when you change a source file.
 
-## Code scaffolding
-
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
-
-```bash
-ng generate component component-name
-```
-
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
-
-```bash
-ng generate --help
-```
-
-## Building
-
-To build the project run:
+### Build
 
 ```bash
 ng build
 ```
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+Build artifacts are stored in `dist/`.
 
-## Running unit tests
-
-To execute unit tests with the [Vitest](https://vitest.dev/) test runner, use the following command:
+### Unit tests
 
 ```bash
 ng test
 ```
 
-## Running end-to-end tests
+Tests run with [Vitest](https://vitest.dev/).
 
-For end-to-end (e2e) testing, run:
+---
 
-```bash
-ng e2e
-```
+## Project Status
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+In development. Authentication, catalog and cart work against the live API; more features are in progress.
 
-## Related Projects
-
-- Backend: [Spring-FerreViky](https://github.com/LNath4n/Spring-FerreViky)
-
-## Additional Resources
-
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+---
