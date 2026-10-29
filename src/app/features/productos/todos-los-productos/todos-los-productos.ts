@@ -1,20 +1,20 @@
-import { Component, inject, signal, AfterViewInit, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { debounceTime, distinctUntilChanged, Subject, Subscription } from 'rxjs';
 import { LucidePackage, LucideSearch } from '@lucide/angular';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ProductosService } from '@core/services/producto/ProductosService';
 import { CarritosService } from '@core/services/carrito/CarritosService';
 import { AuthService } from '@core/services/auth/auth';
-import { ProductoPublicoResponse } from '@core/models/producto/productoModels';
+import { OrdenProducto, ProductoPublicoResponse } from '@core/models/producto/productoModels';
 import { AlertaService } from '@core/services/modals/ModalsService';
 
 @Component({
   selector: 'app-todos-los-productos',
-  imports: [CommonModule, FormsModule, LucideSearch, LucidePackage, TranslatePipe],
+  imports: [CommonModule, FormsModule, RouterLink, LucideSearch, LucidePackage, TranslatePipe],
   templateUrl: './todos-los-productos.html',
   styleUrl: './todos-los-productos.css',
 })
@@ -32,16 +32,21 @@ export class TodosLosProductos implements OnInit, AfterViewInit, OnDestroy {
 
   private readonly tamanoPagina = 24;   // múltiplo de 2, 3 y 4: filas completas en cualquier ancho
   productos = signal<ProductoPublicoResponse[]>([]);
+  animarEntrada = signal(true);
+  reemplazandoResultados = signal(false);
   cargando = signal(false);
   errorCarga = signal(false);
   paginaActual = 0;
   hayMasPaginas = true;
 
   textoBusqueda = '';              // lo que el usuario está escribiendo
+  ordenSeleccionado: OrdenProducto = '';
   private busquedaActiva = '';     // lo que realmente se buscó (para las páginas siguientes)
   private peticion?: Subscription;
   private readonly cambiosBusqueda = new Subject<string>();
   private suscripcionBusqueda?: Subscription;
+  private animacionInicialTimer?: ReturnType<typeof setTimeout>;
+  private reemplazarProductosAlCargar = false;
 
   // IDs de productos cuya imagen no existe (se muestra el ícono de paquete)
   private imagenesFallidas = signal<Set<number>>(new Set());
@@ -74,6 +79,7 @@ export class TodosLosProductos implements OnInit, AfterViewInit, OnDestroy {
   ngOnDestroy() {
     this.peticion?.unsubscribe();
     this.suscripcionBusqueda?.unsubscribe();
+    this.detenerAnimacionEntrada();
     this.sidenavContent?.removeEventListener('scroll', this.scrollListener);
   }
 
@@ -92,10 +98,17 @@ export class TodosLosProductos implements OnInit, AfterViewInit, OnDestroy {
 
     this.cargando.set(true);
     this.peticion = this.productosService
-      .buscar({ q: this.busquedaActiva }, this.paginaActual, this.tamanoPagina)
+      .buscar({ q: this.busquedaActiva, orden: this.ordenSeleccionado }, this.paginaActual, this.tamanoPagina)
       .subscribe({
         next: (page) => {
-          this.productos.update(actual => [...actual, ...page.content]);
+          if (this.reemplazarProductosAlCargar) {
+            this.productos.set(page.content);
+            this.reemplazarProductosAlCargar = false;
+          } else {
+            this.productos.update(actual => [...actual, ...page.content]);
+          }
+          this.reemplazandoResultados.set(false);
+          this.programarFinAnimacionInicial();
           this.hayMasPaginas = this.paginaActual < page.totalPages - 1;
           this.paginaActual++;
           this.cargando.set(false);
@@ -103,29 +116,53 @@ export class TodosLosProductos implements OnInit, AfterViewInit, OnDestroy {
         },
         error: () => {
           this.cargando.set(false);
+          this.reemplazandoResultados.set(false);
           this.errorCarga.set(true);
         }
       });
   }
 
   buscar() {
+    this.detenerAnimacionEntrada();
     this.cambiosBusqueda.next(this.textoBusqueda);
     this.ejecutarBusqueda(this.textoBusqueda);
   }
 
+  cambiarOrden(orden: OrdenProducto) {
+    this.detenerAnimacionEntrada();
+    this.ordenSeleccionado = orden;
+    this.ejecutarBusqueda(this.textoBusqueda);
+  }
+
   programarBusqueda(termino: string) {
+    this.detenerAnimacionEntrada();
     this.cambiosBusqueda.next(termino);
   }
 
   private ejecutarBusqueda(termino: string) {
+    this.detenerAnimacionEntrada();
     this.peticion?.unsubscribe();           // descarta una respuesta vieja que siga en camino
     this.busquedaActiva = termino;
-    this.productos.set([]);
+    this.reemplazarProductosAlCargar = true;
+    this.reemplazandoResultados.set(true);
     this.paginaActual = 0;
     this.hayMasPaginas = true;
     this.errorCarga.set(false);
     this.cargando.set(false);
     this.cargarMas();
+  }
+
+  private programarFinAnimacionInicial() {
+    if (!this.animarEntrada() || this.animacionInicialTimer) return;
+    this.animacionInicialTimer = setTimeout(() => this.detenerAnimacionEntrada(), 1400);
+  }
+
+  private detenerAnimacionEntrada() {
+    if (this.animacionInicialTimer) {
+      clearTimeout(this.animacionInicialTimer);
+      this.animacionInicialTimer = undefined;
+    }
+    this.animarEntrada.set(false);
   }
 
   limpiarBusqueda() {

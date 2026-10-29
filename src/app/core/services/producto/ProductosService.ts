@@ -4,6 +4,7 @@ import { Observable } from 'rxjs';
 import { environment } from '@environments/environment';
 import {
   CategoriaOpcionResponse,
+  OrdenProducto,
   PageResponse,
   ProductoPublicoResponse,
 } from '@core/models/producto/productoModels';
@@ -33,6 +34,18 @@ export class ProductosService {
     );
   }
 
+  obtenerTopVistas(): Observable<ProductoPublicoResponse[]> {
+    return this.http.get<ProductoPublicoResponse[]>(`${this.url}/top/vistas`);
+  }
+
+  obtenerTopCalificados(): Observable<ProductoPublicoResponse[]> {
+    return this.http.get<ProductoPublicoResponse[]>(`${this.url}/top/calificados`);
+  }
+
+  obtenerTopResenados(): Observable<ProductoPublicoResponse[]> {
+    return this.http.get<ProductoPublicoResponse[]>(`${this.url}/top/resenados`);
+  }
+
   obtenerPlataformas(): Observable<string[]> {
     return this.http.get<string[]>(`${this.url}/plataformas`);
   }
@@ -42,7 +55,7 @@ export class ProductosService {
   }
 
   buscar(
-    filtros: { q?: string; plataforma?: string; categoriaId?: number },
+    filtros: { q?: string; plataforma?: string; categoriaId?: number; orden?: OrdenProducto },
     page: number = 0,
     size: number = 20
   ): Observable<PageResponse<ProductoPublicoResponse>> {
@@ -56,6 +69,7 @@ export class ProductosService {
     if (filtros.categoriaId != null) {
       params = params.set('categoriaId', filtros.categoriaId.toString());
     }
+    if (filtros.orden) params = params.set('orden', filtros.orden);
 
     return this.http.get<PageResponse<ProductoPublicoResponse>>(`${this.url}/buscar`, { params });
   }

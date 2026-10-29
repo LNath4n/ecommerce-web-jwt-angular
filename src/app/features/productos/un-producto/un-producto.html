@@ -20,6 +20,10 @@
           } @else {
           <svg lucidePackage color="#3b5d50" [size]="96" [strokeWidth]="1.25"></svg>
           }
+          <div class="detalle-vistas">
+            <span>{{ 'PRODUCT_DETAIL.VIEWS' | translate }}</span>
+            <strong>{{ producto.vistas }}</strong>
+          </div>
         </div>
       </div>
 
@@ -63,6 +67,14 @@
               {{ 'PRODUCT_DETAIL.OUT_OF_STOCK' | translate }}
               }
             </dd>
+          </div>
+          <div>
+            <dt>{{ 'PRODUCT_DETAIL.RATING' | translate }}</dt>
+            <dd>{{ producto.promedioCalificacion }} ★</dd>
+          </div>
+          <div>
+            <dt>{{ 'PRODUCT_DETAIL.REVIEWS' | translate }}</dt>
+            <dd>{{ producto.totalResenas }}</dd>
           </div>
         </dl>
 

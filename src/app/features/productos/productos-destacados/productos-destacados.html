@@ -1,0 +1,113 @@
+<div class="hero productos-destacados-hero">
+  <div class="container">
+    <div class="row justify-content-between">
+      <div class="col-lg-7">
+        <div class="intro-excerpt">
+          <h1>{{ 'PRODUCTS_PAGE.SPECIAL_SELECTIONS' | translate }}</h1>
+          @if (isLoggedIn() && nombreUsuario()) {
+          <p class="mb-4">{{ 'PRODUCTS_PAGE.GREETING_USER' | translate: { name: nombreUsuario() } }}</p>
+          } @else {
+          <p class="mb-4">{{ 'PRODUCTS_PAGE.GREETING_GUEST' | translate }}</p>
+          }
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="product-section productos-destacados">
+  <div class="container">
+    <div class="selecciones-encabezado">
+      <div class="selecciones-tabs" role="group" [attr.aria-label]="'PRODUCTS_PAGE.SPECIAL_SELECTIONS' | translate">
+        <button type="button" [class.active]="seleccionEspecial() === 'calificacion'"
+          [attr.aria-pressed]="seleccionEspecial() === 'calificacion'"
+          (click)="seleccionarEspecial('calificacion')">
+          {{ 'PRODUCTS_PAGE.TOP_RATED' | translate }}
+        </button>
+        <button type="button" [class.active]="seleccionEspecial() === 'vistas'"
+          [attr.aria-pressed]="seleccionEspecial() === 'vistas'"
+          (click)="seleccionarEspecial('vistas')">
+          {{ 'PRODUCTS_PAGE.TOP_VIEWS' | translate }}
+        </button>
+        <button type="button" [class.active]="seleccionEspecial() === 'resenas'"
+          [attr.aria-pressed]="seleccionEspecial() === 'resenas'"
+          (click)="seleccionarEspecial('resenas')">
+          {{ 'PRODUCTS_PAGE.TOP_REVIEWED' | translate }}
+        </button>
+      </div>
+      <a class="btn btn-primary" routerLink="/productos">
+        {{ 'PRODUCTS_PAGE.BACK_TO_PRODUCTS' | translate }}
+      </a>
+    </div>
+
+    @if (cargandoSeleccionEspecial()) {
+    <div class="text-center py-5" role="status">
+      <span class="spinner-border text-success" aria-hidden="true"></span>
+      <p class="mt-3 mb-0">{{ 'PRODUCT_DETAIL.LOADING' | translate }}</p>
+    </div>
+    } @else if (errorSeleccionEspecial()) {
+    <div class="text-center py-5">
+      <p role="alert">{{ 'PRODUCTS_PAGE.TOP_LOAD_ERROR' | translate }}</p>
+      <button type="button" class="btn btn-primary" (click)="reintentarSeleccionEspecial()">
+        {{ 'PRODUCTS_PAGE.RETRY' | translate }}
+      </button>
+    </div>
+    } @else {
+    @if (productosSeleccionados().length > 0) {
+    <div class="top-carrusel-controles">
+      <button type="button" class="top-carrusel-flecha" (click)="desplazarCarrusel(topCarrusel, -1)"
+        [attr.aria-label]="'PRODUCTS_PAGE.PREVIOUS' | translate">
+        &larr;
+      </button>
+      <button type="button" class="top-carrusel-flecha" (click)="desplazarCarrusel(topCarrusel, 1)"
+        [attr.aria-label]="'PRODUCTS_PAGE.NEXT' | translate">
+        &rarr;
+      </button>
+    </div>
+    }
+    <div #topCarrusel class="top-carrusel" role="region"
+      (mouseenter)="pausarCarrusel()" (mouseleave)="reanudarCarrusel()"
+      (focusin)="pausarCarrusel()" (focusout)="reanudarCarrusel()"
+      (touchstart)="pausarCarrusel()" (touchend)="reanudarCarrusel()"
+      [attr.aria-label]="'PRODUCTS_PAGE.SPECIAL_SELECTIONS' | translate">
+      @for (producto of productosSeleccionados(); track producto.id) {
+      <div class="top-carrusel-slide" [class.producto-entrada]="animarEntrada()">
+        <a class="product-item" (click)="verDetalle(producto.slug)">
+          @if (producto.imagenUrl && !imagenFallida(producto.id)) {
+          <img [src]="producto.imagenUrl" [alt]="producto.nombre" class="img-fluid product-thumbnail"
+            loading="lazy" (error)="marcarImagenFallida(producto.id)">
+          } @else {
+          <div class="product-thumbnail producto-imagen-fallback">
+            <svg lucidePackage color="#3b5d50" [size]="72" [strokeWidth]="1.25"></svg>
+          </div>
+          }
+
+          <h3 class="product-title">{{ producto.nombre }}</h3>
+          <p class="mb-1 product-description">{{ producto.descripcion || '' }}</p>
+          <p class="mb-1 product-meta">
+            {{ producto.plataforma || producto.tipo }} · {{ producto.region || ('PRODUCTS_PAGE.GLOBAL' | translate) }}
+          </p>
+          <p class="mb-1 product-meta">
+            {{ 'PRODUCTS_PAGE.SKU' | translate }}: {{ producto.sku }} ·
+            {{ 'PRODUCTS_PAGE.STOCK' | translate }}: {{ producto.stock }}
+          </p>
+          @if (seleccionEspecial() === 'vistas') {
+          <span class="producto-top-meta">{{ producto.vistas }} {{ 'PRODUCTS_PAGE.VIEWS' | translate }}</span>
+          } @else if (seleccionEspecial() === 'calificacion') {
+          <span class="producto-top-meta">
+            {{ producto.promedioCalificacion }} ★ · {{ producto.totalResenas }}
+            {{ 'PRODUCTS_PAGE.REVIEWS' | translate }}
+          </span>
+          } @else {
+          <span class="producto-top-meta">{{ producto.totalResenas }} {{ 'PRODUCTS_PAGE.REVIEWS' | translate }}</span>
+          }
+          <strong class="product-price">${{ producto.precioVenta }}</strong>
+        </a>
+      </div>
+      } @empty {
+      <p class="top-carrusel-vacio">{{ 'PRODUCTS_PAGE.NO_SPECIAL_PRODUCTS' | translate }}</p>
+      }
+    </div>
+    }
+  </div>
+</section>

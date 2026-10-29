@@ -29,6 +29,11 @@ export const routes: Routes = [
           .then(m => m.TodosLosProductos)
       },
       {
+        path: 'productos/destacados',
+        loadComponent: () => import('./features/productos/productos-destacados/productos-destacados')
+          .then(m => m.ProductosDestacados)
+      },
+      {
         path: 'productos/:slug',
         loadComponent: () => import('./features/productos/un-producto/un-producto')
           .then(m => m.UnProducto)

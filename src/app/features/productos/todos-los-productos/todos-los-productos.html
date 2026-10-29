@@ -20,10 +20,15 @@
 <!-- Start Product Section -->
 <div class="product-section">
   <div class="container">
+    <div class="d-flex justify-content-end mb-4">
+      <a class="btn btn-primary" routerLink="/productos/destacados">
+        {{ 'PRODUCTS_PAGE.VIEW_FEATURED' | translate }}
+      </a>
+    </div>
 
     <!-- Buscador -->
     <div class="row mb-5 justify-content-end">
-      <div class="col-12 col-lg-6">
+      <div class="col-12 col-lg-8">
         <div class="buscador-barra">
           <div class="buscador-campo">
             <svg lucideSearch [size]="18"></svg>
@@ -40,13 +45,25 @@
             {{ 'PRODUCTS_PAGE.SEARCH' | translate }}
           </button>
         </div>
+        <label class="orden-productos">
+          <span>{{ 'PRODUCTS_PAGE.SORT_BY' | translate }}</span>
+          <select class="form-select" [(ngModel)]="ordenSeleccionado" (ngModelChange)="cambiarOrden($event)">
+            <option value="">{{ 'PRODUCTS_PAGE.SORT_DEFAULT' | translate }}</option>
+            <option value="calificacion">{{ 'PRODUCTS_PAGE.SORT_RATING' | translate }}</option>
+            <option value="vistas">{{ 'PRODUCTS_PAGE.SORT_VIEWS' | translate }}</option>
+            <option value="resenas">{{ 'PRODUCTS_PAGE.SORT_REVIEWS' | translate }}</option>
+            <option value="precio_asc">{{ 'PRODUCTS_PAGE.SORT_PRICE_ASC' | translate }}</option>
+            <option value="precio_desc">{{ 'PRODUCTS_PAGE.SORT_PRICE_DESC' | translate }}</option>
+          </select>
+        </label>
       </div>
     </div>
 
+    <h2 class="mb-4">{{ 'PRODUCTS_PAGE.ALL_PRODUCTS' | translate }}</h2>
     <div class="row">
 
       @for (producto of productos(); track producto.id) {
-      <div class="col-12 col-md-4 col-lg-3 mb-5">
+      <div class="col-12 col-md-4 col-lg-3 mb-5" [class.producto-entrada]="animarEntrada()">
         <a class="product-item" style="cursor: pointer" (click)="verDetalle(producto.slug)">
 
           @if (producto.imagenUrl && !imagenFallida(producto.id)) {
@@ -81,6 +98,8 @@
         <button type="button" class="btn btn-primary" (click)="reintentarCarga()">
           {{ 'PRODUCTS_PAGE.RETRY' | translate }}
         </button>
+        } @else if (cargando()) {
+        <p class="text-center" role="status">{{ 'PRODUCTS_PAGE.LOADING_MORE' | translate }}</p>
         } @else {
         <p>{{ 'PRODUCTS_PAGE.EMPTY' | translate }}</p>
         }
@@ -100,7 +119,7 @@
 
     <div #centinela style="height: 1px;"></div>
 
-    @if (cargando()) {
+    @if (cargando() && productos().length > 0 && !reemplazandoResultados()) {
     <p class="text-center">{{ 'PRODUCTS_PAGE.LOADING_MORE' | translate }}</p>
     }
 
