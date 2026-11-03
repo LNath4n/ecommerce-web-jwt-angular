@@ -29,6 +29,22 @@ describe('ClientesService', () => {
     expect(service).toBeTruthy();
   });
 
+  it('loads the public customer profile from the customer endpoint', () => {
+    const profile: ClientePublico = {
+      email: 'cliente@example.com',
+      nombre: null,
+      telefono: '123456789'
+    };
+
+    service.obtenerPerfil().subscribe(response => {
+      expect(response).toEqual(profile);
+    });
+
+    const request = httpTestingController.expectOne(`${environment.apiUrl}/cliente`);
+    expect(request.request.method).toBe('GET');
+    request.flush(profile);
+  });
+
   it('uploads a profile photo as multipart data', () => {
     const file = new File(['photo'], 'profile.png', { type: 'image/png' });
     const profile: ClientePublico = {

@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, effect, inject } from '@angular/core';
 import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
 import { AsyncPipe } from '@angular/common';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
@@ -11,6 +11,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { Observable } from 'rxjs';
 import { map, shareReplay } from 'rxjs/operators';
 import { AuthService } from '@core/services/auth/auth';
+import { ClientesService } from '@core/services/cliente/ClientesService';
 import { Router } from '@angular/router';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
 import {
@@ -45,9 +46,23 @@ export class AppNavComponent {
   readonly translate = inject(TranslateService);
   private breakpointObserver = inject(BreakpointObserver);
   private authService = inject(AuthService);
+  private clientesService = inject(ClientesService);
   private router = inject(Router);
   isLoggedIn = this.authService.isLoggedIn;
   isAdmin = this.authService.isAdmin;
+
+  private readonly sincronizarPerfil = effect(onCleanup => {
+    if (!this.isLoggedIn()) {
+      this.authService.clearClientePublico();
+      return;
+    }
+
+    const subscription = this.clientesService.obtenerPerfil().subscribe({
+      next: perfil => this.authService.setClientePublico(perfil),
+      error: error => console.error('Could not load the authenticated customer profile.', error),
+    });
+    onCleanup(() => subscription.unsubscribe());
+  });
 
   isHandset$: Observable<boolean> = this.breakpointObserver.observe(Breakpoints.Handset).pipe(
     map((result) => result.matches),

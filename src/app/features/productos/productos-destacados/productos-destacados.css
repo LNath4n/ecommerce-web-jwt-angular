@@ -1,5 +1,5 @@
 .productos-destacados-hero h1 {
-  font-size: clamp(2.5rem, 5vw, 3.5rem);
+  font-size: clamp(2rem, 5vw, 3.5rem);
 }
 
 .productos-destacados {
@@ -22,6 +22,7 @@
 }
 
 .selecciones-tabs button {
+  min-height: 44px;
   padding: 0.55rem 1rem;
   border: 1px solid #d5ddda;
   border-radius: 999px;
@@ -47,8 +48,8 @@
 
 .top-carrusel-flecha {
   display: grid;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.75rem;
+  height: 2.75rem;
   place-items: center;
   border: 1px solid #d5ddda;
   border-radius: 50%;
@@ -170,15 +171,80 @@
 
 @media (max-width: 767.98px) {
   .productos-destacados {
+    padding: 2rem 0 3rem;
+  }
+
+  .productos-destacados-hero {
     padding-top: 2rem;
   }
 
+  .productos-destacados-hero h1 {
+    margin-bottom: 1rem;
+  }
+
+  .productos-destacados-hero p {
+    margin-bottom: 1.5rem !important;
+  }
+
+  .selecciones-encabezado {
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .selecciones-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    margin: 0 -0.25rem;
+    padding: 0.25rem;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .selecciones-tabs::-webkit-scrollbar {
+    display: none;
+  }
+
+  .selecciones-tabs button {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .selecciones-encabezado > .btn {
+    align-self: stretch;
+  }
+
+  .top-carrusel-controles {
+    margin-bottom: 0.5rem;
+  }
+
   .top-carrusel-slide {
-    flex-basis: min(82%, 22rem);
+    flex-basis: min(88%, 22rem);
+  }
+
+  .top-carrusel-slide .product-item {
+    padding: 0.75rem 0.75rem 2.5rem;
   }
 
   .top-carrusel-slide .product-item .product-thumbnail {
-    height: clamp(200px, 62vw, 280px);
+    height: clamp(180px, 58vw, 250px);
+    margin-bottom: 1rem;
+  }
+
+  .top-carrusel-slide .product-item .product-description {
+    height: auto;
+    min-height: 0;
+  }
+
+  .top-carrusel-slide .product-item .product-meta {
+    min-height: 0;
+    margin-bottom: 0.5rem !important;
+  }
+}
+
+@media (max-width: 359.98px) {
+  .selecciones-tabs button {
+    padding-right: 0.75rem;
+    padding-left: 0.75rem;
   }
 }
 

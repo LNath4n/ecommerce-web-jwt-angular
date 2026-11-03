@@ -36,6 +36,7 @@ export class Verperfil implements OnInit, OnDestroy {
   telefono = signal('');
   passwordVieja = signal('');
   passwordNueva = signal('');
+  cerrarSesiones = signal(false);
 
   ngOnInit() {
     this.obtenerPerfil();
@@ -49,10 +50,7 @@ export class Verperfil implements OnInit, OnDestroy {
     this.cargando.set(true);
     this.clientesService.obtenerPerfil().subscribe({
       next: perfil => {
-        this.perfil.set(perfil);
-        this.email.set(perfil.email);
-        this.nombre.set(perfil.nombre);
-        this.telefono.set(perfil.telefono);
+        this.aplicarPerfil(perfil);
         this.cargando.set(false);
       },
       error: () => {
@@ -88,6 +86,9 @@ export class Verperfil implements OnInit, OnDestroy {
       request.passwordNueva = this.passwordNueva();
     }
 
+    const cerrarSesiones = this.cerrarSesiones();
+    if (cerrarSesiones) request.cerrarSesiones = true;
+
     if (Object.keys(request).length === 0) {
       this.alerta.advertencia(this.translate.instant('PROFILE.NO_CHANGES'));
       return;
@@ -95,15 +96,30 @@ export class Verperfil implements OnInit, OnDestroy {
 
     this.guardando.set(true);
     this.clientesService.editarPerfil(request).subscribe({
-      next: perfil => {
-        this.perfil.set(perfil);
-        this.email.set(perfil.email);
-        this.nombre.set(perfil.nombre);
-        this.telefono.set(perfil.telefono);
+      next: () => {
+        if (cerrarSesiones) {
+          this.passwordVieja.set('');
+          this.passwordNueva.set('');
+          this.authService.clearToken();
+          this.guardando.set(false);
+          this.alerta.exito(this.translate.instant('PROFILE.SESSIONS_CLOSED_SUCCESS'));
+          this.router.navigate(['/login']);
+          return;
+        }
+
         this.passwordVieja.set('');
         this.passwordNueva.set('');
-        this.guardando.set(false);
-        this.alerta.exito(this.translate.instant('PROFILE.SAVE_SUCCESS'));
+        this.clientesService.obtenerPerfil().subscribe({
+          next: perfil => {
+            this.aplicarPerfil(perfil);
+            this.guardando.set(false);
+            this.alerta.exito(this.translate.instant('PROFILE.SAVE_SUCCESS'));
+          },
+          error: () => {
+            this.guardando.set(false);
+            this.alerta.error(this.translate.instant('PROFILE.LOAD_ERROR'));
+          }
+        });
       },
       error: () => {
         this.guardando.set(false);
@@ -204,6 +220,14 @@ export class Verperfil implements OnInit, OnDestroy {
     this.fotoPendiente = null;
     this.fotoVistaPrevia.set(null);
     this.liberarVistaPrevia();
+  }
+
+  private aplicarPerfil(perfil: ClientePublico) {
+    this.perfil.set(perfil);
+    this.email.set(perfil.email);
+    this.nombre.set(perfil.nombre ?? '');
+    this.telefono.set(perfil.telefono);
+    this.authService.setClientePublico(perfil);
   }
 
   private liberarVistaPrevia() {

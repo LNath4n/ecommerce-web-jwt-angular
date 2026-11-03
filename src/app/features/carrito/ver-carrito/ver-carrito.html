@@ -48,8 +48,12 @@
                   <h2 class="h5 text-black">{{ item.nombre }}</h2>
                   <small>{{ item.sku }}</small>
                 </td>
-                <td>{{ item.precioVenta | currency:'MXN' }}</td>
-                <td>
+                <td class="product-price" [attr.data-label]="'CART.PRICE' | translate"
+                  [attr.aria-label]="'CART.PRICE' | translate">
+                  {{ item.precioVenta | currency:'MXN' }}
+                </td>
+                <td class="product-quantity" [attr.data-label]="'CART.QUANTITY' | translate"
+                  [attr.aria-label]="'CART.QUANTITY' | translate">
                   <div class="input-group mb-3 d-flex align-items-center quantity-container" style="max-width: 120px;">
                     <div class="input-group-prepend">
                       <button class="btn btn-outline-black decrease" type="button"
@@ -65,8 +69,12 @@
                     </div>
                   </div>
                 </td>
-                <td>{{ item.cantidad * item.precioVenta | currency:'MXN' }}</td>
-                <td>
+                <td class="product-total" [attr.data-label]="'CART.TOTAL' | translate"
+                  [attr.aria-label]="'CART.TOTAL' | translate">
+                  {{ item.cantidad * item.precioVenta | currency:'MXN' }}
+                </td>
+                <td class="product-remove" [attr.data-label]="'CART.REMOVE' | translate"
+                  [attr.aria-label]="'CART.REMOVE' | translate">
                   <button type="button" class="btn-quitar-carrito"
                     [attr.aria-label]="'CART.REMOVE_FROM_CART' | translate"
                     (click)="eliminar(item.productoId)">

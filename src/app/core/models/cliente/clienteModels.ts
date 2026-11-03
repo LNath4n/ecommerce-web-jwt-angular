@@ -5,7 +5,7 @@ export interface LoginClienteDto {
 
 export interface ClientePublico {
   email: string;
-  nombre: string;
+  nombre: string | null;
   telefono: string;
   fotoUrl?: string;
 }
@@ -16,6 +16,7 @@ export interface ClienteEditarRequest {
   passwordNueva?: string;
   nombre?: string;
   telefono?: string;
+  cerrarSesiones?: boolean;
 }
 
 export interface CreacionClienteRespuestaDto {

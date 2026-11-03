@@ -1,4 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
+import { NgForm } from '@angular/forms';
 import { Router } from '@angular/router';
 import { provideTranslateService } from '@ngx-translate/core';
 import { of } from 'rxjs';
@@ -12,7 +13,15 @@ describe('Verperfil', () => {
   let component: Verperfil;
   let fixture: ComponentFixture<Verperfil>;
   const clientesServiceMock = {
-    obtenerPerfil: vi.fn().mockReturnValue(of({ email: 'test@example.com', nombre: '', telefono: '' })),
+    obtenerPerfil: vi.fn(),
+    editarPerfil: vi.fn(),
+  };
+  const authServiceMock = {
+    clearToken: vi.fn(),
+    setClientePublico: vi.fn(),
+  };
+  const routerMock = {
+    navigate: vi.fn(),
   };
   const alertaMock = {
     error: vi.fn(),
@@ -22,13 +31,14 @@ describe('Verperfil', () => {
   };
 
   beforeEach(async () => {
+
     await TestBed.configureTestingModule({
       imports: [Verperfil],
       providers: [
         { provide: ClientesService, useValue: clientesServiceMock },
-        { provide: AuthService, useValue: { clearToken: vi.fn() } },
+        { provide: AuthService, useValue: authServiceMock },
         { provide: AlertaService, useValue: alertaMock },
-        { provide: Router, useValue: { navigate: vi.fn() } },
+        { provide: Router, useValue: routerMock },
         provideTranslateService(),
       ],
     }).compileComponents();

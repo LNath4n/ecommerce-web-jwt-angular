@@ -115,6 +115,8 @@
   "PROFILE": {
     "ACCOUNT_DETAILS": "Datos de la cuenta",
     "CHANGE_PASSWORD": "Cambiar contraseña",
+    "CLOSE_ALL_SESSIONS": "Cerrar sesiones en todos mis dispositivos",
+    "CLOSE_ALL_SESSIONS_HELP": "Se cerrará también esta sesión y tendrás que iniciar sesión de nuevo.",
     "CONFIRM_PHOTO_ACTION": "Sí, cambiar foto",
     "CONFIRM_PHOTO_MESSAGE": "¿Quieres usar esta foto de perfil?",
     "CONFIRM_PHOTO_TITLE": "Confirmar foto",
@@ -152,6 +154,7 @@
     "SAVE_CHANGES": "Guardar cambios",
     "SAVE_ERROR": "No se pudieron guardar los cambios.",
     "SAVE_SUCCESS": "Tu perfil se actualizó correctamente.",
+    "SESSIONS_CLOSED_SUCCESS": "Se cerraron tus sesiones. Inicia sesión de nuevo para continuar.",
     "SAVING": "Guardando...",
     "SELECT_PHOTO": "Seleccionar foto",
     "TITLE": "Mi perfil",

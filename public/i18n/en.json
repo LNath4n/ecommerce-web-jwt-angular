@@ -115,6 +115,8 @@
   "PROFILE": {
     "ACCOUNT_DETAILS": "Account details",
     "CHANGE_PASSWORD": "Change password",
+    "CLOSE_ALL_SESSIONS": "Sign out on all my devices",
+    "CLOSE_ALL_SESSIONS_HELP": "This session will also be signed out, and you will need to log in again.",
     "CONFIRM_PHOTO_ACTION": "Yes, change photo",
     "CONFIRM_PHOTO_MESSAGE": "Would you like to use this profile photo?",
     "CONFIRM_PHOTO_TITLE": "Confirm photo",
@@ -152,6 +154,7 @@
     "SAVE_CHANGES": "Save changes",
     "SAVE_ERROR": "Could not save your changes.",
     "SAVE_SUCCESS": "Your profile was updated successfully.",
+    "SESSIONS_CLOSED_SUCCESS": "Your sessions were closed. Log in again to continue.",
     "SAVING": "Saving...",
     "SELECT_PHOTO": "Select photo",
     "TITLE": "My profile",
