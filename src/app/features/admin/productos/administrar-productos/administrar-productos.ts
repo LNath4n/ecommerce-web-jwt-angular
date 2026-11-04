@@ -12,6 +12,7 @@ import {
 } from '@lucide/angular';
 import {
   CategoriaOpcionResponse,
+  CategoriaRequest,
   ProductoPublicoResponse,
   ProductoRequest,
   TipoProducto,
@@ -45,6 +46,11 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
 
   productos = signal<ProductoPublicoResponse[]>([]);
   categorias = signal<CategoriaOpcionResponse[]>([]);
+  categoriaEditandoId = signal<number | null>(null);
+  categoriaGuardando = signal(false);
+  categoriaEliminandoId = signal<number | null>(null);
+  nombreCategoria = '';
+  private nombreCategoriaInicial = '';
   readonly tiposProducto: TipoProducto[] = [
     'GIFT_CARD',
     'CLAVE_JUEGO',
@@ -81,6 +87,10 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
 
   ngOnInit() {
     this.cargar();
+    this.cargarCategorias();
+  }
+
+  cargarCategorias() {
     this.productosService.obtenerListaDeCategorias().subscribe({
       next: categorias => this.categorias.set(categorias),
       error: err => this.mostrarError(err, 'ADMIN_PRODUCTS.CATEGORIES_LOAD_ERROR'),
@@ -238,7 +248,71 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
   }
 
   hayCambiosSinGuardar(): boolean {
-    return JSON.stringify(this.form) !== this.inicial || this.archivoImagen !== null;
+    return JSON.stringify(this.form) !== this.inicial
+      || this.archivoImagen !== null
+      || this.nombreCategoria !== this.nombreCategoriaInicial;
+  }
+
+  guardarCategoria() {
+    const nombre = this.nombreCategoria.trim();
+    if (!nombre) {
+      this.alerta.error(this.translate.instant('ADMIN_PRODUCTS.CATEGORY_NAME_REQUIRED'));
+      return;
+    }
+
+    const id = this.categoriaEditandoId();
+    const request: CategoriaRequest = { nombre };
+    const guardar$ = id === null
+      ? this.adminService.crearCategoria(request)
+      : this.adminService.editarCategoria(id, request);
+
+    this.categoriaGuardando.set(true);
+    guardar$.subscribe({
+      next: () => {
+        this.alerta.exito(this.translate.instant(
+          id === null ? 'ADMIN_PRODUCTS.CATEGORY_CREATE_SUCCESS' : 'ADMIN_PRODUCTS.CATEGORY_UPDATE_SUCCESS'
+        ));
+        this.cancelarEdicionCategoria();
+        this.cargarCategorias();
+        this.categoriaGuardando.set(false);
+      },
+      error: err => {
+        this.mostrarErrorCategoria(err, 'ADMIN_PRODUCTS.CATEGORY_SAVE_ERROR', 'ADMIN_PRODUCTS.CATEGORY_NAME_CONFLICT');
+        this.categoriaGuardando.set(false);
+      },
+    });
+  }
+
+  editarCategoria(categoria: CategoriaOpcionResponse) {
+    this.categoriaEditandoId.set(categoria.id);
+    this.nombreCategoria = categoria.nombre;
+    this.nombreCategoriaInicial = categoria.nombre;
+  }
+
+  cancelarEdicionCategoria() {
+    this.categoriaEditandoId.set(null);
+    this.nombreCategoria = '';
+    this.nombreCategoriaInicial = '';
+  }
+
+  borrarCategoria(categoria: CategoriaOpcionResponse) {
+    if (!confirm(this.translate.instant('ADMIN_PRODUCTS.CATEGORY_DELETE_CONFIRM', { nombre: categoria.nombre }))) {
+      return;
+    }
+
+    this.categoriaEliminandoId.set(categoria.id);
+    this.adminService.borrarCategoria(categoria.id).subscribe({
+      next: () => {
+        this.alerta.exito(this.translate.instant('ADMIN_PRODUCTS.CATEGORY_DELETE_SUCCESS'));
+        if (this.categoriaEditandoId() === categoria.id) this.cancelarEdicionCategoria();
+        this.cargarCategorias();
+        this.categoriaEliminandoId.set(null);
+      },
+      error: err => {
+        this.mostrarErrorCategoria(err, 'ADMIN_PRODUCTS.CATEGORY_DELETE_ERROR', 'ADMIN_PRODUCTS.CATEGORY_DELETE_CONFLICT');
+        this.categoriaEliminandoId.set(null);
+      },
+    });
   }
 
   private reiniciarForm(valor: ProductoRequest) {
@@ -276,5 +350,13 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
       return;
     }
     this.alerta.error(this.translate.instant(mensajeDefaultKey));
+  }
+
+  private mostrarErrorCategoria(err: unknown, mensajeDefaultKey: string, conflictoKey: string) {
+    if (err instanceof HttpErrorResponse && err.status === 409) {
+      this.alerta.error(this.translate.instant(conflictoKey));
+      return;
+    }
+    this.mostrarError(err, mensajeDefaultKey);
   }
 }

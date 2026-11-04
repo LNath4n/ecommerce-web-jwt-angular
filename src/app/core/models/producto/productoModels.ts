@@ -42,6 +42,10 @@ export interface CategoriaOpcionResponse {
   nombre: string;
 }
 
+export interface CategoriaRequest {
+  nombre: string;
+}
+
 export type TipoProducto =
   | 'GIFT_CARD'
   | 'CLAVE_JUEGO'
