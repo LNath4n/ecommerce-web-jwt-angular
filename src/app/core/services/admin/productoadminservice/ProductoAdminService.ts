@@ -3,6 +3,8 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@environments/environment';
 import {
+  CategoriaOpcionResponse,
+  CategoriaRequest,
   ProductoAdminResponse,
   ProductoPublicoResponse,
   ProductoRequest,
@@ -12,6 +14,19 @@ import {
 export class ProductoAdminService {
   private http = inject(HttpClient);
   private url = `${environment.apiUrl}/admin/productos`;
+  private categoriasUrl = `${environment.apiUrl}/admin/categorias`;
+
+  crearCategoria(body: CategoriaRequest): Observable<CategoriaOpcionResponse> {
+    return this.http.post<CategoriaOpcionResponse>(this.categoriasUrl, body);
+  }
+
+  editarCategoria(id: number, body: CategoriaRequest): Observable<CategoriaOpcionResponse> {
+    return this.http.put<CategoriaOpcionResponse>(`${this.categoriasUrl}/${id}`, body);
+  }
+
+  borrarCategoria(id: number): Observable<string> {
+    return this.http.delete(`${this.categoriasUrl}/${id}`, { responseType: 'text' });
+  }
 
   obtener(id: number): Observable<ProductoAdminResponse> {
     return this.http.get<ProductoAdminResponse>(`${this.url}/${id}`);

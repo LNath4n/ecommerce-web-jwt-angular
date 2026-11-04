@@ -6,6 +6,10 @@
   overflow: hidden;
 }
 
+.admin-categorias {
+  overflow: visible;
+}
+
 /* El formulario se queda visible mientras bajas por la tabla */
 @media (min-width: 992px) {
   .admin-form-sticky {

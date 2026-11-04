@@ -254,5 +254,70 @@
       </div>
 
     </div>
+
+    <section class="admin-card admin-categorias mt-4" aria-labelledby="admin-categorias-titulo">
+      <div class="d-flex align-items-center justify-content-between mb-3">
+        <h3 id="admin-categorias-titulo" class="h5 mb-0">{{ 'ADMIN_PRODUCTS.CATEGORIES_TITLE' | translate }}</h3>
+        <span class="admin-contador">
+          {{ 'ADMIN_PRODUCTS.CATEGORIES_COUNT' | translate: { count: categorias().length } }}
+        </span>
+      </div>
+
+      <form class="row g-3 align-items-end mb-4" (ngSubmit)="guardarCategoria()" #formCategoria="ngForm">
+        <div class="col-12 col-md-8">
+          <label class="form-label" for="nombreCategoria">{{ 'ADMIN_PRODUCTS.CATEGORY_NAME' | translate }} *</label>
+          <input id="nombreCategoria" name="nombreCategoria" class="form-control" [(ngModel)]="nombreCategoria"
+            required />
+        </div>
+        <div class="col-12 col-md-4 d-flex gap-2">
+          <button type="submit" class="btn btn-primary flex-grow-1"
+            [disabled]="formCategoria.invalid || categoriaGuardando()">
+            {{ (categoriaEditandoId() !== null ? 'ADMIN_PRODUCTS.CATEGORY_UPDATE' : 'ADMIN_PRODUCTS.CATEGORY_CREATE') | translate }}
+          </button>
+          @if (categoriaEditandoId() !== null) {
+          <button type="button" class="btn btn-outline-black" (click)="cancelarEdicionCategoria()">
+            {{ 'ADMIN_PRODUCTS.CANCEL' | translate }}
+          </button>
+          }
+        </div>
+      </form>
+
+      <div class="table-responsive">
+        <table class="table admin-tabla mb-0">
+          <thead>
+            <tr>
+              <th>{{ 'ADMIN_PRODUCTS.CATEGORY_NAME' | translate }}</th>
+              <th class="text-end">{{ 'ADMIN_PRODUCTS.ACTIONS' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (categoria of categorias(); track categoria.id) {
+            <tr [class.fila-editando]="categoriaEditandoId() === categoria.id">
+              <td>{{ categoria.nombre }}</td>
+              <td class="text-end text-nowrap">
+                <button type="button" class="admin-btn-icono"
+                  [attr.title]="'ADMIN_PRODUCTS.EDIT' | translate"
+                  [attr.aria-label]="'ADMIN_PRODUCTS.EDIT' | translate"
+                  (click)="editarCategoria(categoria)">
+                  <svg lucidePencil [size]="18"></svg>
+                </button>
+                <button type="button" class="admin-btn-icono admin-btn-peligro"
+                  [attr.title]="'ADMIN_PRODUCTS.CATEGORY_DELETE' | translate"
+                  [attr.aria-label]="'ADMIN_PRODUCTS.CATEGORY_DELETE' | translate"
+                  [disabled]="categoriaEliminandoId() !== null"
+                  (click)="borrarCategoria(categoria)">
+                  <svg lucideTrash2 [size]="18"></svg>
+                </button>
+              </td>
+            </tr>
+            } @empty {
+            <tr>
+              <td colspan="2" class="text-center py-4">{{ 'ADMIN_PRODUCTS.CATEGORIES_EMPTY' | translate }}</td>
+            </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </section>
   </div>
 </div>
