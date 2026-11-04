@@ -3,26 +3,34 @@
   <!-- Sidenav solo en mobile -->
   <mat-sidenav #drawer class="sidenav" fixedInViewport [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
     [mode]="'over'" [opened]="false">
-    <mat-toolbar>Menu</mat-toolbar>
+    <mat-toolbar>{{ 'NAV.MENU' | translate }}</mat-toolbar>
     <mat-nav-list>
-      <a mat-list-item routerLink="/productos" (click)="drawer.close()">Productos</a>
+      <a mat-list-item routerLink="/productos" (click)="drawer.close()">{{ 'NAV.PRODUCTS' | translate }}</a>
 
       @if (isLoggedIn()) {
-      <a mat-list-item routerLink="/carrito" (click)="drawer.close()">Mi carrito</a>
+      <a mat-list-item routerLink="/carrito" (click)="drawer.close()">{{ 'NAV.CART' | translate }}</a>
       @if (isAdmin()) {
-      <a mat-list-item routerLink="/admin/productos" (click)="drawer.close()">Administrar productos</a>
-      <a mat-list-item routerLink="/admin/codigos" (click)="drawer.close()">Administrar códigos</a>
+      <a mat-list-item routerLink="/admin/productos" (click)="drawer.close()">{{ 'NAV.ADMIN_PRODUCTS' | translate }}</a>
+      <a mat-list-item routerLink="/admin/codigos" (click)="drawer.close()">{{ 'NAV.ADMIN_CODES' | translate }}</a>
       }
       <a mat-list-item routerLink="/perfil" routerLinkActive="active" (click)="drawer.close()">
-        <mat-icon>account_circle</mat-icon> Mi perfil
+        <mat-icon>account_circle</mat-icon> {{ 'NAV.PROFILE' | translate }}
       </a>
       <a mat-list-item (click)="logout(); drawer.close()">
-        <mat-icon>logout</mat-icon> Cerrar sesión
+        <mat-icon>logout</mat-icon> {{ 'NAV.LOGOUT' | translate }}
       </a>
       } @else {
-      <a mat-list-item routerLink="/login" (click)="drawer.close()">Login</a>
-      <a mat-list-item routerLink="/registro" (click)="drawer.close()">Registro</a>
+      <a mat-list-item routerLink="/login" (click)="drawer.close()">{{ 'NAV.LOGIN' | translate }}</a>
+      <a mat-list-item routerLink="/registro" (click)="drawer.close()">{{ 'NAV.REGISTER' | translate }}</a>
       }
+
+      <div class="language-settings">
+        <p>{{ 'NAV.LANGUAGE' | translate }}</p>
+        <button type="button" [attr.aria-pressed]="translate.currentLang() === 'en'"
+          (click)="changeLanguage('en')">{{ 'LANGUAGES.ENGLISH' | translate }}</button>
+        <button type="button" [attr.aria-pressed]="translate.currentLang() === 'es'"
+          (click)="changeLanguage('es')">{{ 'LANGUAGES.SPANISH' | translate }}</button>
+      </div>
     </mat-nav-list>
   </mat-sidenav>
 
@@ -42,50 +50,71 @@
         <div class="collapse navbar-collapse" id="navbarsFerreViky">
           <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
             <li class="nav-item" routerLinkActive="active">
-              <a class="nav-link" routerLink="/productos">Productos</a>
+              <a class="nav-link" routerLink="/productos">{{ 'NAV.PRODUCTS' | translate }}</a>
             </li>
 
             @if (!isLoggedIn()) {
             <li class="nav-item" routerLinkActive="active">
-              <a class="nav-link" routerLink="/login">Login</a>
+              <a class="nav-link" routerLink="/login">{{ 'NAV.LOGIN' | translate }}</a>
             </li>
             <li class="nav-item" routerLinkActive="active">
-              <a class="nav-link" routerLink="/registro">Registro</a>
+              <a class="nav-link" routerLink="/registro">{{ 'NAV.REGISTER' | translate }}</a>
             </li>
             }
           </ul>
 
-          @if (isLoggedIn()) {
           <ul class="custom-navbar-cta navbar-nav mb-2 mb-md-0 ms-5">
+            <li class="settings-menu-item">
+              <button class="nav-link settings-menu-trigger" type="button"
+                [attr.aria-label]="'NAV.SETTINGS' | translate" aria-haspopup="true"
+                [attr.aria-expanded]="settingsOpen" aria-controls="language-settings"
+                (click)="settingsOpen = !settingsOpen">
+                <svg lucideSettings color="#fff" [size]="22"></svg>
+              </button>
+              @if (settingsOpen) {
+              <div class="settings-menu" id="language-settings" [attr.aria-label]="'NAV.LANGUAGE' | translate">
+                <p>{{ 'NAV.LANGUAGE' | translate }}</p>
+                <button type="button" [attr.aria-pressed]="translate.currentLang() === 'en'"
+                  (click)="changeLanguage('en')">{{ 'LANGUAGES.ENGLISH' | translate }}</button>
+                <button type="button" [attr.aria-pressed]="translate.currentLang() === 'es'"
+                  (click)="changeLanguage('es')">{{ 'LANGUAGES.SPANISH' | translate }}</button>
+              </div>
+              }
+            </li>
             @if (isAdmin()) {
             <li class="admin-menu-item" routerLinkActive="active">
-              <button class="nav-link admin-menu-trigger" type="button" title="Administrar"
-                aria-label="Administrar" aria-haspopup="true">
+              <button class="nav-link admin-menu-trigger" type="button"
+                [attr.title]="'NAV.ADMINISTRATION' | translate"
+                [attr.aria-label]="'NAV.ADMINISTRATION' | translate" aria-haspopup="true">
                 <svg lucideLayoutDashboard color="#fff" [size]="22"></svg>
               </button>
-              <div class="admin-menu" aria-label="Opciones de administración">
-                <a routerLink="/admin/productos" routerLinkActive="active">Administrar productos</a>
-                <a routerLink="/admin/codigos" routerLinkActive="active">Administrar códigos</a>
+              <div class="admin-menu" [attr.aria-label]="'NAV.ADMIN_OPTIONS' | translate">
+                <a routerLink="/admin/productos" routerLinkActive="active">{{ 'NAV.ADMIN_PRODUCTS' | translate }}</a>
+                <a routerLink="/admin/codigos" routerLinkActive="active">{{ 'NAV.ADMIN_CODES' | translate }}</a>
               </div>
             </li>
             }
+            @if (isLoggedIn()) {
             <li>
-              <a class="nav-link" routerLink="/perfil" routerLinkActive="active" title="Mi perfil" aria-label="Mi perfil">
+              <a class="nav-link" routerLink="/perfil" routerLinkActive="active"
+                [attr.title]="'NAV.PROFILE' | translate" [attr.aria-label]="'NAV.PROFILE' | translate">
                 <svg lucideUser color="#fff" [size]="22"></svg>
               </a>
             </li>
             <li>
-              <a class="nav-link" routerLink="/carrito" title="Mi carrito" aria-label="Mi carrito">
+              <a class="nav-link" routerLink="/carrito" [attr.title]="'NAV.CART' | translate"
+                [attr.aria-label]="'NAV.CART' | translate">
                 <svg lucideShoppingCart color="#fff" [size]="22"></svg>
               </a>
             </li>
             <li>
-              <a class="nav-link" role="button" (click)="logout()" title="Cerrar sesión" aria-label="Cerrar sesión">
+              <a class="nav-link" role="button" (click)="logout()" [attr.title]="'NAV.LOGOUT' | translate"
+                [attr.aria-label]="'NAV.LOGOUT' | translate">
                 <svg lucideLogOut color="#fff" [size]="22"></svg>
               </a>
             </li>
+            }
           </ul>
-          }
         </div>
       </div>
 

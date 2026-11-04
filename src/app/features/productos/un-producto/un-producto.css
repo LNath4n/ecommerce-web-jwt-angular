@@ -1,10 +1,29 @@
 .detalle-imagen {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   aspect-ratio: 1 / 1;
   background: #dce5e4;
   border-radius: 20px;
+}
+
+.detalle-vistas {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #3b5d50;
+  color: #fff;
+  font-size: 13px;
+}
+
+.detalle-vistas strong {
+  font-weight: 700;
 }
 
 .detalle-marca {

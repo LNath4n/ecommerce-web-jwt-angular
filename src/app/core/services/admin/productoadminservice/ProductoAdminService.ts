@@ -6,7 +6,7 @@ import {
   ProductoAdminResponse,
   ProductoPublicoResponse,
   ProductoRequest,
-} from '@core/models/Producto/productoModels';
+} from '@core/models/producto/productoModels';
 
 @Injectable({ providedIn: 'root' })
 export class ProductoAdminService {

@@ -5,7 +5,7 @@ import {
   provideHttpClientTesting
 } from '@angular/common/http/testing';
 import { environment } from '@environments/environment';
-import { ClientePublico } from '@core/models/Cliente/clienteModels';
+import { ClientePublico } from '@core/models/cliente/clienteModels';
 
 import { ClientesService } from './ClientesService';
 
@@ -27,6 +27,22 @@ describe('ClientesService', () => {
 
   it('should be created', () => {
     expect(service).toBeTruthy();
+  });
+
+  it('loads the public customer profile from the customer endpoint', () => {
+    const profile: ClientePublico = {
+      email: 'cliente@example.com',
+      nombre: null,
+      telefono: '123456789'
+    };
+
+    service.obtenerPerfil().subscribe(response => {
+      expect(response).toEqual(profile);
+    });
+
+    const request = httpTestingController.expectOne(`${environment.apiUrl}/cliente`);
+    expect(request.request.method).toBe('GET');
+    request.flush(profile);
   });
 
   it('uploads a profile photo as multipart data', () => {

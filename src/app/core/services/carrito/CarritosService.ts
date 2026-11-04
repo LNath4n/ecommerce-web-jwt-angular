@@ -3,7 +3,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@environments/environment';
-import { ActualizarCantidad, AgregarCarrito, Carrito } from '@core/models/Carrito/carritoModels';
+import { ActualizarCantidad, AgregarCarrito, Carrito } from '@core/models/carrito/carritoModels';
 
 @Injectable({ providedIn: 'root' })
 export class CarritosService {

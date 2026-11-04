@@ -24,7 +24,7 @@ export interface ProductoPublicoResponse {
   nombre: string;
   descripcion: string | null;
   plataforma: string | null;
-  tipo: string;
+  tipo: TipoProducto;
   region: string | null;
   valorNominal: number | null;
   moneda: string | null;
@@ -32,6 +32,9 @@ export interface ProductoPublicoResponse {
   instruccionesCanje: string | null;
   imagenUrl: string | null;
   stock: number;
+  vistas: number;
+  promedioCalificacion: number;
+  totalResenas: number;
 }
 
 export interface CategoriaOpcionResponse {
@@ -45,6 +48,14 @@ export type TipoProducto =
   | 'LICENCIA_SOFTWARE'
   | 'RECARGA'
   | 'SUSCRIPCION';
+
+export type OrdenProducto =
+  | ''
+  | 'calificacion'
+  | 'vistas'
+  | 'resenas'
+  | 'precio_asc'
+  | 'precio_desc';
 
 export interface ProductoRequest {
   sku: string;
@@ -81,4 +92,7 @@ export interface ProductoAdminResponse {
   imagenUrl: string | null;
   stock: number;
   fechaCreacion: string;
+  vistas: number;
+  promedioCalificacion: number;
+  totalResenas: number;
 }

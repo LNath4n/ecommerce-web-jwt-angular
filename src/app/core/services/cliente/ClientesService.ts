@@ -8,7 +8,7 @@ import {
   CreacionClienteRespuestaDto,
   LoginClienteDto,
   LoginResponse
-} from '@core/models/Cliente/clienteModels';
+} from '@core/models/cliente/clienteModels';
 
 
 @Injectable({ providedIn: 'root' })

@@ -1,8 +1,10 @@
 import { Injectable, signal, computed } from '@angular/core';
+import { ClientePublico } from '@core/models/cliente/clienteModels';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private token = signal<string | null>(localStorage.getItem('token'));
+  private nombreCliente = signal<string | null>(null);
 
   // Ahora son propiedades: auth.isLoggedIn() devuelve true/false directo
   isLoggedIn = computed(() => this.token() !== null);
@@ -20,10 +22,7 @@ export class AuthService {
   });
 
   isAdmin = computed(() => this.payload()?.role === 'ADMIN');
-  nombre = computed(() => {
-    const nombre = this.payload()?.nombre;
-    return typeof nombre === 'string' ? nombre : null;
-  });
+  nombre = computed(() => this.nombreCliente());
 
   getToken() {
     return this.token();
@@ -31,11 +30,21 @@ export class AuthService {
 
   setToken(newToken: string) {
     localStorage.setItem('token', newToken);
+    this.clearClientePublico();
     this.token.set(newToken);
   }
 
   clearToken() {
     localStorage.removeItem('token');
     this.token.set(null);
+    this.clearClientePublico();
+  }
+
+  setClientePublico(cliente: Pick<ClientePublico, 'email' | 'nombre'>) {
+    this.nombreCliente.set(cliente.nombre ?? cliente.email);
+  }
+
+  clearClientePublico() {
+    this.nombreCliente.set(null);
   }
 }
