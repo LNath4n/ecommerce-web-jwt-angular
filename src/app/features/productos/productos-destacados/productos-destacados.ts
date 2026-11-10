@@ -3,7 +3,7 @@ import { Router, RouterLink } from '@angular/router';
 import { Observable, Subscription } from 'rxjs';
 import { LucidePackage } from '@lucide/angular';
 import { TranslatePipe } from '@ngx-translate/core';
-import { ProductoPublicoResponse } from '@core/models/producto/productoModels';
+import { PublicProductResponse } from '@core/models/producto/productoModels';
 import { AuthService } from '@core/services/auth/auth';
 import { ProductosService } from '@core/services/producto/ProductosService';
 
@@ -26,9 +26,9 @@ export class ProductosDestacados implements OnInit, AfterViewInit, OnDestroy {
   isLoggedIn = this.authService.isLoggedIn;
   nombreUsuario = this.authService.nombre;
   animarEntrada = signal(true);
-  productosMasVistos = signal<ProductoPublicoResponse[]>([]);
-  productosMejorCalificados = signal<ProductoPublicoResponse[]>([]);
-  productosMasResenados = signal<ProductoPublicoResponse[]>([]);
+  productosMasVistos = signal<PublicProductResponse[]>([]);
+  productosMejorCalificados = signal<PublicProductResponse[]>([]);
+  productosMasResenados = signal<PublicProductResponse[]>([]);
   cargandoTopVistas = signal(true);
   cargandoTopCalificados = signal(true);
   cargandoTopResenados = signal(true);
@@ -166,8 +166,8 @@ export class ProductosDestacados implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private cargarTop(
-    solicitud: Observable<ProductoPublicoResponse[]>,
-    destino: WritableSignal<ProductoPublicoResponse[]>,
+    solicitud: Observable<PublicProductResponse[]>,
+    destino: WritableSignal<PublicProductResponse[]>,
     cargando: WritableSignal<boolean>,
     error: WritableSignal<boolean>
   ) {

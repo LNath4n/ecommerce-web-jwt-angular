@@ -1,0 +1,148 @@
+<div class="hero">
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-7">
+        <div class="intro-excerpt">
+          <h1>{{ (esDetalle() ? 'ORDERS.DETAIL_TITLE' : 'ORDERS.TITLE') | translate }}</h1>
+          <p>{{ (esDetalle() ? 'ORDERS.DETAIL_SUBTITLE' : 'ORDERS.SUBTITLE') | translate }}</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<section class="untree_co-section before-footer-section orders-section">
+  <div class="container">
+    @if (cargando()) {
+      <div class="orders-feedback" role="status" aria-live="polite">
+        {{ 'ORDERS.LOADING' | translate }}
+      </div>
+    } @else if (errorCarga()) {
+      <div class="orders-feedback" role="alert">
+        <p>{{ errorCarga() }}</p>
+        <div class="orders-actions">
+          @if (!esDetalle() || ordenActualId() !== null) {
+            <button class="btn btn-primary" type="button" (click)="reintentarCarga()">
+              {{ 'ORDERS.RETRY' | translate }}
+            </button>
+          }
+          <a class="btn btn-outline-black" routerLink="/mis-compras">
+            {{ 'ORDERS.BACK_TO_ORDERS' | translate }}
+          </a>
+        </div>
+      </div>
+    } @else if (esDetalle()) {
+      @if (detalle(); as orden) {
+        <article class="order-detail-card">
+          <div class="order-detail-heading">
+            <a class="back-link" routerLink="/mis-compras">
+              {{ 'ORDERS.BACK_TO_ORDERS' | translate }}
+            </a>
+            <span class="order-status">{{ orden.status }}</span>
+          </div>
+          <div class="order-summary">
+            <div>
+              <span class="order-label">{{ 'ORDERS.ORDER_NUMBER' | translate }}</span>
+              <h2>#{{ orden.id }}</h2>
+            </div>
+            <div>
+              <span class="order-label">{{ 'ORDERS.DATE' | translate }}</span>
+              <time [attr.datetime]="orden.createdAt">{{ orden.createdAt | date:'medium' }}</time>
+            </div>
+            <div class="order-total">
+              <span class="order-label">{{ 'ORDERS.TOTAL' | translate }}</span>
+              <strong>{{ orden.total | currency:'MXN' }}</strong>
+            </div>
+          </div>
+
+          <h3 class="items-title">{{ 'ORDERS.ORDER_ITEMS' | translate }}</h3>
+          <div class="delivered-items">
+            @for (item of orden.items; track item.productId) {
+              <section class="delivered-item">
+                <div class="item-heading">
+                  <div>
+                    <h4>{{ item.name }}</h4>
+                    <p>{{ 'ORDERS.QUANTITY' | translate }}: {{ item.quantity }}</p>
+                  </div>
+                  <strong>{{ item.unitPrice | currency:'MXN' }}</strong>
+                </div>
+
+                @if (!ordenCancelada(orden.status) && item.redemptionInstructions) {
+                  <div class="redemption-instructions">
+                    <span class="order-label">{{ 'ORDERS.REDEMPTION_INSTRUCTIONS' | translate }}</span>
+                    <p>{{ item.redemptionInstructions }}</p>
+                  </div>
+                }
+
+                @if (!ordenCancelada(orden.status)) {
+                <div class="codes-section">
+                  <span class="order-label">{{ 'ORDERS.CODES' | translate }}</span>
+                  @if (item.codes.length > 0) {
+                    <ul class="code-list">
+                      @for (code of item.codes; track $index) {
+                        <li class="code-entry">
+                          <code [class.code-hidden]="!codigoVisible(orden.id, item.productId, $index)">
+                            {{ code }}
+                          </code>
+                          <button
+                            class="code-visibility-button"
+                            type="button"
+                            [attr.aria-label]="(codigoVisible(orden.id, item.productId, $index)
+                              ? 'ORDERS.HIDE_CODE'
+                              : 'ORDERS.SHOW_CODE') | translate"
+                            [attr.aria-pressed]="codigoVisible(orden.id, item.productId, $index)"
+                            (click)="alternarVisibilidadCodigo(orden.id, item.productId, $index)">
+                            @if (codigoVisible(orden.id, item.productId, $index)) {
+                              <svg lucideEyeOff [size]="18" aria-hidden="true"></svg>
+                            } @else {
+                              <svg lucideEye [size]="18" aria-hidden="true"></svg>
+                            }
+                          </button>
+                        </li>
+                      }
+                    </ul>
+                  } @else {
+                    <p class="muted">{{ 'ORDERS.NO_CODES' | translate }}</p>
+                  }
+                </div>
+                }
+              </section>
+            } @empty {
+              <p class="muted">{{ 'ORDERS.NO_ITEMS' | translate }}</p>
+            }
+          </div>
+        </article>
+      }
+    } @else if (ordenes(); as lista) {
+      @if (lista.length > 0) {
+        <div class="orders-list">
+          @for (orden of lista; track orden.id) {
+            <a class="order-card" [routerLink]="['/mis-compras', orden.id]">
+              <div class="order-card-main">
+                <div>
+                  <span class="order-label">{{ 'ORDERS.ORDER_NUMBER' | translate }}</span>
+                  <h2>#{{ orden.id }}</h2>
+                </div>
+                <div>
+                  <span class="order-label">{{ 'ORDERS.DATE' | translate }}</span>
+                  <time [attr.datetime]="orden.createdAt">{{ orden.createdAt | date:'medium' }}</time>
+                </div>
+                <span class="order-status">{{ orden.status }}</span>
+                <strong class="order-card-total">{{ orden.total | currency:'MXN' }}</strong>
+              </div>
+              <span class="order-card-link">{{ 'ORDERS.VIEW_CODES' | translate }} <span aria-hidden="true">→</span></span>
+            </a>
+          }
+        </div>
+      } @else {
+        <div class="orders-feedback">
+          <h2>{{ 'ORDERS.EMPTY_TITLE' | translate }}</h2>
+          <p>{{ 'ORDERS.EMPTY_MESSAGE' | translate }}</p>
+          <a class="btn btn-primary" routerLink="/productos">
+            {{ 'ORDERS.VIEW_PRODUCTS' | translate }}
+          </a>
+        </div>
+      }
+    }
+  </div>
+</section>

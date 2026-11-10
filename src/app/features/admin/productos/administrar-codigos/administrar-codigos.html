@@ -13,7 +13,7 @@
           @if (productoSeleccionado(); as producto) {
           <div class="admin-producto-seleccionado mb-3">
             <span class="admin-contador">{{ 'ADMIN_CODES.SELECTED_PRODUCT' | translate }}</span>
-            <strong>{{ producto.nombre }}</strong>
+            <strong>{{ producto.name }}</strong>
             <span class="admin-contador">
               {{ 'ADMIN_CODES.SKU' | translate }}: {{ producto.sku }} · {{ 'ADMIN_CODES.ID' | translate }}: {{ producto.id }}
             </span>
@@ -101,8 +101,8 @@
                   <tr [class.fila-seleccionada]="productoSeleccionado()?.id === producto.id">
                     <td class="text-muted">{{ producto.id }}</td>
                     <td>{{ producto.sku }}</td>
-                    <td class="fw-semibold">{{ producto.nombre }}</td>
-                    <td>{{ ('ADMIN_PRODUCTS.TYPES.' + producto.tipo) | translate }}</td>
+                    <td class="fw-semibold">{{ producto.name }}</td>
+                    <td>{{ ('ADMIN_PRODUCTS.TYPES.' + producto.type) | translate }}</td>
                     <td class="text-end">
                       <button
                         type="button"

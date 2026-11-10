@@ -5,7 +5,10 @@ import { Router } from '@angular/router';
 import { AuthService } from '@core/services/auth/auth';
 import { ClientesService } from '@core/services/cliente/ClientesService';
 import { AlertaService } from '@core/services/modals/ModalsService';
-import { ClienteEditarRequest, ClientePublico } from '@core/models/cliente/clienteModels';
+import {
+  PublicCustomerResponse,
+  UpdateCustomerRequest,
+} from '@core/models/cliente/clienteModels';
 import { LucideUser } from '@lucide/angular';
 
 @Component({
@@ -21,7 +24,7 @@ export class Verperfil implements OnInit, OnDestroy {
   private router = inject(Router);
   private translate = inject(TranslateService);
 
-  perfil = signal<ClientePublico | null>(null);
+  perfil = signal<PublicCustomerResponse | null>(null);
   cargando = signal(true);
   guardando = signal(false);
   procesandoFoto = signal(false);
@@ -53,9 +56,9 @@ export class Verperfil implements OnInit, OnDestroy {
         this.aplicarPerfil(perfil);
         this.cargando.set(false);
       },
-      error: () => {
+      error: error => {
         this.cargando.set(false);
-        this.alerta.error(this.translate.instant('PROFILE.LOAD_ERROR'));
+        this.mostrarError(error, 'PROFILE.LOAD_ERROR');
       }
     });
   }
@@ -69,25 +72,25 @@ export class Verperfil implements OnInit, OnDestroy {
     const perfilActual = this.perfil();
     if (!perfilActual) return;
 
-    const request: ClienteEditarRequest = {};
+    const request: UpdateCustomerRequest = {};
     const email = (this.email() ?? '').trim();
     const nombre = (this.nombre() ?? '').trim();
     const telefono = (this.telefono() ?? '').trim();
     if (email && email !== perfilActual.email) request.email = email;
-    if (nombre && nombre !== perfilActual.nombre) request.nombre = nombre;
-    if (telefono && telefono !== perfilActual.telefono) request.telefono = telefono;
+    if (nombre && nombre !== perfilActual.name) request.name = nombre;
+    if (telefono && telefono !== perfilActual.phone) request.phone = telefono;
 
     if (this.passwordNueva()) {
       if (!this.passwordVieja()) {
         this.alerta.advertencia(this.translate.instant('PROFILE.CURRENT_PASSWORD_REQUIRED'));
         return;
       }
-      request.passwordVieja = this.passwordVieja();
-      request.passwordNueva = this.passwordNueva();
+      request.currentPassword = this.passwordVieja();
+      request.newPassword = this.passwordNueva();
     }
 
     const cerrarSesiones = this.cerrarSesiones();
-    if (cerrarSesiones) request.cerrarSesiones = true;
+    if (cerrarSesiones) request.closeSessions = true;
 
     if (Object.keys(request).length === 0) {
       this.alerta.advertencia(this.translate.instant('PROFILE.NO_CHANGES'));
@@ -115,15 +118,15 @@ export class Verperfil implements OnInit, OnDestroy {
             this.guardando.set(false);
             this.alerta.exito(this.translate.instant('PROFILE.SAVE_SUCCESS'));
           },
-          error: () => {
+          error: error => {
             this.guardando.set(false);
-            this.alerta.error(this.translate.instant('PROFILE.LOAD_ERROR'));
+            this.mostrarError(error, 'PROFILE.LOAD_ERROR');
           }
         });
       },
-      error: () => {
+      error: error => {
         this.guardando.set(false);
-        this.alerta.error(this.translate.instant('PROFILE.SAVE_ERROR'));
+        this.mostrarError(error, 'PROFILE.SAVE_ERROR');
       }
     });
   }
@@ -174,10 +177,10 @@ export class Verperfil implements OnInit, OnDestroy {
         this.limpiarFotoPendiente();
         this.alerta.exito(this.translate.instant('PROFILE.PHOTO_UPDATE_SUCCESS'));
       },
-      error: () => {
+      error: error => {
         this.procesandoFoto.set(false);
         this.limpiarFotoPendiente();
-        this.alerta.error(this.translate.instant('PROFILE.PHOTO_UPLOAD_ERROR'));
+        this.mostrarError(error, 'PROFILE.PHOTO_UPLOAD_ERROR');
       }
     });
   }
@@ -190,9 +193,9 @@ export class Verperfil implements OnInit, OnDestroy {
         this.procesandoFoto.set(false);
         this.alerta.exito(this.translate.instant('PROFILE.PHOTO_REMOVE_SUCCESS'));
       },
-      error: () => {
+      error: error => {
         this.procesandoFoto.set(false);
-        this.alerta.error(this.translate.instant('PROFILE.PHOTO_REMOVE_ERROR'));
+        this.mostrarError(error, 'PROFILE.PHOTO_REMOVE_ERROR');
       }
     });
   }
@@ -211,7 +214,7 @@ export class Verperfil implements OnInit, OnDestroy {
           this.alerta.exito(this.translate.instant('PROFILE.DEACTIVATE_SUCCESS'));
           this.router.navigate(['/login']);
         },
-        error: () => this.alerta.error(this.translate.instant('PROFILE.DEACTIVATE_ERROR'))
+        error: error => this.mostrarError(error, 'PROFILE.DEACTIVATE_ERROR')
       });
     });
   }
@@ -222,12 +225,16 @@ export class Verperfil implements OnInit, OnDestroy {
     this.liberarVistaPrevia();
   }
 
-  private aplicarPerfil(perfil: ClientePublico) {
+  private aplicarPerfil(perfil: PublicCustomerResponse) {
     this.perfil.set(perfil);
     this.email.set(perfil.email);
-    this.nombre.set(perfil.nombre ?? '');
-    this.telefono.set(perfil.telefono);
+    this.nombre.set(perfil.name ?? '');
+    this.telefono.set(perfil.phone ?? '');
     this.authService.setClientePublico(perfil);
+  }
+
+  private mostrarError(_error: unknown, mensajePorDefecto: string) {
+    this.alerta.error(this.translate.instant(mensajePorDefecto));
   }
 
   private liberarVistaPrevia() {

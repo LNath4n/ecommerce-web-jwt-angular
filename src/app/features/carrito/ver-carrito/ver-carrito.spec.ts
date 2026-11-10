@@ -13,9 +13,8 @@ describe('VerCarrito', () => {
   let fixture: ComponentFixture<VerCarrito>;
   const carritoServiceMock = {
     obtenerCarrito: vi.fn().mockReturnValue(of({
-      id: 1,
-      productos: [],
-      fechaCreacion: '',
+      items: [],
+      createdAt: '',
       subtotal: 0,
     })),
     actualizar: vi.fn(),
@@ -42,5 +41,11 @@ describe('VerCarrito', () => {
 
   it('should create', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('navigates to checkout from the cart', () => {
+    component.irACheckout();
+
+    expect(routerMock.navigate).toHaveBeenCalledWith(['/checkout']);
   });
 });

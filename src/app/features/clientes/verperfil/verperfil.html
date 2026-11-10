@@ -18,7 +18,7 @@
       <div class="row g-4 profile-row">
         <div class="col-12 col-lg-4 profile-column">
           <section class="profile-card text-center profile-summary">
-            @if (fotoVistaPrevia() || perfilActual.fotoUrl; as fotoUrl) {
+            @if (fotoVistaPrevia() || perfilActual.photoUrl; as fotoUrl) {
               <img class="profile-photo" [src]="fotoUrl" [alt]="'PROFILE.PHOTO_ALT' | translate">
             } @else {
               <div class="profile-photo profile-photo-placeholder" [attr.aria-label]="'PROFILE.NO_PHOTO' | translate">
@@ -26,7 +26,7 @@
               </div>
             }
 
-            <h2 class="h4 mt-3 mb-1">{{ perfilActual.nombre ?? perfilActual.email }}</h2>
+            <h2 class="h4 mt-3 mb-1">{{ perfilActual.name ?? perfilActual.email }}</h2>
             <p class="text-muted mb-4">{{ perfilActual.email }}</p>
 
             <label class="btn btn-primary w-100" for="fotoPerfil">
@@ -36,7 +36,7 @@
             <input id="fotoPerfil" class="visually-hidden" type="file" accept="image/png,image/jpeg"
               [disabled]="procesandoFoto() || confirmandoFoto()" (change)="seleccionarFoto($event)">
 
-            @if (perfilActual.fotoUrl && !fotoVistaPrevia()) {
+            @if (perfilActual.photoUrl && !fotoVistaPrevia()) {
               <button class="btn btn-outline-secondary w-100 mt-2" type="button"
                 [disabled]="procesandoFoto()" (click)="quitarFoto()">
                 {{ 'PROFILE.REMOVE_PHOTO' | translate }}

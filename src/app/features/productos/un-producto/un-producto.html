@@ -14,25 +14,25 @@
       <!-- Imagen -->
       <div class="col-12 col-lg-6">
         <div class="detalle-imagen">
-          @if (producto.imagenUrl && !imagenFallida(producto.id)) {
-          <img [src]="producto.imagenUrl" [alt]="producto.nombre"
+          @if (producto.imageUrl && !imagenFallida(producto.id)) {
+          <img [src]="producto.imageUrl" [alt]="producto.name"
             class="img-fluid" (error)="marcarImagenFallida(producto.id)">
           } @else {
           <svg lucidePackage color="#3b5d50" [size]="96" [strokeWidth]="1.25"></svg>
           }
           <div class="detalle-vistas">
             <span>{{ 'PRODUCT_DETAIL.VIEWS' | translate }}</span>
-            <strong>{{ producto.vistas }}</strong>
+            <strong>{{ producto.views }}</strong>
           </div>
         </div>
       </div>
 
       <!-- Información -->
       <div class="col-12 col-lg-6">
-        <span class="detalle-marca">{{ producto.plataforma || producto.tipo }}</span>
-        <h2 class="section-title mb-3">{{ producto.nombre }}</h2>
+        <span class="detalle-marca">{{ producto.platform || producto.type }}</span>
+        <h2 class="section-title mb-3">{{ producto.name }}</h2>
 
-        <strong class="product-price detalle-precio">${{ producto.precioVenta }}</strong>
+        <strong class="product-price detalle-precio">${{ producto.salePrice }}</strong>
         <small class="d-block mb-4">{{ 'PRODUCT_DETAIL.SALE_PRICE' | translate }}</small>
 
         <dl class="detalle-datos">
@@ -40,10 +40,10 @@
             <dt>SKU</dt>
             <dd>{{ producto.sku }}</dd>
           </div>
-          @if (producto.tipo) {
+          @if (producto.type) {
           <div>
             <dt>{{ 'PRODUCT_DETAIL.TYPE' | translate }}</dt>
-            <dd>{{ producto.tipo }}</dd>
+            <dd>{{ producto.type }}</dd>
           </div>
           }
           @if (producto.region) {
@@ -52,10 +52,10 @@
             <dd>{{ producto.region }}</dd>
           </div>
           }
-          @if (producto.valorNominal !== null) {
+          @if (producto.faceValue !== null) {
           <div>
             <dt>{{ 'PRODUCT_DETAIL.FACE_VALUE' | translate }}</dt>
-            <dd>{{ producto.valorNominal }} {{ producto.moneda }}</dd>
+            <dd>{{ producto.faceValue }} {{ producto.currency }}</dd>
           </div>
           }
           <div>
@@ -70,21 +70,21 @@
           </div>
           <div>
             <dt>{{ 'PRODUCT_DETAIL.RATING' | translate }}</dt>
-            <dd>{{ producto.promedioCalificacion }} ★</dd>
+            <dd>{{ resumenResenas()?.average ?? producto.averageRating }} ★</dd>
           </div>
           <div>
             <dt>{{ 'PRODUCT_DETAIL.REVIEWS' | translate }}</dt>
-            <dd>{{ producto.totalResenas }}</dd>
+            <dd>{{ resumenResenas()?.count ?? producto.totalReviews }}</dd>
           </div>
         </dl>
 
-        @if (producto.descripcion) {
-        <p class="mb-4">{{ producto.descripcion }}</p>
+        @if (producto.description) {
+        <p class="mb-4">{{ producto.description }}</p>
         }
-        @if (producto.instruccionesCanje) {
+        @if (producto.redemptionInstructions) {
         <section class="mb-4">
           <h3 class="h6">{{ 'PRODUCT_DETAIL.REDEMPTION_INSTRUCTIONS' | translate }}</h3>
-          <p>{{ producto.instruccionesCanje }}</p>
+          <p>{{ producto.redemptionInstructions }}</p>
         </section>
         }
 
@@ -97,14 +97,138 @@
       </div>
 
     </div>
+
+    <section class="resenas-section" aria-labelledby="resenas-title">
+      <div class="resenas-heading">
+        <div>
+          <span class="detalle-marca">{{ 'PRODUCT_DETAIL.REVIEWS' | translate }}</span>
+          <h2 id="resenas-title">{{ 'PRODUCT_DETAIL.CUSTOMER_REVIEWS' | translate }}</h2>
+        </div>
+        @if (resumenResenas(); as resumen) {
+        <div class="resenas-promedio">
+          <strong>{{ resumen.average }} ★</strong>
+          <span>{{ 'PRODUCT_DETAIL.REVIEW_COUNT' | translate: { count: resumen.count } }}</span>
+        </div>
+        } @else if (errorResumenResenas()) {
+        <p class="resenas-error" role="status">{{ 'PRODUCT_DETAIL.REVIEW_SUMMARY_ERROR' | translate }}</p>
+        }
+      </div>
+
+      <div class="row g-4 align-items-start">
+        <div class="col-12 col-lg-7">
+          @if (cargandoResenas()) {
+          <p class="resenas-feedback" role="status">{{ 'PRODUCT_DETAIL.REVIEWS_LOADING' | translate }}</p>
+          } @else if (errorResenas()) {
+          <div class="resenas-feedback" role="alert">
+            <p>{{ 'PRODUCT_DETAIL.REVIEWS_LOAD_ERROR' | translate }}</p>
+            <button class="btn btn-primary" type="button" (click)="reintentarResenas()">
+              {{ 'PRODUCT_DETAIL.RETRY_REVIEWS' | translate }}
+            </button>
+          </div>
+          } @else if (resenas().length > 0) {
+          <div class="resenas-lista">
+            @for (resena of resenas(); track resena.id) {
+            <article class="resena-card">
+              <div class="resena-meta">
+                <strong>{{ resena.rating }} ★ / 5</strong>
+                <time [attr.datetime]="resena.createdAt">{{ resena.createdAt | date:'mediumDate' }}</time>
+              </div>
+              @if (resena.comment) {
+              <p class="resena-comentario">{{ resena.comment }}</p>
+              } @else {
+              <p class="resena-sin-comentario">{{ 'PRODUCT_DETAIL.RATING_ONLY' | translate }}</p>
+              }
+            </article>
+            }
+          </div>
+
+          @if (totalPaginasResenas() > 1) {
+          <nav class="resenas-paginacion" [attr.aria-label]="'PRODUCT_DETAIL.REVIEW_PAGINATION' | translate">
+            <button class="btn btn-outline-black" type="button"
+              [disabled]="paginaResenas() === 0 || cargandoResenas()" (click)="cambiarPaginaResenas(-1)">
+              {{ 'PRODUCT_DETAIL.PREVIOUS_REVIEWS' | translate }}
+            </button>
+            <span>{{ 'PRODUCT_DETAIL.PAGE_OF' | translate: {
+              current: paginaResenas() + 1,
+              total: totalPaginasResenas()
+            } }}</span>
+            <button class="btn btn-outline-black" type="button"
+              [disabled]="paginaResenas() + 1 >= totalPaginasResenas() || cargandoResenas()"
+              (click)="cambiarPaginaResenas(1)">
+              {{ 'PRODUCT_DETAIL.NEXT_REVIEWS' | translate }}
+            </button>
+          </nav>
+          }
+          } @else {
+          <p class="resenas-feedback">{{ 'PRODUCT_DETAIL.NO_REVIEWS' | translate }}</p>
+          }
+        </div>
+
+        <div class="col-12 col-lg-5 resena-editor">
+        @if (!sesionActiva()) {
+        <div class="resenas-feedback">
+          <p>{{ 'PRODUCT_DETAIL.LOGIN_TO_REVIEW' | translate }}</p>
+          <a class="btn btn-primary" routerLink="/login">{{ 'PRODUCT_DETAIL.LOGIN_TO_WRITE_REVIEW' | translate }}</a>
+        </div>
+        } @else if (cargandoElegibilidad()) {
+        <p class="resenas-feedback" role="status">{{ 'PRODUCT_DETAIL.CHECKING_REVIEW_ELIGIBILITY' | translate }}</p>
+        } @else if (errorElegibilidad()) {
+        <div class="resenas-feedback" role="alert">
+          <p>{{ 'PRODUCT_DETAIL.REVIEW_ELIGIBILITY_ERROR' | translate }}</p>
+          <button class="btn btn-primary" type="button" (click)="reintentarResenas()">
+            {{ 'PRODUCT_DETAIL.RETRY_REVIEWS' | translate }}
+          </button>
+        </div>
+        } @else if (puedeEnviarResena()) {
+        <form class="resena-form" (submit)="$event.preventDefault(); guardarResena(producto.id)">
+          <h3>{{ (miResena() ? 'PRODUCT_DETAIL.EDIT_REVIEW' : 'PRODUCT_DETAIL.WRITE_REVIEW') | translate }}</h3>
+          <span class="rating-label" id="review-rating-label">{{ 'PRODUCT_DETAIL.YOUR_RATING' | translate }}</span>
+          <div class="rating-picker" role="group" aria-labelledby="review-rating-label">
+            @for (rating of [1, 2, 3, 4, 5]; track rating) {
+            <button class="rating-star" type="button"
+              [class.selected]="rating <= calificacionResena()"
+              [attr.aria-label]="'PRODUCT_DETAIL.SELECT_RATING' | translate: { rating }"
+              [attr.aria-pressed]="calificacionResena() === rating"
+              (click)="actualizarCalificacion(rating)">★</button>
+            }
+            <span class="rating-value">{{ calificacionResena() }} / 5</span>
+          </div>
+
+          <label for="review-comment">{{ 'PRODUCT_DETAIL.YOUR_COMMENT' | translate }}</label>
+          <textarea id="review-comment" rows="4" maxlength="1000"
+            [value]="comentarioResena()" (input)="actualizarComentario($event)"></textarea>
+          <small>{{ comentarioResena().length }} / 1000</small>
+
+          <div class="resena-form-actions">
+            <button class="btn btn-primary" type="submit"
+              [disabled]="enviandoResena() || eliminandoResena()">
+              {{ (enviandoResena() ? 'PRODUCT_DETAIL.SAVING_REVIEW' :
+                miResena() ? 'PRODUCT_DETAIL.UPDATE_REVIEW' : 'PRODUCT_DETAIL.SUBMIT_REVIEW') | translate }}
+            </button>
+            @if (miResena()) {
+            <button class="btn btn-outline-black" type="button" [disabled]="eliminandoResena() || enviandoResena()"
+              (click)="eliminarMiResena(producto.id)">
+              {{ (eliminandoResena() ? 'PRODUCT_DETAIL.DELETING_REVIEW' : 'PRODUCT_DETAIL.DELETE_REVIEW') | translate }}
+            </button>
+            }
+          </div>
+        </form>
+        } @else if (elegibilidadResena()?.purchased === false) {
+        <p class="resenas-feedback">{{ 'PRODUCT_DETAIL.PURCHASE_REQUIRED_TO_REVIEW' | translate }}</p>
+        } @else {
+        <p class="resenas-feedback">{{ 'PRODUCT_DETAIL.REVIEW_ALREADY_EXISTS' | translate }}</p>
+        }
+        </div>
+      </div>
+    </section>
     } @else if (estado.status === 'not-found') {
     <div class="text-center py-5">
-      <h2 class="section-title mb-3">{{ 'PRODUCT_DETAIL.NOT_FOUND' | translate }}</h2>
+      <h2 class="section-title mb-3">{{ estado.message ?? ('PRODUCT_DETAIL.NOT_FOUND' | translate) }}</h2>
       <button class="btn btn-primary" (click)="regresar()">{{ 'PRODUCT_DETAIL.VIEW_PRODUCTS' | translate }}</button>
     </div>
     } @else {
     <div class="text-center py-5">
-      <h2 class="section-title mb-3">{{ 'PRODUCT_DETAIL.LOAD_ERROR' | translate }}</h2>
+      <h2 class="section-title mb-3">{{ estado.message ?? ('PRODUCT_DETAIL.LOAD_ERROR' | translate) }}</h2>
       <p class="mb-4">{{ 'PRODUCT_DETAIL.TRY_AGAIN_LATER' | translate }}</p>
       <button class="btn btn-primary" (click)="regresar()">{{ 'PRODUCT_DETAIL.VIEW_PRODUCTS' | translate }}</button>
     </div>

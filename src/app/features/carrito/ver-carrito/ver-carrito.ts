@@ -2,14 +2,14 @@ import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
-import { BehaviorSubject, switchMap } from 'rxjs';
+import { BehaviorSubject, catchError, of, switchMap } from 'rxjs';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { LucideTrash2, LucidePackage } from '@lucide/angular';
 import { CarritosService } from '@core/services/carrito/CarritosService';
 import { AlertaService } from '@core/services/modals/ModalsService';
-import { Carrito } from '@core/models/carrito/carritoModels';
+import { CartResponse } from '@core/models/carrito/carritoModels';
 
-type ItemCarrito = Carrito['productos'][number];
+type ItemCarrito = CartResponse['items'][number];
 
 @Component({
   selector: 'app-ver-carrito',
@@ -28,8 +28,21 @@ export class VerCarrito {
 
   // Cada .next() vuelve a pedir el carrito sin vaciar la pantalla mientras llega
   private recargar$ = new BehaviorSubject<void>(undefined);
+  errorCarga = signal<string | null>(null);
   carrito$ = this.recargar$.pipe(
-    switchMap(() => this.carritoService.obtenerCarrito()) // GET /carrito
+    switchMap(() => {
+      this.errorCarga.set(null);
+      return this.carritoService.obtenerCarrito().pipe(
+        catchError(error => {
+          if (error instanceof HttpErrorResponse && error.status === 404) {
+            return of(null);
+          }
+
+          this.errorCarga.set(this.translate.instant('CART.LOAD_ERROR'));
+          return of(null);
+        })
+      );
+    })
   );
 
   imagenFallida(productoId: number): boolean {
@@ -41,51 +54,41 @@ export class VerCarrito {
   }
 
   cambiarCantidad(item: ItemCarrito, delta: number) {
-    const nueva = item.cantidad + delta;
+    const nueva = item.quantity + delta;
     if (nueva < 1) return;
 
-    const request = { idProducto: item.productoId, cantidad: nueva };
+    const request = { productId: item.productId, quantity: nueva };
 
     this.carritoService.actualizar(request).subscribe({
       next: () => this.recargar$.next(),
-      error: error => {
-        const mensaje = this.mensajeError(error);
-        this.alerta.error(
-          mensaje ?? this.translate.instant('CART.UPDATE_QUANTITY_ERROR')
-        );
-      }
+      error: () => this.alerta.error(
+        this.translate.instant('CART.UPDATE_QUANTITY_ERROR')
+      )
     });
   }
 
-  eliminar(productoId: number) {
-    this.carritoService.eliminar(productoId).subscribe({
+  eliminar(productId: number) {
+    this.carritoService.eliminar(productId).subscribe({
       next: () => {
         this.alerta.exito(this.translate.instant('CART.REMOVE_SUCCESS'));
         this.recargar$.next();
       },
-      error: () => this.alerta.error(this.translate.instant('CART.REMOVE_ERROR'))
+      error: () => this.alerta.error(
+        this.translate.instant('CART.REMOVE_ERROR')
+      )
     });
+  }
+
+  reintentarCarga() {
+    this.recargar$.next();
   }
 
   seguirComprando() {
     this.router.navigate(['/productos']);
   }
 
-  private mensajeError(error: unknown): string | null {
-    if (!(error instanceof HttpErrorResponse)) return null;
-
-    const cuerpo: unknown = error.error;
-    if (typeof cuerpo === 'string' && cuerpo.trim()) return cuerpo.trim();
-
-    if (typeof cuerpo === 'object' && cuerpo !== null) {
-      if ('error' in cuerpo && typeof cuerpo.error === 'string' && cuerpo.error.trim()) {
-        return cuerpo.error.trim();
-      }
-      if ('message' in cuerpo && typeof cuerpo.message === 'string' && cuerpo.message.trim()) {
-        return cuerpo.message.trim();
-      }
-    }
-
-    return null;
+  irACheckout() {
+    this.router.navigate(['/checkout']);
   }
+
 }

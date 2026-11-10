@@ -3,11 +3,12 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@environments/environment';
 import {
-  CategoriaOpcionResponse,
-  OrdenProducto,
+  CategoryOptionResponse,
+  ProductOrder,
   PageResponse,
-  ProductoPublicoResponse,
+  PublicProductResponse,
 } from '@core/models/producto/productoModels';
+import { ReviewPage, ReviewSummary } from '@core/models/producto/resenaModels';
 
 @Injectable({
   providedIn: 'root'
@@ -15,50 +16,61 @@ import {
 export class ProductosService {
 
   private http = inject(HttpClient);
-  private url = `${environment.apiUrl}/productos`;
+  private url = `${environment.apiUrl}/products`;
 
-  getAll(page: number = 0, size: number = 20): Observable<PageResponse<ProductoPublicoResponse>> {
+  getAll(page: number = 0, size: number = 20): Observable<PageResponse<PublicProductResponse>> {
     const params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
-    return this.http.get<PageResponse<ProductoPublicoResponse>>(this.url, { params });
+    return this.http.get<PageResponse<PublicProductResponse>>(this.url, { params });
   }
 
-  getById(id: number): Observable<ProductoPublicoResponse> {
-    return this.http.get<ProductoPublicoResponse>(`${this.url}/${id}`);
+  getById(id: number): Observable<PublicProductResponse> {
+    return this.http.get<PublicProductResponse>(`${this.url}/${id}`);
   }
 
-  getBySlug(slug: string): Observable<ProductoPublicoResponse> {
-    return this.http.get<ProductoPublicoResponse>(
+  getBySlug(slug: string): Observable<PublicProductResponse> {
+    return this.http.get<PublicProductResponse>(
       `${this.url}/slug/${encodeURIComponent(slug)}`
     );
   }
 
-  obtenerTopVistas(): Observable<ProductoPublicoResponse[]> {
-    return this.http.get<ProductoPublicoResponse[]>(`${this.url}/top/vistas`);
+  obtenerResenas(idProducto: number, page = 0, size = 10): Observable<ReviewPage> {
+    const params = new HttpParams()
+      .set('page', page.toString())
+      .set('size', size.toString());
+    return this.http.get<ReviewPage>(`${this.url}/${idProducto}/reviews`, { params });
   }
 
-  obtenerTopCalificados(): Observable<ProductoPublicoResponse[]> {
-    return this.http.get<ProductoPublicoResponse[]>(`${this.url}/top/calificados`);
+  obtenerResumenResenas(idProducto: number): Observable<ReviewSummary> {
+    return this.http.get<ReviewSummary>(`${this.url}/${idProducto}/reviews/summary`);
   }
 
-  obtenerTopResenados(): Observable<ProductoPublicoResponse[]> {
-    return this.http.get<ProductoPublicoResponse[]>(`${this.url}/top/resenados`);
+  obtenerTopVistas(): Observable<PublicProductResponse[]> {
+    return this.http.get<PublicProductResponse[]>(`${this.url}/top/views`);
+  }
+
+  obtenerTopCalificados(): Observable<PublicProductResponse[]> {
+    return this.http.get<PublicProductResponse[]>(`${this.url}/top/rated`);
+  }
+
+  obtenerTopResenados(): Observable<PublicProductResponse[]> {
+    return this.http.get<PublicProductResponse[]>(`${this.url}/top/reviewed`);
   }
 
   obtenerPlataformas(): Observable<string[]> {
-    return this.http.get<string[]>(`${this.url}/plataformas`);
+    return this.http.get<string[]>(`${this.url}/platforms`);
   }
 
-  obtenerListaDeCategorias(): Observable<CategoriaOpcionResponse[]> {
-    return this.http.get<CategoriaOpcionResponse[]>(`${this.url}/categorias`);
+  obtenerListaDeCategorias(): Observable<CategoryOptionResponse[]> {
+    return this.http.get<CategoryOptionResponse[]>(`${this.url}/categories`);
   }
 
   buscar(
-    filtros: { q?: string; plataforma?: string; categoriaId?: number; orden?: OrdenProducto },
+    filtros: { q?: string; plataforma?: string; categoriaId?: number; orden?: ProductOrder },
     page: number = 0,
     size: number = 20
-  ): Observable<PageResponse<ProductoPublicoResponse>> {
+  ): Observable<PageResponse<PublicProductResponse>> {
     let params = new HttpParams()
       .set('page', page.toString())
       .set('size', size.toString());
@@ -71,6 +83,6 @@ export class ProductosService {
     }
     if (filtros.orden) params = params.set('orden', filtros.orden);
 
-    return this.http.get<PageResponse<ProductoPublicoResponse>>(`${this.url}/buscar`, { params });
+    return this.http.get<PageResponse<PublicProductResponse>>(`${this.url}/search`, { params });
   }
 }

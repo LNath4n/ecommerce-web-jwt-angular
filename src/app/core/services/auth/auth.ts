@@ -1,5 +1,5 @@
 import { Injectable, signal, computed } from '@angular/core';
-import { ClientePublico } from '@core/models/cliente/clienteModels';
+import { PublicCustomerResponse } from '@core/models/cliente/clienteModels';
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -40,8 +40,8 @@ export class AuthService {
     this.clearClientePublico();
   }
 
-  setClientePublico(cliente: Pick<ClientePublico, 'email' | 'nombre'>) {
-    this.nombreCliente.set(cliente.nombre ?? cliente.email);
+  setClientePublico(cliente: Pick<PublicCustomerResponse, 'email' | 'name'>) {
+    this.nombreCliente.set(cliente.name ?? cliente.email);
   }
 
   clearClientePublico() {

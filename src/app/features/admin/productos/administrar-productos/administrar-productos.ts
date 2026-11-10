@@ -11,11 +11,11 @@ import {
   LucideImageOff,
 } from '@lucide/angular';
 import {
-  CategoriaOpcionResponse,
-  CategoriaRequest,
-  ProductoPublicoResponse,
-  ProductoRequest,
-  TipoProducto,
+  CategoryOptionResponse,
+  CategoryRequest,
+  ProductRequest,
+  ProductType,
+  PublicProductResponse,
 } from '@core/models/producto/productoModels';
 import { ProductosService } from '@core/services/producto/ProductosService';
 import { ProductoAdminService } from '@core/services/admin/productoadminservice/ProductoAdminService';
@@ -44,14 +44,14 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
   private alerta = inject(AlertaService);
   private translate = inject(TranslateService);
 
-  productos = signal<ProductoPublicoResponse[]>([]);
-  categorias = signal<CategoriaOpcionResponse[]>([]);
+  productos = signal<PublicProductResponse[]>([]);
+  categorias = signal<CategoryOptionResponse[]>([]);
   categoriaEditandoId = signal<number | null>(null);
   categoriaGuardando = signal(false);
   categoriaEliminandoId = signal<number | null>(null);
   nombreCategoria = '';
   private nombreCategoriaInicial = '';
-  readonly tiposProducto: TipoProducto[] = [
+  readonly tiposProducto: ProductType[] = [
     'GIFT_CARD',
     'CLAVE_JUEGO',
     'LICENCIA_SOFTWARE',
@@ -60,7 +60,7 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
   ];
   editandoId = signal<number | null>(null);
 
-  form: ProductoRequest = this.formularioVacio();
+  form: ProductRequest = this.formularioVacio();
   private inicial = JSON.stringify(this.form);
 
   //  Imagen 
@@ -192,12 +192,26 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
     });
   }
 
-  editar(p: ProductoPublicoResponse) {
+  editar(p: PublicProductResponse) {
     this.adminService.obtener(p.id).subscribe({
-      next: ({ id, imagenUrl, slug, stock, fechaCreacion, ...datos }) => {
-        this.editandoId.set(id);
-        this.reiniciarForm(datos);
-        this.reiniciarImagen(imagenUrl);
+      next: producto => {
+        this.editandoId.set(producto.id);
+        this.reiniciarForm({
+          sku: producto.sku,
+          name: producto.name,
+          description: producto.description,
+          platform: producto.platform,
+          type: producto.type,
+          region: producto.region,
+          faceValue: producto.faceValue,
+          currency: producto.currency,
+          salePrice: producto.salePrice,
+          costPrice: producto.costPrice,
+          redemptionInstructions: producto.redemptionInstructions,
+          active: producto.active,
+          categoryId: producto.categoryId,
+        });
+        this.reiniciarImagen(producto.imageUrl);
       },
       error: err => this.mostrarError(err, 'ADMIN_PRODUCTS.PRODUCT_LOAD_ERROR'),
     });
@@ -261,7 +275,7 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
     }
 
     const id = this.categoriaEditandoId();
-    const request: CategoriaRequest = { nombre };
+    const request: CategoryRequest = { name: nombre };
     const guardar$ = id === null
       ? this.adminService.crearCategoria(request)
       : this.adminService.editarCategoria(id, request);
@@ -283,10 +297,10 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
     });
   }
 
-  editarCategoria(categoria: CategoriaOpcionResponse) {
+  editarCategoria(categoria: CategoryOptionResponse) {
     this.categoriaEditandoId.set(categoria.id);
-    this.nombreCategoria = categoria.nombre;
-    this.nombreCategoriaInicial = categoria.nombre;
+    this.nombreCategoria = categoria.name;
+    this.nombreCategoriaInicial = categoria.name;
   }
 
   cancelarEdicionCategoria() {
@@ -295,8 +309,8 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
     this.nombreCategoriaInicial = '';
   }
 
-  borrarCategoria(categoria: CategoriaOpcionResponse) {
-    if (!confirm(this.translate.instant('ADMIN_PRODUCTS.CATEGORY_DELETE_CONFIRM', { nombre: categoria.nombre }))) {
+  borrarCategoria(categoria: CategoryOptionResponse) {
+    if (!confirm(this.translate.instant('ADMIN_PRODUCTS.CATEGORY_DELETE_CONFIRM', { nombre: categoria.name }))) {
       return;
     }
 
@@ -315,7 +329,7 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
     });
   }
 
-  private reiniciarForm(valor: ProductoRequest) {
+  private reiniciarForm(valor: ProductRequest) {
     this.form = valor;
     this.inicial = JSON.stringify(valor);
   }
@@ -327,13 +341,13 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
     this.inputKey.update(k => k + 1); // recrea el input y borra el nombre del archivo
   }
 
-  private formularioVacio(): ProductoRequest {
+  private formularioVacio(): ProductRequest {
     return {
       sku: '',
-      nombre: '',
-      tipo: 'GIFT_CARD',
-      precioVenta: 0,
-      activo: true,
+      name: '',
+      type: 'GIFT_CARD',
+      salePrice: 0,
+      active: true,
     };
   }
 
@@ -344,11 +358,7 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
     }
   }
 
-  private mostrarError(err: unknown, mensajeDefaultKey: string) {
-    if (err instanceof HttpErrorResponse && typeof err.error === 'string') {
-      this.alerta.error(err.error);
-      return;
-    }
+  private mostrarError(_err: unknown, mensajeDefaultKey: string) {
     this.alerta.error(this.translate.instant(mensajeDefaultKey));
   }
 
@@ -357,6 +367,6 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
       this.alerta.error(this.translate.instant(conflictoKey));
       return;
     }
-    this.mostrarError(err, mensajeDefaultKey);
+    this.alerta.error(this.translate.instant(mensajeDefaultKey));
   }
 }

@@ -1,27 +1,26 @@
-export interface AgregarCarrito {
-  idProducto: number;
-  cantidad: number;
+export interface AddCartItemRequest {
+  productId: number;
+  quantity: number;
 }
 
-export interface ActualizarCantidad {
-  idProducto: number;
-  cantidad: number;
+export interface UpdateCartItemQuantityRequest {
+  productId: number;
+  quantity: number;
 }
 
-export interface CarritoProducto {
-  productoId: number;
+export interface CartItemResponse {
+  productId: number;
   slug: string;
-  nombre: string;
+  name: string;
   sku: string;
-  plataforma: string | null;
-  cantidad: number;
-  precioVenta: number;
-  imagenUrl: string | null;
+  platform: string | null;
+  quantity: number;
+  salePrice: number;
+  imageUrl: string | null;
 }
 
-export interface Carrito {
-  id: number;
-  productos: CarritoProducto[];
-  fechaCreacion: string;
+export interface CartResponse {
+  items: CartItemResponse[];
+  createdAt: string;
   subtotal: number;
 }

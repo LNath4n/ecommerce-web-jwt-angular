@@ -17,7 +17,16 @@
 <div class="untree_co-section before-footer-section">
   <div class="container">
 
-    @if (carrito && carrito.productos.length > 0) {
+    @if (errorCarga()) {
+
+    <div class="text-center py-5" role="alert">
+      <p class="mb-4">{{ errorCarga() }}</p>
+      <button class="btn btn-primary" type="button" (click)="reintentarCarga()">
+        {{ 'CART.RETRY' | translate }}
+      </button>
+    </div>
+
+    } @else if (carrito && carrito.items.length > 0) {
 
     <div class="row mb-5">
       <div class="col-md-12">
@@ -34,33 +43,33 @@
               </tr>
             </thead>
             <tbody>
-              @for (item of carrito.productos; track item.productoId) {
+              @for (item of carrito.items; track item.productId) {
               <tr>
                 <td class="product-thumbnail">
-                  @if (item.imagenUrl && !imagenFallida(item.productoId)) {
-                  <img [src]="item.imagenUrl" [alt]="item.nombre" class="img-fluid"
-                    (error)="marcarImagenFallida(item.productoId)">
+                  @if (item.imageUrl && !imagenFallida(item.productId)) {
+                  <img [src]="item.imageUrl" [alt]="item.name" class="img-fluid"
+                    (error)="marcarImagenFallida(item.productId)">
                   } @else {
                   <svg lucidePackage color="#3b5d50" [size]="48" [strokeWidth]="1.25"></svg>
                   }
                 </td>
                 <td class="product-name">
-                  <h2 class="h5 text-black">{{ item.nombre }}</h2>
+                  <h2 class="h5 text-black">{{ item.name }}</h2>
                   <small>{{ item.sku }}</small>
                 </td>
                 <td class="product-price" [attr.data-label]="'CART.PRICE' | translate"
                   [attr.aria-label]="'CART.PRICE' | translate">
-                  {{ item.precioVenta | currency:'MXN' }}
+                  {{ item.salePrice | currency:'MXN' }}
                 </td>
                 <td class="product-quantity" [attr.data-label]="'CART.QUANTITY' | translate"
                   [attr.aria-label]="'CART.QUANTITY' | translate">
                   <div class="input-group mb-3 d-flex align-items-center quantity-container" style="max-width: 120px;">
                     <div class="input-group-prepend">
                       <button class="btn btn-outline-black decrease" type="button"
-                        [attr.aria-label]="'CART.DECREASE_QUANTITY' | translate" [disabled]="item.cantidad <= 1"
+                        [attr.aria-label]="'CART.DECREASE_QUANTITY' | translate" [disabled]="item.quantity <= 1"
                         (click)="cambiarCantidad(item, -1)">&minus;</button>
                     </div>
-                    <input type="text" class="form-control text-center quantity-amount" [value]="item.cantidad" readonly
+                    <input type="text" class="form-control text-center quantity-amount" [value]="item.quantity" readonly
                       [attr.aria-label]="'CART.QUANTITY' | translate">
                     <div class="input-group-append">
                       <button class="btn btn-outline-black increase" type="button"
@@ -71,13 +80,13 @@
                 </td>
                 <td class="product-total" [attr.data-label]="'CART.TOTAL' | translate"
                   [attr.aria-label]="'CART.TOTAL' | translate">
-                  {{ item.cantidad * item.precioVenta | currency:'MXN' }}
+                  {{ item.quantity * item.salePrice | currency:'MXN' }}
                 </td>
                 <td class="product-remove" [attr.data-label]="'CART.REMOVE' | translate"
                   [attr.aria-label]="'CART.REMOVE' | translate">
                   <button type="button" class="btn-quitar-carrito"
                     [attr.aria-label]="'CART.REMOVE_FROM_CART' | translate"
-                    (click)="eliminar(item.productoId)">
+                    (click)="eliminar(item.productId)">
                     <svg lucideTrash2 color="#fff" [size]="16"></svg>
                   </button>
                 </td>
@@ -107,6 +116,13 @@
               </div>
               <div class="col-6 text-end">
                 <strong class="text-black">{{ carrito.subtotal | currency:'MXN' }}</strong>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <button class="btn btn-primary w-100" type="button" (click)="irACheckout()">
+                  {{ 'CHECKOUT.CONTINUE_TO_PAYMENT' | translate }}
+                </button>
               </div>
             </div>
           </div>

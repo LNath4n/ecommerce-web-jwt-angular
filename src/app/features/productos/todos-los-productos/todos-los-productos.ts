@@ -1,20 +1,19 @@
 import { AfterViewInit, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
-import { Router, RouterLink } from '@angular/router';
+import { Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, Subject, Subscription } from 'rxjs';
 import { LucidePackage, LucideSearch } from '@lucide/angular';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ProductosService } from '@core/services/producto/ProductosService';
 import { CarritosService } from '@core/services/carrito/CarritosService';
 import { AuthService } from '@core/services/auth/auth';
-import { OrdenProducto, ProductoPublicoResponse } from '@core/models/producto/productoModels';
+import { ProductOrder, PublicProductResponse } from '@core/models/producto/productoModels';
 import { AlertaService } from '@core/services/modals/ModalsService';
 
 @Component({
   selector: 'app-todos-los-productos',
-  imports: [CommonModule, FormsModule, RouterLink, LucideSearch, LucidePackage, TranslatePipe],
+  imports: [CommonModule, FormsModule, LucideSearch, LucidePackage, TranslatePipe],
   templateUrl: './todos-los-productos.html',
   styleUrl: './todos-los-productos.css',
 })
@@ -31,16 +30,16 @@ export class TodosLosProductos implements OnInit, AfterViewInit, OnDestroy {
   nombreUsuario = this.authService.nombre;
 
   private readonly tamanoPagina = 24;   // múltiplo de 2, 3 y 4: filas completas en cualquier ancho
-  productos = signal<ProductoPublicoResponse[]>([]);
+  productos = signal<PublicProductResponse[]>([]);
   animarEntrada = signal(true);
   reemplazandoResultados = signal(false);
   cargando = signal(false);
-  errorCarga = signal(false);
+  errorCarga = signal<string | null>(null);
   paginaActual = 0;
   hayMasPaginas = true;
 
   textoBusqueda = '';              // lo que el usuario está escribiendo
-  ordenSeleccionado: OrdenProducto = '';
+  ordenSeleccionado: ProductOrder = '';
   private busquedaActiva = '';     // lo que realmente se buscó (para las páginas siguientes)
   private peticion?: Subscription;
   private readonly cambiosBusqueda = new Subject<string>();
@@ -112,12 +111,12 @@ export class TodosLosProductos implements OnInit, AfterViewInit, OnDestroy {
           this.hayMasPaginas = this.paginaActual < page.totalPages - 1;
           this.paginaActual++;
           this.cargando.set(false);
-          this.errorCarga.set(false);
+          this.errorCarga.set(null);
         },
         error: () => {
           this.cargando.set(false);
           this.reemplazandoResultados.set(false);
-          this.errorCarga.set(true);
+          this.errorCarga.set(this.translate.instant('PRODUCTS_PAGE.LOAD_ERROR'));
         }
       });
   }
@@ -128,7 +127,7 @@ export class TodosLosProductos implements OnInit, AfterViewInit, OnDestroy {
     this.ejecutarBusqueda(this.textoBusqueda);
   }
 
-  cambiarOrden(orden: OrdenProducto) {
+  cambiarOrden(orden: ProductOrder) {
     this.detenerAnimacionEntrada();
     this.ordenSeleccionado = orden;
     this.ejecutarBusqueda(this.textoBusqueda);
@@ -147,7 +146,7 @@ export class TodosLosProductos implements OnInit, AfterViewInit, OnDestroy {
     this.reemplazandoResultados.set(true);
     this.paginaActual = 0;
     this.hayMasPaginas = true;
-    this.errorCarga.set(false);
+    this.errorCarga.set(null);
     this.cargando.set(false);
     this.cargarMas();
   }
@@ -171,7 +170,7 @@ export class TodosLosProductos implements OnInit, AfterViewInit, OnDestroy {
   }
 
   reintentarCarga() {
-    this.errorCarga.set(false);
+    this.errorCarga.set(null);
     this.cargarMas();
   }
 
@@ -194,35 +193,14 @@ export class TodosLosProductos implements OnInit, AfterViewInit, OnDestroy {
       return;
     }
 
-    this.carritosService.agregar({ idProducto, cantidad: 1 })
+    this.carritosService.agregar({ productId: idProducto, quantity: 1 })
       .subscribe({
         next: () => {
           this.alerta.exito(this.translate.instant('PRODUCT_DETAIL.ADDED_TO_CART'));
         },
-        error: error => {
-          const mensaje = this.mensajeError(error);
-          this.alerta.error(
-            mensaje ?? this.translate.instant('PRODUCT_DETAIL.ADD_TO_CART_ERROR')
-          );
-        }
+        error: () => this.alerta.error(
+          this.translate.instant('PRODUCT_DETAIL.ADD_TO_CART_ERROR')
+        )
       });
-  }
-
-  private mensajeError(error: unknown): string | null {
-    if (!(error instanceof HttpErrorResponse)) return null;
-
-    const cuerpo: unknown = error.error;
-    if (typeof cuerpo === 'string' && cuerpo.trim()) return cuerpo.trim();
-
-    if (typeof cuerpo === 'object' && cuerpo !== null) {
-      if ('error' in cuerpo && typeof cuerpo.error === 'string' && cuerpo.error.trim()) {
-        return cuerpo.error.trim();
-      }
-      if ('message' in cuerpo && typeof cuerpo.message === 'string' && cuerpo.message.trim()) {
-        return cuerpo.message.trim();
-      }
-    }
-
-    return null;
   }
 }

@@ -1,7 +1,7 @@
-export interface CargarCodigosRequest {
-  codigos: string[];
+export interface UploadProductCodesRequest {
+  codes: string[];
 }
 
-export interface CodigosCargadosResponse {
-  guardados: number;
+export interface UploadProductCodesResponse {
+  savedCount: number;
 }

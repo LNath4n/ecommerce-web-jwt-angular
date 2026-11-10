@@ -6,9 +6,13 @@
     <mat-toolbar>{{ 'NAV.MENU' | translate }}</mat-toolbar>
     <mat-nav-list>
       <a mat-list-item routerLink="/productos" (click)="drawer.close()">{{ 'NAV.PRODUCTS' | translate }}</a>
+      <a mat-list-item routerLink="/productos/destacados" (click)="drawer.close()">
+        {{ 'NAV.FEATURED' | translate }}
+      </a>
 
       @if (isLoggedIn()) {
       <a mat-list-item routerLink="/carrito" (click)="drawer.close()">{{ 'NAV.CART' | translate }}</a>
+      <a mat-list-item routerLink="/mis-compras" (click)="drawer.close()">{{ 'NAV.ORDERS' | translate }}</a>
       @if (isAdmin()) {
       <a mat-list-item routerLink="/admin/productos" (click)="drawer.close()">{{ 'NAV.ADMIN_PRODUCTS' | translate }}</a>
       <a mat-list-item routerLink="/admin/codigos" (click)="drawer.close()">{{ 'NAV.ADMIN_CODES' | translate }}</a>
@@ -49,8 +53,11 @@
 
         <div class="collapse navbar-collapse" id="navbarsFerreViky">
           <ul class="custom-navbar-nav navbar-nav ms-auto mb-2 mb-md-0">
-            <li class="nav-item" routerLinkActive="active">
+            <li class="nav-item" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
               <a class="nav-link" routerLink="/productos">{{ 'NAV.PRODUCTS' | translate }}</a>
+            </li>
+            <li class="nav-item" routerLinkActive="active">
+              <a class="nav-link" routerLink="/productos/destacados">{{ 'NAV.FEATURED' | translate }}</a>
             </li>
 
             @if (!isLoggedIn()) {
@@ -105,6 +112,12 @@
               <a class="nav-link" routerLink="/carrito" [attr.title]="'NAV.CART' | translate"
                 [attr.aria-label]="'NAV.CART' | translate">
                 <svg lucideShoppingCart color="#fff" [size]="22"></svg>
+              </a>
+            </li>
+            <li>
+              <a class="nav-link" routerLink="/mis-compras" routerLinkActive="active"
+                [attr.title]="'NAV.ORDERS' | translate" [attr.aria-label]="'NAV.ORDERS' | translate">
+                <svg lucidePackage color="#fff" [size]="22"></svg>
               </a>
             </li>
             <li>

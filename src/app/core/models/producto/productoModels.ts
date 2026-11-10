@@ -1,14 +1,3 @@
-export interface Producto {
-  id: number;
-  codigo: string;
-  descripcion: string;
-  unidad: string;
-  marca: string;
-  precioPublicoIva: number;
-  imagenUrl: string | null;
-  stock: number;
-}
-
 export interface PageResponse<T> {
   content: T[];
   totalPages: number;
@@ -17,86 +6,69 @@ export interface PageResponse<T> {
   size: number;
 }
 
-export interface ProductoPublicoResponse {
+export interface PublicProductResponse {
   id: number;
   slug: string;
   sku: string;
-  nombre: string;
-  descripcion: string | null;
-  plataforma: string | null;
-  tipo: TipoProducto;
+  name: string;
+  description: string | null;
+  platform: string | null;
+  type: ProductType;
   region: string | null;
-  valorNominal: number | null;
-  moneda: string | null;
-  precioVenta: number;
-  instruccionesCanje: string | null;
-  imagenUrl: string | null;
+  faceValue: number | null;
+  currency: string | null;
+  salePrice: number;
+  redemptionInstructions: string | null;
+  imageUrl: string | null;
   stock: number;
-  vistas: number;
-  promedioCalificacion: number;
-  totalResenas: number;
+  views: number;
+  averageRating: number;
+  totalReviews: number;
 }
 
-export interface CategoriaOpcionResponse {
+export interface AdminProductResponse extends PublicProductResponse {
+  costPrice: number | null;
+  active: boolean;
+  categoryId: number | null;
+  createdAt: string;
+}
+
+export interface ProductRequest {
+  sku: string;
+  name: string;
+  description?: string | null;
+  platform?: string | null;
+  type: ProductType;
+  region?: string | null;
+  faceValue?: number | null;
+  currency?: string | null;
+  salePrice: number;
+  costPrice?: number | null;
+  redemptionInstructions?: string | null;
+  active?: boolean | null;
+  categoryId?: number | null;
+}
+
+export interface CategoryOptionResponse {
   id: number;
-  nombre: string;
+  name: string;
 }
 
-export interface CategoriaRequest {
-  nombre: string;
+export interface CategoryRequest {
+  name: string;
 }
 
-export type TipoProducto =
+export type ProductType =
   | 'GIFT_CARD'
   | 'CLAVE_JUEGO'
   | 'LICENCIA_SOFTWARE'
   | 'RECARGA'
   | 'SUSCRIPCION';
 
-export type OrdenProducto =
+export type ProductOrder =
   | ''
   | 'calificacion'
   | 'vistas'
   | 'resenas'
   | 'precio_asc'
   | 'precio_desc';
-
-export interface ProductoRequest {
-  sku: string;
-  nombre: string;
-  descripcion?: string | null;
-  plataforma?: string | null;
-  tipo: TipoProducto;
-  region?: string | null;
-  valorNominal?: number | null;
-  moneda?: string | null;
-  precioVenta: number;
-  precioCosto?: number | null;
-  instruccionesCanje?: string | null;
-  activo?: boolean | null;
-  categoriaId?: number | null;
-}
-
-export interface ProductoAdminResponse {
-  id: number;
-  sku: string;
-  nombre: string;
-  slug: string;
-  descripcion: string | null;
-  plataforma: string | null;
-  tipo: TipoProducto;
-  region: string | null;
-  valorNominal: number | null;
-  moneda: string | null;
-  precioVenta: number;
-  precioCosto: number | null;
-  instruccionesCanje: string | null;
-  activo: boolean;
-  categoriaId: number | null;
-  imagenUrl: string | null;
-  stock: number;
-  fechaCreacion: string;
-  vistas: number;
-  promedioCalificacion: number;
-  totalResenas: number;
-}

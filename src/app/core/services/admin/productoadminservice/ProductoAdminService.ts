@@ -3,41 +3,41 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@environments/environment';
 import {
-  CategoriaOpcionResponse,
-  CategoriaRequest,
-  ProductoAdminResponse,
-  ProductoPublicoResponse,
-  ProductoRequest,
+  AdminProductResponse,
+  CategoryOptionResponse,
+  CategoryRequest,
+  ProductRequest,
+  PublicProductResponse,
 } from '@core/models/producto/productoModels';
 
 @Injectable({ providedIn: 'root' })
 export class ProductoAdminService {
   private http = inject(HttpClient);
-  private url = `${environment.apiUrl}/admin/productos`;
-  private categoriasUrl = `${environment.apiUrl}/admin/categorias`;
+  private url = `${environment.apiUrl}/admin/products`;
+  private categoriasUrl = `${environment.apiUrl}/admin/categories`;
 
-  crearCategoria(body: CategoriaRequest): Observable<CategoriaOpcionResponse> {
-    return this.http.post<CategoriaOpcionResponse>(this.categoriasUrl, body);
+  crearCategoria(body: CategoryRequest): Observable<CategoryOptionResponse> {
+    return this.http.post<CategoryOptionResponse>(this.categoriasUrl, body);
   }
 
-  editarCategoria(id: number, body: CategoriaRequest): Observable<CategoriaOpcionResponse> {
-    return this.http.put<CategoriaOpcionResponse>(`${this.categoriasUrl}/${id}`, body);
+  editarCategoria(id: number, body: CategoryRequest): Observable<CategoryOptionResponse> {
+    return this.http.put<CategoryOptionResponse>(`${this.categoriasUrl}/${id}`, body);
   }
 
   borrarCategoria(id: number): Observable<string> {
     return this.http.delete(`${this.categoriasUrl}/${id}`, { responseType: 'text' });
   }
 
-  obtener(id: number): Observable<ProductoAdminResponse> {
-    return this.http.get<ProductoAdminResponse>(`${this.url}/${id}`);
+  obtener(id: number): Observable<AdminProductResponse> {
+    return this.http.get<AdminProductResponse>(`${this.url}/${id}`);
   }
 
-  crear(body: ProductoRequest): Observable<ProductoPublicoResponse> {
-    return this.http.post<ProductoPublicoResponse>(this.url, body);
+  crear(body: ProductRequest): Observable<PublicProductResponse> {
+    return this.http.post<PublicProductResponse>(this.url, body);
   }
 
-  editar(id: number, body: ProductoRequest): Observable<ProductoPublicoResponse> {
-    return this.http.put<ProductoPublicoResponse>(`${this.url}/${id}`, body);
+  editar(id: number, body: ProductRequest): Observable<PublicProductResponse> {
+    return this.http.put<PublicProductResponse>(`${this.url}/${id}`, body);
   }
 
   borrar(id: number): Observable<string> {
@@ -46,16 +46,16 @@ export class ProductoAdminService {
   }
 
   desactivar(id: number): Observable<string> {
-    return this.http.patch(`${this.url}/${id}/desactivar`, null, { responseType: 'text' });
+    return this.http.patch(`${this.url}/${id}/deactivate`, null, { responseType: 'text' });
   }
 
-  subirImagen(id: number, file: File): Observable<ProductoAdminResponse> {
+  subirImagen(id: number, file: File): Observable<AdminProductResponse> {
     const formData = new FormData();
     formData.append('file', file);
-    return this.http.post<ProductoAdminResponse>(`${this.url}/${id}/imagen`, formData);
+    return this.http.post<AdminProductResponse>(`${this.url}/${id}/image`, formData);
   }
 
-  quitarImagen(id: number): Observable<ProductoAdminResponse> {
-    return this.http.delete<ProductoAdminResponse>(`${this.url}/${id}/imagen`);
+  quitarImagen(id: number): Observable<AdminProductResponse> {
+    return this.http.delete<AdminProductResponse>(`${this.url}/${id}/image`);
   }
 }
