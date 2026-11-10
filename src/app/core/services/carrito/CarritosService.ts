@@ -1,6 +1,6 @@
 
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '@environments/environment';
 import {
@@ -29,5 +29,52 @@ export class CarritosService {
 
     eliminar(idProducto: number): Observable<string> {
         return this.http.delete(`${this.url}/${idProducto}`, { responseType: 'text' });
+    }
+
+    obtenerMensajeError(error: unknown): string | null {
+        if (!(error instanceof HttpErrorResponse)) return null;
+        return this.extraerMensaje(error.error);
+    }
+
+    private extraerMensaje(cuerpo: unknown): string | null {
+        if (typeof cuerpo === 'string') {
+            const texto = cuerpo.trim();
+            if (!texto) return null;
+
+            if (texto.startsWith('{') || texto.startsWith('[')) {
+                try {
+                    return this.extraerMensaje(JSON.parse(texto)) ?? texto;
+                } catch {
+                    return texto;
+                }
+            }
+
+            return texto;
+        }
+
+        if (Array.isArray(cuerpo)) {
+            const mensajes = cuerpo
+                .map(item => this.extraerMensaje(item))
+                .filter((mensaje): mensaje is string => mensaje !== null);
+            return mensajes.length ? mensajes.join('; ') : null;
+        }
+
+        if (typeof cuerpo !== 'object' || cuerpo === null) return null;
+
+        const respuesta = cuerpo as Record<string, unknown>;
+        for (const campo of ['mensaje', 'message', 'detail', 'error', 'title']) {
+            const mensaje = this.extraerMensaje(respuesta[campo]);
+            if (mensaje) return mensaje;
+        }
+
+        const errores = respuesta['errors'];
+        if (typeof errores === 'object' && errores !== null && !Array.isArray(errores)) {
+            const mensajes = Object.values(errores)
+                .map(item => this.extraerMensaje(item))
+                .filter((mensaje): mensaje is string => mensaje !== null);
+            return mensajes.length ? mensajes.join('; ') : null;
+        }
+
+        return this.extraerMensaje(errores);
     }
 }

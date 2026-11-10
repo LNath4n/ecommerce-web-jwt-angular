@@ -61,8 +61,9 @@ export class VerCarrito {
 
     this.carritoService.actualizar(request).subscribe({
       next: () => this.recargar$.next(),
-      error: () => this.alerta.error(
-        this.translate.instant('CART.UPDATE_QUANTITY_ERROR')
+      error: error => this.alerta.error(
+        this.carritoService.obtenerMensajeError(error)
+          ?? this.translate.instant('CART.UPDATE_QUANTITY_ERROR')
       )
     });
   }
