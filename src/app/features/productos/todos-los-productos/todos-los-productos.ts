@@ -198,8 +198,9 @@ export class TodosLosProductos implements OnInit, AfterViewInit, OnDestroy {
         next: () => {
           this.alerta.exito(this.translate.instant('PRODUCT_DETAIL.ADDED_TO_CART'));
         },
-        error: () => this.alerta.error(
-          this.translate.instant('PRODUCT_DETAIL.ADD_TO_CART_ERROR')
+        error: error => this.alerta.error(
+          this.carritosService.obtenerMensajeError(error)
+            ?? this.translate.instant('PRODUCT_DETAIL.ADD_TO_CART_ERROR')
         )
       });
   }
