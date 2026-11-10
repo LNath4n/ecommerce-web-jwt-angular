@@ -27,7 +27,8 @@ jobs:
       - run: npm ci
 
       - name: Inyectar PayPal Client ID
-        run: sed -i "s|paypalClientId: ''|paypalClientId: '${{ secrets.PAYPAL_CLIENT_ID }}'|" src/environments/environment.ts
+        run: |
+          sed -i "s|paypalClientId: ''|paypalClientId: '${{ secrets.PAYPAL_CLIENT_ID }}'|" src/environments/environment.ts
 
       - run: npm run build
 
