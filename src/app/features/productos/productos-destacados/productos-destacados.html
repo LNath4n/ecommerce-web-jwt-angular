@@ -73,8 +73,8 @@
       @for (producto of productosSeleccionados(); track producto.id) {
       <div class="top-carrusel-slide" [class.producto-entrada]="animarEntrada()">
         <a class="product-item" (click)="verDetalle(producto.slug)">
-          @if (producto.imagenUrl && !imagenFallida(producto.id)) {
-          <img [src]="producto.imagenUrl" [alt]="producto.nombre" class="img-fluid product-thumbnail"
+          @if (producto.imageUrl && !imagenFallida(producto.id)) {
+          <img [src]="producto.imageUrl" [alt]="producto.name" class="img-fluid product-thumbnail"
             loading="lazy" (error)="marcarImagenFallida(producto.id)">
           } @else {
           <div class="product-thumbnail producto-imagen-fallback">
@@ -82,26 +82,26 @@
           </div>
           }
 
-          <h3 class="product-title">{{ producto.nombre }}</h3>
-          <p class="mb-1 product-description">{{ producto.descripcion || '' }}</p>
+          <h3 class="product-title">{{ producto.name }}</h3>
+          <p class="mb-1 product-description">{{ producto.description || '' }}</p>
           <p class="mb-1 product-meta">
-            {{ producto.plataforma || producto.tipo }} · {{ producto.region || ('PRODUCTS_PAGE.GLOBAL' | translate) }}
+            {{ producto.platform || producto.type }} · {{ producto.region || ('PRODUCTS_PAGE.GLOBAL' | translate) }}
           </p>
           <p class="mb-1 product-meta">
             {{ 'PRODUCTS_PAGE.SKU' | translate }}: {{ producto.sku }} ·
             {{ 'PRODUCTS_PAGE.STOCK' | translate }}: {{ producto.stock }}
           </p>
           @if (seleccionEspecial() === 'vistas') {
-          <span class="producto-top-meta">{{ producto.vistas }} {{ 'PRODUCTS_PAGE.VIEWS' | translate }}</span>
+          <span class="producto-top-meta">{{ producto.views }} {{ 'PRODUCTS_PAGE.VIEWS' | translate }}</span>
           } @else if (seleccionEspecial() === 'calificacion') {
           <span class="producto-top-meta">
-            {{ producto.promedioCalificacion }} ★ · {{ producto.totalResenas }}
+            {{ producto.averageRating }} ★ · {{ producto.totalReviews }}
             {{ 'PRODUCTS_PAGE.REVIEWS' | translate }}
           </span>
           } @else {
-          <span class="producto-top-meta">{{ producto.totalResenas }} {{ 'PRODUCTS_PAGE.REVIEWS' | translate }}</span>
+          <span class="producto-top-meta">{{ producto.totalReviews }} {{ 'PRODUCTS_PAGE.REVIEWS' | translate }}</span>
           }
-          <strong class="product-price">${{ producto.precioVenta }}</strong>
+          <strong class="product-price">${{ producto.salePrice }}</strong>
         </a>
       </div>
       } @empty {

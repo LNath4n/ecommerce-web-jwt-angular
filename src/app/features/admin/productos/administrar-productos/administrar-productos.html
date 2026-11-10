@@ -30,22 +30,22 @@
 
             <div class="mb-3">
               <label class="form-label" for="nombre">{{ 'ADMIN_PRODUCTS.NAME' | translate }} *</label>
-              <input id="nombre" name="nombre" class="form-control" [(ngModel)]="form.nombre" required />
+              <input id="nombre" name="name" class="form-control" [(ngModel)]="form.name" required />
             </div>
 
             <div class="mb-3">
               <label class="form-label" for="descripcion">{{ 'ADMIN_PRODUCTS.DESCRIPTION' | translate }}</label>
-              <input id="descripcion" name="descripcion" class="form-control" [(ngModel)]="form.descripcion" />
+              <input id="descripcion" name="description" class="form-control" [(ngModel)]="form.description" />
             </div>
 
             <div class="row g-3 mb-3">
               <div class="col-6">
                 <label class="form-label" for="plataforma">{{ 'ADMIN_PRODUCTS.PLATFORM' | translate }}</label>
-                <input id="plataforma" name="plataforma" class="form-control" [(ngModel)]="form.plataforma" />
+                <input id="plataforma" name="platform" class="form-control" [(ngModel)]="form.platform" />
               </div>
               <div class="col-6">
                 <label class="form-label" for="tipo">{{ 'ADMIN_PRODUCTS.TYPE' | translate }} *</label>
-                <select id="tipo" name="tipo" class="form-select" [(ngModel)]="form.tipo" required>
+                <select id="tipo" name="type" class="form-select" [(ngModel)]="form.type" required>
                   @for (tipo of tiposProducto; track tipo) {
                   <option [value]="tipo">{{ ('ADMIN_PRODUCTS.TYPES.' + tipo) | translate }}</option>
                   }
@@ -60,10 +60,10 @@
               </div>
               <div class="col-6">
                 <label class="form-label" for="categoriaId">{{ 'ADMIN_PRODUCTS.CATEGORY' | translate }}</label>
-                <select id="categoriaId" name="categoriaId" class="form-select" [(ngModel)]="form.categoriaId">
+                <select id="categoriaId" name="categoryId" class="form-select" [(ngModel)]="form.categoryId">
                   <option [ngValue]="null">{{ 'ADMIN_PRODUCTS.NO_CATEGORY' | translate }}</option>
                   @for (categoria of categorias(); track categoria.id) {
-                  <option [ngValue]="categoria.id">{{ categoria.nombre }}</option>
+                  <option [ngValue]="categoria.id">{{ categoria.name }}</option>
                   }
                 </select>
               </div>
@@ -73,11 +73,11 @@
               <div class="col-6">
                 <label class="form-label" for="valorNominal">{{ 'ADMIN_PRODUCTS.FACE_VALUE' | translate }}</label>
                 <input id="valorNominal" name="valorNominal" type="number" step="0.01" min="0" class="form-control"
-                  [(ngModel)]="form.valorNominal" />
+                  [(ngModel)]="form.faceValue" />
               </div>
               <div class="col-6">
                 <label class="form-label" for="moneda">{{ 'ADMIN_PRODUCTS.CURRENCY' | translate }}</label>
-                <input id="moneda" name="moneda" maxlength="3" class="form-control" [(ngModel)]="form.moneda" />
+                <input id="moneda" name="currency" maxlength="3" class="form-control" [(ngModel)]="form.currency" />
               </div>
             </div>
 
@@ -85,12 +85,12 @@
               <div class="col-6">
                 <label class="form-label" for="precioVenta">{{ 'ADMIN_PRODUCTS.SALE_PRICE' | translate }} *</label>
                 <input id="precioVenta" name="precioVenta" type="number" step="0.01" min="0" class="form-control"
-                  [(ngModel)]="form.precioVenta" required />
+                  [(ngModel)]="form.salePrice" required />
               </div>
               <div class="col-6">
                 <label class="form-label" for="precioCosto">{{ 'ADMIN_PRODUCTS.COST_PRICE' | translate }}</label>
                 <input id="precioCosto" name="precioCosto" type="number" step="0.01" min="0" class="form-control"
-                  [(ngModel)]="form.precioCosto" />
+                  [(ngModel)]="form.costPrice" />
               </div>
             </div>
 
@@ -99,11 +99,11 @@
                 {{ 'ADMIN_PRODUCTS.REDEMPTION_INSTRUCTIONS' | translate }}
               </label>
               <textarea id="instruccionesCanje" name="instruccionesCanje" class="form-control" rows="3"
-                [(ngModel)]="form.instruccionesCanje"></textarea>
+                [(ngModel)]="form.redemptionInstructions"></textarea>
             </div>
 
             <div class="form-check mb-3">
-              <input id="activo" name="activo" type="checkbox" class="form-check-input" [(ngModel)]="form.activo" />
+              <input id="activo" name="active" type="checkbox" class="form-check-input" [(ngModel)]="form.active" />
               <label class="form-check-label" for="activo">{{ 'ADMIN_PRODUCTS.ACTIVE_PRODUCT' | translate }}</label>
             </div>
 
@@ -181,15 +181,15 @@
                 <tr [class.fila-editando]="editandoId() === p.id">
                   <td class="text-muted">{{ p.id }}</td>
                   <td>
-                    @if (p.imagenUrl) {
-                    <img [src]="p.imagenUrl" [alt]="p.nombre" loading="lazy"
+                    @if (p.imageUrl) {
+                    <img [src]="p.imageUrl" [alt]="p.name" loading="lazy"
                       style="width: 40px; height: 40px; object-fit: cover; border-radius: 4px;">
                     }
                   </td>
                   <td>{{ p.sku }}</td>
-                  <td class="fw-semibold">{{ p.nombre }}</td>
-                  <td>{{ p.plataforma || '—' }} · {{ ('ADMIN_PRODUCTS.TYPES.' + p.tipo) | translate }}</td>
-                  <td class="text-end">${{ p.precioVenta }}</td>
+                  <td class="fw-semibold">{{ p.name }}</td>
+                  <td>{{ p.platform || '—' }} · {{ ('ADMIN_PRODUCTS.TYPES.' + p.type) | translate }}</td>
+                  <td class="text-end">${{ p.salePrice }}</td>
                   <td class="text-end">{{ p.stock }}</td>
                   <td class="text-end text-nowrap">
                     <button type="button" class="admin-btn-icono"
@@ -290,7 +290,7 @@
               <tbody>
                 @for (categoria of categorias(); track categoria.id) {
                 <tr [class.fila-editando]="categoriaEditandoId() === categoria.id">
-                  <td>{{ categoria.nombre }}</td>
+                  <td>{{ categoria.name }}</td>
                   <td class="text-end text-nowrap">
                     <button type="button" class="admin-btn-icono"
                       [attr.title]="'ADMIN_PRODUCTS.EDIT' | translate"

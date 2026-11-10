@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ClientesService } from '@core/services/cliente/ClientesService';
@@ -34,8 +35,11 @@ export class Login {
           );
           this.irProductos();
         },
-        error: () => {
-          this.alerta.error(this.translate.instant('LOGIN_PAGE.INVALID_CREDENTIALS'));
+        error: error => {
+          const mensajeDefault = error instanceof HttpErrorResponse && error.status === 401
+            ? 'LOGIN_PAGE.INVALID_CREDENTIALS'
+            : 'LOGIN_PAGE.ERROR';
+          this.alerta.error(this.translate.instant(mensajeDefault));
         }
       });
   }

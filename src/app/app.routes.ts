@@ -45,6 +45,24 @@ export const routes: Routes = [
           .then(m => m.VerCarrito)
       },
       {
+        path: 'checkout',
+        canActivate: [authGuard],
+        loadComponent: () => import('./features/checkout/checkout')
+          .then(m => m.Checkout)
+      },
+      {
+        path: 'mis-compras/:id',
+        canActivate: [authGuard],
+        loadComponent: () => import('./features/ordenes/mis-compras/mis-compras')
+          .then(m => m.MisCompras)
+      },
+      {
+        path: 'mis-compras',
+        canActivate: [authGuard],
+        loadComponent: () => import('./features/ordenes/mis-compras/mis-compras')
+          .then(m => m.MisCompras)
+      },
+      {
         path: 'perfil',
         canActivate: [authGuard],
         loadComponent: () => import('./features/clientes/verperfil/verperfil')

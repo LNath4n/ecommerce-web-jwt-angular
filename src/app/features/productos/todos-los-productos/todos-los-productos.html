@@ -20,12 +20,6 @@
 <!-- Start Product Section -->
 <div class="product-section">
   <div class="container">
-    <div class="d-flex justify-content-end mb-4">
-      <a class="btn btn-primary" routerLink="/productos/destacados">
-        {{ 'PRODUCTS_PAGE.VIEW_FEATURED' | translate }}
-      </a>
-    </div>
-
     <!-- Buscador -->
     <div class="row mb-5 justify-content-end">
       <div class="col-12 col-lg-8">
@@ -66,8 +60,8 @@
       <div class="col-12 col-md-4 col-lg-3 mb-5" [class.producto-entrada]="animarEntrada()">
         <a class="product-item" style="cursor: pointer" (click)="verDetalle(producto.slug)">
 
-          @if (producto.imagenUrl && !imagenFallida(producto.id)) {
-          <img [src]="producto.imagenUrl" [alt]="producto.nombre" class="img-fluid product-thumbnail"
+          @if (producto.imageUrl && !imagenFallida(producto.id)) {
+          <img [src]="producto.imageUrl" [alt]="producto.name" class="img-fluid product-thumbnail"
             loading="lazy" (error)="marcarImagenFallida(producto.id)">
           } @else {
           <div class="product-thumbnail d-flex justify-content-center align-items-center mb-3">
@@ -75,16 +69,16 @@
           </div>
           }
 
-          <h3 class="product-title">{{ producto.nombre }}</h3>
-          <p class="mb-1 product-description">{{ producto.descripcion || '' }}</p>
+          <h3 class="product-title">{{ producto.name }}</h3>
+          <p class="mb-1 product-description">{{ producto.description || '' }}</p>
           <p class="mb-1 product-meta">
-            {{ producto.plataforma || producto.tipo }} · {{ producto.region || ('PRODUCTS_PAGE.GLOBAL' | translate) }}
+            {{ producto.platform || producto.type }} · {{ producto.region || ('PRODUCTS_PAGE.GLOBAL' | translate) }}
           </p>
           <p class="mb-1 product-meta">
             {{ 'PRODUCTS_PAGE.SKU' | translate }}: {{ producto.sku }} ·
             {{ 'PRODUCTS_PAGE.STOCK' | translate }}: {{ producto.stock }}
           </p>
-          <strong class="product-price">${{ producto.precioVenta }}</strong>
+          <strong class="product-price">${{ producto.salePrice }}</strong>
 
           <span class="icon-cross" (click)="$event.stopPropagation(); agregarAlCarrito(producto.id)">
             <img src="images/cross.svg" class="img-fluid">
@@ -94,7 +88,7 @@
       } @empty {
       <div class="col-12 text-center">
         @if (errorCarga()) {
-        <p>{{ 'PRODUCTS_PAGE.LOAD_ERROR' | translate }}</p>
+        <p>{{ errorCarga() }}</p>
         <button type="button" class="btn btn-primary" (click)="reintentarCarga()">
           {{ 'PRODUCTS_PAGE.RETRY' | translate }}
         </button>
@@ -110,7 +104,7 @@
 
     @if (errorCarga() && productos().length > 0) {
     <div class="text-center">
-      <p>{{ 'PRODUCTS_PAGE.LOAD_ERROR' | translate }}</p>
+      <p>{{ errorCarga() }}</p>
       <button type="button" class="btn btn-primary" (click)="reintentarCarga()">
         {{ 'PRODUCTS_PAGE.RETRY' | translate }}
       </button>

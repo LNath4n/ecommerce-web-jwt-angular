@@ -3,7 +3,7 @@ import { Component, OnInit, computed, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { LucideChevronLeft, LucideChevronRight, LucideSearch } from '@lucide/angular';
-import { ProductoPublicoResponse } from '@core/models/producto/productoModels';
+import { PublicProductResponse } from '@core/models/producto/productoModels';
 import { ProductosService } from '@core/services/producto/ProductosService';
 import { AlertaService } from '@core/services/modals/ModalsService';
 import { CodigosAdminService } from '@core/services/admin/codigosadminservice/codigos-admin-service';
@@ -21,8 +21,8 @@ export class AdministrarCodigos implements OnInit {
   private readonly translate = inject(TranslateService);
   private readonly tamanoPagina = 5;
 
-  readonly productos = signal<ProductoPublicoResponse[]>([]);
-  readonly productoSeleccionado = signal<ProductoPublicoResponse | null>(null);
+  readonly productos = signal<PublicProductResponse[]>([]);
+  readonly productoSeleccionado = signal<PublicProductResponse | null>(null);
   readonly cargandoProductos = signal(false);
   readonly cargandoCodigos = signal(false);
   readonly paginaActual = signal(0);
@@ -83,7 +83,7 @@ export class AdministrarCodigos implements OnInit {
     this.consultarProductos(pagina);
   }
 
-  seleccionarProducto(producto: ProductoPublicoResponse) {
+  seleccionarProducto(producto: PublicProductResponse) {
     this.productoSeleccionado.set(producto);
   }
 
@@ -112,13 +112,13 @@ export class AdministrarCodigos implements OnInit {
     }
 
     this.cargandoCodigos.set(true);
-    this.codigosAdminService.cargarCodigos(producto.id, { codigos }).subscribe({
-      next: respuesta => {
+    this.codigosAdminService.cargarCodigos(producto.id, { codes: codigos }).subscribe({
+      next: response => {
         this.cargandoCodigos.set(false);
         this.textoCodigos = '';
         this.alerta.exito(this.translate.instant('ADMIN_CODES.UPLOAD_SUCCESS', {
-          count: respuesta.guardados,
-          product: producto.nombre,
+          count: response.savedCount,
+          product: producto.name,
         }));
       },
       error: error => {
@@ -130,10 +130,6 @@ export class AdministrarCodigos implements OnInit {
 
   private mostrarError(error: unknown, mensajeDefaultKey: string) {
     if (error instanceof HttpErrorResponse) {
-      if (typeof error.error === 'string' && error.error.trim()) {
-        this.alerta.error(error.error);
-        return;
-      }
       if (error.status === 400) {
         this.alerta.error(this.translate.instant('ADMIN_CODES.INVALID_REQUEST'));
         return;

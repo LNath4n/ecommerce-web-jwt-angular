@@ -1,28 +1,24 @@
-export interface LoginClienteDto {
+export interface CustomerLoginRequest {
   email: string;
   password: string;
 }
 
-export interface ClientePublico {
-  email: string;
-  nombre: string | null;
-  telefono: string;
-  fotoUrl?: string;
-}
-
-export interface ClienteEditarRequest {
-  email?: string;
-  passwordVieja?: string;
-  passwordNueva?: string;
-  nombre?: string;
-  telefono?: string;
-  cerrarSesiones?: boolean;
-}
-
-export interface CreacionClienteRespuestaDto {
-  id: number;
-  email: string;
-}
-export interface LoginResponse {
+export interface AuthResponse {
   token: string;
+}
+
+export interface PublicCustomerResponse {
+  email: string;
+  name: string | null;
+  phone: string | null;
+  photoUrl: string | null;
+}
+
+export interface UpdateCustomerRequest {
+  email?: string;
+  currentPassword?: string;
+  newPassword?: string;
+  name?: string;
+  phone?: string;
+  closeSessions?: boolean;
 }

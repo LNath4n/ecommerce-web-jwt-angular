@@ -1,4 +1,5 @@
 import { Component, inject } from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ClientesService } from '@core/services/cliente/ClientesService';
@@ -30,8 +31,11 @@ export class Register {
             this.translate.instant('REGISTER_PAGE.SUCCESS_TITLE')
           );
         },
-        error: () => {
-          this.alerta.error(this.translate.instant('REGISTER_PAGE.ERROR'));
+        error: error => {
+          const mensajeDefault = error instanceof HttpErrorResponse && error.status === 409
+            ? 'REGISTER_PAGE.EMAIL_ALREADY_REGISTERED'
+            : 'REGISTER_PAGE.ERROR';
+          this.alerta.error(this.translate.instant(mensajeDefault));
         }
       });
   }

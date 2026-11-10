@@ -19,7 +19,8 @@ import {
   LucideShoppingCart,
   LucideLogOut,
   LucideLayoutDashboard,
-  LucideSettings
+  LucideSettings,
+  LucidePackage
 } from '@lucide/angular';
 
 @Component({
@@ -28,7 +29,7 @@ import {
   styleUrls: ['./app-nav.component.css', '../../../../styles/bootstrap.min.css', '../../../../styles/style.css'],
   imports: [RouterOutlet, RouterLink, RouterLinkActive, LucideLayoutDashboard, LucideSettings,
     MatToolbarModule,
-    MatButtonModule, LucideUser, LucideShoppingCart, LucideLogOut,
+    MatButtonModule, LucideUser, LucideShoppingCart, LucideLogOut, LucidePackage,
     MatSidenavModule,
     MatListModule,
     MatIconModule,
