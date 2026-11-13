@@ -8,12 +8,12 @@ import { LucideTrash2, LucidePackage } from '@lucide/angular';
 import { CarritosService } from '@core/services/carrito/CarritosService';
 import { AlertaService } from '@core/services/modals/ModalsService';
 import { CartResponse } from '@core/models/carrito/carritoModels';
-
+import {PageHero} from '../../layout/page-hero/page-hero';
 type ItemCarrito = CartResponse['items'][number];
 
 @Component({
   selector: 'app-ver-carrito',
-  imports: [CommonModule, LucideTrash2, LucidePackage, TranslatePipe],
+  imports: [CommonModule, LucideTrash2, LucidePackage, TranslatePipe,PageHero],
   templateUrl: './ver-carrito.html',
   styleUrl: './ver-carrito.css',
 })

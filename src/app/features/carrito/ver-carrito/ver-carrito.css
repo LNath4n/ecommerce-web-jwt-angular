@@ -24,14 +24,37 @@
   background-color: #2f4b40;
 }
 
-/* Por si style.css define otro verde para btn-primary */
 .btn-primary {
   background-color: #3b5d50;
   border-color: #3b5d50;
   color: #fff;
 }
 
-@media (max-width: 767.98px) {
+@media (min-width: 992px) {
+  .site-blocks-table th,
+  .site-blocks-table td {
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .site-blocks-table td.product-name h2 {
+    margin-bottom: 0.25rem;
+  }
+
+  /* Quita el mb-3 de Bootstrap que subía el stepper */
+  .site-blocks-table .quantity-container {
+    margin: 0 auto !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .site-blocks-table tbody {
+    max-width: 560px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 991.98px) {
   .before-footer-section {
     padding-top: 2rem;
     padding-bottom: 2rem;

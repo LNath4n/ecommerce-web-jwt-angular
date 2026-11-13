@@ -7,10 +7,11 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { LucideEye, LucideEyeOff } from '@lucide/angular';
 import { OrderDetail, OrderSummary } from '@core/models/ordenes/ordenesModels';
 import { OrdenesService } from '@core/services/ordenes/OrdenesService';
+import {PageHero} from '../../layout/page-hero/page-hero';
 
 @Component({
   selector: 'app-mis-compras',
-  imports: [CurrencyPipe, DatePipe, RouterLink, TranslatePipe, LucideEye, LucideEyeOff],
+  imports: [CurrencyPipe, DatePipe, RouterLink, TranslatePipe, LucideEye, LucideEyeOff, PageHero],
   templateUrl: './mis-compras.html',
   styleUrl: './mis-compras.css',
 })

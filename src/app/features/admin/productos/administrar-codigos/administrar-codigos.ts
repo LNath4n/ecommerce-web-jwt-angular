@@ -7,6 +7,7 @@ import { PublicProductResponse } from '@core/models/producto/productoModels';
 import { ProductosService } from '@core/services/producto/ProductosService';
 import { AlertaService } from '@core/services/modals/ModalsService';
 import { CodigosAdminService } from '@core/services/admin/codigosadminservice/codigos-admin-service';
+import {PageHero} from '../../../layout/page-hero/page-hero';
 
 @Component({
   imports: [FormsModule, TranslatePipe, LucideChevronLeft, LucideChevronRight, LucideSearch],

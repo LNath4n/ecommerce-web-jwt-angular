@@ -17,6 +17,8 @@ import {
   ProductType,
   PublicProductResponse,
 } from '@core/models/producto/productoModels';
+import {PageHero} from '../../../layout/page-hero/page-hero';
+
 import { ProductosService } from '@core/services/producto/ProductosService';
 import { ProductoAdminService } from '@core/services/admin/productoadminservice/ProductoAdminService';
 import { AlertaService } from '@core/services/modals/ModalsService';
@@ -30,6 +32,7 @@ import { switchMap, of, catchError, throwError } from 'rxjs';
     LucidePencil,
     LucideTrash2,
     LucideSearch,
+    PageHero,
     LucideChevronLeft,
     LucideChevronRight,
     LucideImageOff,
