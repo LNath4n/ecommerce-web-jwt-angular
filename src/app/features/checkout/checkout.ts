@@ -7,10 +7,12 @@ import { CartResponse } from '@core/models/carrito/carritoModels';
 import { CheckoutConfirmResponse } from '@core/services/checkout/checkout.service';
 import { CarritosService } from '@core/services/carrito/CarritosService';
 import { PayPalButtonComponent } from '../paypal-button/paypal-button';
+import {PageHero} from '../layout/page-hero/page-hero';
+import { LucideInfo } from '@lucide/angular';
 
 @Component({
   selector: 'app-checkout',
-  imports: [CurrencyPipe, RouterLink, TranslatePipe, PayPalButtonComponent],
+  imports: [CurrencyPipe, RouterLink, TranslatePipe, PayPalButtonComponent, PageHero,LucideInfo],
   templateUrl: './checkout.html',
   styleUrl: './checkout.css',
 })
@@ -18,7 +20,7 @@ export class Checkout implements OnInit {
   private readonly carritosService = inject(CarritosService);
   private readonly translate = inject(TranslateService);
   private readonly router = inject(Router);
-
+ private readonly lucideInfo = LucideInfo;
   readonly carrito = signal<CartResponse | null>(null);
   readonly cargando = signal(true);
   readonly errorCarga = signal<string | null>(null);

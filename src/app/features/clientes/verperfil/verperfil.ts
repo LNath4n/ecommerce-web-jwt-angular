@@ -9,11 +9,13 @@ import {
   PublicCustomerResponse,
   UpdateCustomerRequest,
 } from '@core/models/cliente/clienteModels';
+import {PageHero} from '../../layout/page-hero/page-hero';
+
 import { LucideUser } from '@lucide/angular';
 
 @Component({
   selector: 'app-verperfil',
-  imports: [FormsModule, LucideUser, TranslatePipe],
+  imports: [FormsModule, LucideUser, TranslatePipe, PageHero],
   styleUrl: './verperfil.css',
   templateUrl: './verperfil.html',
 })

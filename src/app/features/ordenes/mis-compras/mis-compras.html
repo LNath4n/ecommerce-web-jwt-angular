@@ -1,15 +1,6 @@
-<div class="hero">
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-7">
-        <div class="intro-excerpt">
-          <h1>{{ (esDetalle() ? 'ORDERS.DETAIL_TITLE' : 'ORDERS.TITLE') | translate }}</h1>
-          <p>{{ (esDetalle() ? 'ORDERS.DETAIL_SUBTITLE' : 'ORDERS.SUBTITLE') | translate }}</p>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+<app-page-hero [titulo]="esDetalle() ? 'ORDERS.DETAIL_TITLE' : 'ORDERS.TITLE'">
+  <p>{{ (esDetalle() ? 'ORDERS.DETAIL_SUBTITLE' : 'ORDERS.SUBTITLE') | translate }}</p>
+</app-page-hero>
 
 <section class="untree_co-section before-footer-section orders-section">
   <div class="container">

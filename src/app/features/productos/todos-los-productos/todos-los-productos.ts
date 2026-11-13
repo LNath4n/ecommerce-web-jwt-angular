@@ -3,17 +3,18 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { debounceTime, distinctUntilChanged, Subject, Subscription } from 'rxjs';
-import { LucidePackage, LucideSearch } from '@lucide/angular';
+import { LucidePackage, LucideSearch,LucideCheck } from '@lucide/angular';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ProductosService } from '@core/services/producto/ProductosService';
 import { CarritosService } from '@core/services/carrito/CarritosService';
 import { AuthService } from '@core/services/auth/auth';
 import { ProductOrder, PublicProductResponse } from '@core/models/producto/productoModels';
 import { AlertaService } from '@core/services/modals/ModalsService';
+import {PageHero} from '../../layout/page-hero/page-hero';
 
 @Component({
   selector: 'app-todos-los-productos',
-  imports: [CommonModule, FormsModule, LucideSearch, LucidePackage, TranslatePipe],
+  imports: [CommonModule, FormsModule, LucideSearch, LucidePackage, TranslatePipe,LucideCheck, PageHero],
   templateUrl: './todos-los-productos.html',
   styleUrl: './todos-los-productos.css',
 })
@@ -32,6 +33,7 @@ export class TodosLosProductos implements OnInit, AfterViewInit, OnDestroy {
   private readonly tamanoPagina = 24;   // múltiplo de 2, 3 y 4: filas completas en cualquier ancho
   productos = signal<PublicProductResponse[]>([]);
   animarEntrada = signal(true);
+  CarritoIdSuccess = signal<number | null>(null);
   reemplazandoResultados = signal(false);
   cargando = signal(false);
   errorCarga = signal<string | null>(null);
@@ -43,6 +45,7 @@ export class TodosLosProductos implements OnInit, AfterViewInit, OnDestroy {
   private busquedaActiva = '';     // lo que realmente se buscó (para las páginas siguientes)
   private peticion?: Subscription;
   private readonly cambiosBusqueda = new Subject<string>();
+  private readonly lucideCheck = LucideCheck;
   private suscripcionBusqueda?: Subscription;
   private animacionInicialTimer?: ReturnType<typeof setTimeout>;
   private reemplazarProductosAlCargar = false;
@@ -197,6 +200,7 @@ export class TodosLosProductos implements OnInit, AfterViewInit, OnDestroy {
       .subscribe({
         next: () => {
           this.alerta.exito(this.translate.instant('PRODUCT_DETAIL.ADDED_TO_CART'));
+          this.marcarExitoCarrito(idProducto);
         },
         error: error => this.alerta.error(
           this.carritosService.obtenerMensajeError(error)
@@ -204,4 +208,9 @@ export class TodosLosProductos implements OnInit, AfterViewInit, OnDestroy {
         )
       });
   }
+
+  private marcarExitoCarrito(id: number) {
+  this.CarritoIdSuccess.set(id);
+  setTimeout(() => this.CarritoIdSuccess.set(null), 1800);
+}
 }

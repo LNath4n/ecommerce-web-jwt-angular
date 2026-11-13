@@ -13,7 +13,9 @@ import { map, shareReplay } from 'rxjs/operators';
 import { AuthService } from '@core/services/auth/auth';
 import { ClientesService } from '@core/services/cliente/ClientesService';
 import { Router } from '@angular/router';
+import { LucideLogIn } from '@lucide/angular';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
+import { LucideStore, LucideStar } from '@lucide/angular';
 import {
   LucideUser,
   LucideShoppingCart,
@@ -31,7 +33,7 @@ import {
     MatToolbarModule,
     MatButtonModule, LucideUser, LucideShoppingCart, LucideLogOut, LucidePackage,
     MatSidenavModule,
-    MatListModule,
+    MatListModule,LucideStore , LucideStar,
     MatIconModule,
     AsyncPipe,
     TranslatePipe,
@@ -42,6 +44,7 @@ export class AppNavComponent {
   readonly LucideUser = LucideUser;
   readonly LucideShoppingCart = LucideShoppingCart;
   readonly LucideLogOut = LucideLogOut;
+  readonly LucideLogIn = LucideLogIn;
   settingsOpen = false;
 
   readonly translate = inject(TranslateService);

@@ -235,7 +235,11 @@
     "RETRY": "Try again",
     "TITLE": "Payment",
     "TOTAL": "Total",
-    "VIEW_CART": "Back to cart"
+    "VIEW_CART": "Back to cart",
+    "DEMO_TITLE": "Demo project",
+    "DEMO_TEXT": "This store is a practice project: no real information is collected, no actual charges are made, and everything here is test data.",
+    "DEMO_CARD_HINT": "Want to try the payment? Generate a test card with",
+    "DEMO_CARD_LINK": "PayPal's card generator"
   },
   "ORDERS": {
     "BACK_TO_ORDERS": "Back to my orders",

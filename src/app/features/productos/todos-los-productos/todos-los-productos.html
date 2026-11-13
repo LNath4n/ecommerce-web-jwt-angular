@@ -1,47 +1,36 @@
 <!-- Start Hero Section -->
-<div class="hero productos-hero">
-  <div class="container">
-    <div class="row justify-content-between">
-      <div class="col-lg-5">
-        <div class="intro-excerpt">
-          <h1>{{ 'PRODUCTS_PAGE.TITLE' | translate }}</h1>
-          @if (isLoggedIn() && nombreUsuario()) {
-          <p class="mb-4">{{ 'PRODUCTS_PAGE.GREETING_USER' | translate: { name: nombreUsuario() } }}</p>
-          } @else {
-          <p class="mb-4">{{ 'PRODUCTS_PAGE.GREETING_GUEST' | translate }}</p>
-          }
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+<app-page-hero titulo="PRODUCTS_PAGE.TITLE">
+  @if (isLoggedIn() && nombreUsuario()) {
+  <p>{{ 'PRODUCTS_PAGE.GREETING_USER' | translate: { name: nombreUsuario() } }}</p>
+  } @else {
+  <p>{{ 'PRODUCTS_PAGE.GREETING_GUEST' | translate }}</p>
+  }
+</app-page-hero>
 <!-- End Hero Section -->
 
 <!-- Start Product Section -->
 <div class="product-section">
   <div class="container">
     <!-- Buscador -->
-    <div class="row mb-5 justify-content-end">
-      <div class="col-12 col-lg-8">
-        <div class="buscador-barra">
-          <div class="buscador-campo">
-            <svg lucideSearch [size]="18"></svg>
-            <input type="text" class="form-control" [placeholder]="'PRODUCTS_PAGE.SEARCH_PLACEHOLDER' | translate"
-              name="busqueda" [(ngModel)]="textoBusqueda" (ngModelChange)="programarBusqueda($event)"
-              (keyup.enter)="buscar()" />
-            @if (textoBusqueda) {
-            <button type="button" class="buscador-limpiar"
-              [attr.aria-label]="'PRODUCTS_PAGE.CLEAR_SEARCH' | translate"
-              (click)="limpiarBusqueda()">&times;</button>
-            }
-          </div>
-          <button type="button" class="btn btn-primary" (click)="buscar()">
-            {{ 'PRODUCTS_PAGE.SEARCH' | translate }}
-          </button>
+    <div class="productos-toolbar">
+      <h2>{{ 'PRODUCTS_PAGE.ALL_PRODUCTS' | translate }}</h2>
+
+      <div class="buscador-barra">
+        <div class="buscador-campo">
+          <svg lucideSearch [size]="18"></svg>
+          <input type="text" class="form-control" [placeholder]="'PRODUCTS_PAGE.SEARCH_PLACEHOLDER' | translate"
+            name="busqueda" [(ngModel)]="textoBusqueda" (ngModelChange)="programarBusqueda($event)"
+            (keyup.enter)="buscar()" />
+          @if (textoBusqueda) {
+          <button type="button" class="buscador-limpiar" [attr.aria-label]="'PRODUCTS_PAGE.CLEAR_SEARCH' | translate"
+            (click)="limpiarBusqueda()">&times;</button>
+          }
         </div>
+
         <label class="orden-productos">
-          <span>{{ 'PRODUCTS_PAGE.SORT_BY' | translate }}</span>
-          <select class="form-select" [(ngModel)]="ordenSeleccionado" (ngModelChange)="cambiarOrden($event)">
+          <span class="d-none d-lg-inline">{{ 'PRODUCTS_PAGE.SORT_BY' | translate }}</span>
+          <select class="form-select" [attr.aria-label]="'PRODUCTS_PAGE.SORT_BY' | translate"
+            [(ngModel)]="ordenSeleccionado" (ngModelChange)="cambiarOrden($event)">
             <option value="">{{ 'PRODUCTS_PAGE.SORT_DEFAULT' | translate }}</option>
             <option value="calificacion">{{ 'PRODUCTS_PAGE.SORT_RATING' | translate }}</option>
             <option value="vistas">{{ 'PRODUCTS_PAGE.SORT_VIEWS' | translate }}</option>
@@ -53,7 +42,7 @@
       </div>
     </div>
 
-    <h2 class="mb-4">{{ 'PRODUCTS_PAGE.ALL_PRODUCTS' | translate }}</h2>
+
     <div class="row">
 
       @for (producto of productos(); track producto.id) {
@@ -61,8 +50,8 @@
         <a class="product-item" style="cursor: pointer" (click)="verDetalle(producto.slug)">
 
           @if (producto.imageUrl && !imagenFallida(producto.id)) {
-          <img [src]="producto.imageUrl" [alt]="producto.name" class="img-fluid product-thumbnail"
-            loading="lazy" (error)="marcarImagenFallida(producto.id)">
+          <img [src]="producto.imageUrl" [alt]="producto.name" class="img-fluid product-thumbnail" loading="lazy"
+            (error)="marcarImagenFallida(producto.id)">
           } @else {
           <div class="product-thumbnail d-flex justify-content-center align-items-center mb-3">
             <svg lucidePackage color="#3b5d50" [size]="96" [strokeWidth]="1.25"></svg>
@@ -75,14 +64,19 @@
             {{ producto.platform || producto.type }} · {{ producto.region || ('PRODUCTS_PAGE.GLOBAL' | translate) }}
           </p>
           <p class="mb-1 product-meta">
-            {{ 'PRODUCTS_PAGE.SKU' | translate }}: {{ producto.sku }} ·
             {{ 'PRODUCTS_PAGE.STOCK' | translate }}: {{ producto.stock }}
           </p>
           <strong class="product-price">${{ producto.salePrice }}</strong>
 
-          <span class="icon-cross" (click)="$event.stopPropagation(); agregarAlCarrito(producto.id)">
-            <img src="images/cross.svg" class="img-fluid">
-          </span>
+          <button type="button" class="icon-cross" [class.exito]="CarritoIdSuccess() === producto.id"
+            [attr.aria-label]="'PRODUCTS_PAGE.ADD_TO_CART' | translate"
+            (click)="$event.stopPropagation(); $event.preventDefault(); agregarAlCarrito(producto.id)">
+            @if (CarritoIdSuccess() === producto.id) {
+            <svg lucideCheck color="#fff" [size]="20" [strokeWidth]="3" class="icon-check"></svg>
+            } @else {
+            <img src="images/cross.svg" class="img-fluid" alt="">
+            }
+          </button>
         </a>
       </div>
       } @empty {

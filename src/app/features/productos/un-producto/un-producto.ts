@@ -6,6 +6,8 @@ import { catchError, map, of, startWith, switchMap } from 'rxjs';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import { LucidePackage, LucideArrowLeft } from '@lucide/angular';
 import { PublicProductResponse } from '@core/models/producto/productoModels';
+import {PageHero} from '../../layout/page-hero/page-hero';
+
 import {
   ReviewEligibility,
   ReviewPage,
@@ -26,7 +28,7 @@ type ProductoEstado =
 
 @Component({
   selector: 'app-un-producto',
-  imports: [AsyncPipe, DatePipe, RouterLink, LucidePackage, LucideArrowLeft, TranslatePipe],
+  imports: [AsyncPipe, DatePipe, RouterLink, LucidePackage, LucideArrowLeft, TranslatePipe, PageHero],
   templateUrl: './un-producto.html',
   styleUrl: './un-producto.css',
 })

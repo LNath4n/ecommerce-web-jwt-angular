@@ -24,15 +24,41 @@
   transition: background-color 0.2s;
 }
 
+.custom-navbar .custom-navbar-cta .nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.custom-navbar .custom-navbar-cta .nav-link.active {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.custom-navbar-cta .nav-link svg {
+  opacity: 0.85;
+  transition: opacity 0.2s;
+}
+
+.custom-navbar-cta .nav-link:hover svg,
+.custom-navbar .custom-navbar-cta .nav-link.active svg {
+  opacity: 1;
+}
+
+.custom-navbar .navbar-toggler {
+  margin-left: 0;
+  padding: 4px 8px;
+  border: 0;
+}
+
+.custom-navbar .navbar-toggler:focus {
+  box-shadow: none;
+}
+
+.settings-menu-item,
 .admin-menu-item {
   position: relative;
 }
 
-.settings-menu-item {
-  position: relative;
-}
-
-.custom-navbar .custom-navbar-cta .settings-menu-trigger {
+.custom-navbar .custom-navbar-cta .settings-menu-trigger,
+.custom-navbar .custom-navbar-cta .admin-menu-trigger {
   border: 0;
   background: transparent;
   color: inherit;
@@ -64,16 +90,14 @@
   }
 }
 
-.settings-menu p,
-.language-settings p {
+.settings-menu p {
   margin: 0;
   padding: 8px;
   color: #3b5d50;
   font-weight: 600;
 }
 
-.settings-menu button,
-.language-settings button {
+.settings-menu button {
   display: block;
   width: 100%;
   padding: 8px;
@@ -86,24 +110,17 @@
 
 .settings-menu button:hover,
 .settings-menu button:focus-visible,
-.language-settings button:hover,
-.language-settings button:focus-visible,
-.settings-menu button[aria-pressed="true"],
-.language-settings button[aria-pressed="true"] {
+.settings-menu button[aria-pressed="true"] {
   background: #f1f5f3;
   color: #263f36;
 }
 
-.language-settings {
-  margin: 8px 16px;
-  padding: 8px;
-  border-top: 1px solid rgba(59, 93, 80, 0.12);
+.custom-navbar .custom-navbar-cta .settings-menu-trigger svg {
+  transition: transform 700ms cubic-bezier(0.45, 0, 0.25, 1), opacity 0.2s;
 }
 
-.custom-navbar .custom-navbar-cta .admin-menu-trigger {
-  border: 0;
-  background: transparent;
-  color: inherit;
+.custom-navbar .custom-navbar-cta .settings-menu-trigger.open svg {
+  transform: rotate(180deg);
 }
 
 .admin-menu {
@@ -161,30 +178,141 @@
   content: none !important;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .admin-menu,
-  .admin-menu a,
-  .settings-menu {
-    transition: none;
-    animation: none;
+.sidenav mat-nav-list {
+  display: flex;
+  flex-direction: column;
+  min-height: calc(100% - 64px); /* alto del mat-toolbar */
+}
+
+.sidenav .drawer-bottom {
+  margin-top: auto;
+}
+
+.account-links {
+  margin: 0 16px;
+  padding: 8px;
+  border-top: 1px solid rgba(59, 93, 80, 0.12);
+}
+
+.account-links button {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 8px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: #a3473f;
+  font-size: 0.95rem;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 150ms ease;
+}
+
+.account-links button:hover {
+  background: #fbefee;
+}
+
+.language-settings {
+  margin: 8px 16px;
+  padding: 8px;
+  border-top: 1px solid rgba(59, 93, 80, 0.12);
+}
+
+.language-settings p {
+  margin: 0;
+  padding: 8px;
+  color: #3b5d50;
+  font-weight: 600;
+}
+
+.language-settings .lang-toggle {
+  display: flex;
+  gap: 4px;
+  margin: 4px 8px 0;
+  padding: 4px;
+  background: #f1f5f3;
+  border-radius: 999px;
+}
+
+.language-settings .lang-toggle button {
+  flex: 1;
+  padding: 8px 0;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: #3b5d50;
+  font-weight: 600;
+  text-align: center;
+  letter-spacing: 0.05em;
+  transition: background-color 200ms ease, color 200ms ease, box-shadow 200ms ease;
+}
+
+.language-settings .lang-toggle button.active,
+.language-settings .lang-toggle button[aria-pressed="true"] {
+  background: #3b5d50;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(59, 93, 80, 0.3);
+}
+
+.language-settings .lang-toggle button:hover:not(.active) {
+  background: rgba(59, 93, 80, 0.1);
+}
+
+.bottom-nav {
+  position: fixed;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 1030;
+  display: flex;
+  justify-content: space-around;
+  padding: 6px 4px calc(6px + env(safe-area-inset-bottom));
+  background: #2f4a40; /* igual que el verde de tu navbar */
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.bottom-nav a {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 0;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.68rem;
+  text-decoration: none;
+  transition: color 200ms ease;
+}
+
+.bottom-nav a svg {
+  transition: transform 200ms ease;
+}
+
+.bottom-nav a.active {
+  color: #fff;
+}
+
+.bottom-nav a.active svg {
+  transform: translateY(-1px) scale(1.08);
+}
+
+@media (max-width: 767.98px) {
+  mat-sidenav-content {
+    padding-bottom: 68px;
   }
 }
 
-.custom-navbar .custom-navbar-cta .nav-link:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-.custom-navbar-cta .nav-link svg {
-  opacity: 0.85;
-  transition: opacity 0.2s;
-}
-
-.custom-navbar-cta .nav-link:hover svg {
-  opacity: 1;
-}.custom-navbar .custom-navbar-cta .nav-link.active {
-  background-color: rgba(255, 255, 255, 0.15);
-}
-
-.custom-navbar .custom-navbar-cta .nav-link.active svg {
-  opacity: 1;
+@media (prefers-reduced-motion: reduce) {
+  .admin-menu,
+  .admin-menu a,
+  .settings-menu,
+  .custom-navbar .custom-navbar-cta .settings-menu-trigger svg,
+  .language-settings .lang-toggle button,
+  .bottom-nav a,
+  .bottom-nav a svg {
+    transition: none;
+    animation: none;
+  }
 }

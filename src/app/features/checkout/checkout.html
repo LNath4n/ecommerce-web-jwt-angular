@@ -1,93 +1,94 @@
-<div class="hero">
-  <div class="container">
-    <div class="row justify-content-between">
-      <div class="col-lg-5">
-        <div class="intro-excerpt">
-          <h1>{{ 'CHECKOUT.TITLE' | translate }}</h1>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+<app-page-hero titulo="CHECKOUT.TITLE" />
 
 <section class="untree_co-section before-footer-section">
   <div class="container">
     @if (cargando()) {
-      <div class="text-center py-5" role="status" aria-live="polite">
-        {{ 'CHECKOUT.LOADING' | translate }}
-      </div>
+    <div class="text-center py-5" role="status" aria-live="polite">
+      {{ 'CHECKOUT.LOADING' | translate }}
+    </div>
     } @else if (errorCarga()) {
-      <div class="text-center py-5" role="alert">
-        <p class="mb-4">{{ errorCarga() }}</p>
-        <button class="btn btn-primary" type="button" (click)="cargarCarrito()">
-          {{ 'CHECKOUT.RETRY' | translate }}
-        </button>
-      </div>
+    <div class="text-center py-5" role="alert">
+      <p class="mb-4">{{ errorCarga() }}</p>
+      <button class="btn btn-primary" type="button" (click)="cargarCarrito()">
+        {{ 'CHECKOUT.RETRY' | translate }}
+      </button>
+    </div>
     } @else if (carrito(); as resumen) {
-      @if (resumen.items.length > 0) {
-        <div class="row justify-content-center">
-          <div class="col-lg-8">
-            <div class="checkout-card">
-              <h2 class="h4 mb-4">{{ 'CHECKOUT.TITLE' | translate }}</h2>
-              <div class="checkout-items">
-                @for (item of resumen.items; track item.productId) {
-                  <div class="checkout-item">
-                    <div>
-                      <h3 class="h6 mb-1">{{ item.name }}</h3>
-                      <span class="checkout-muted">
-                        {{ 'CHECKOUT.QUANTITY' | translate }}: {{ item.quantity }}
-                      </span>
-                    </div>
-                    <strong>{{ item.quantity * item.salePrice | currency:'MXN' }}</strong>
-                  </div>
-                }
+    @if (resumen.items.length > 0) {
+    <div class="row justify-content-center">
+      <div class="col-lg-8">
+        <div class="checkout-card">
+          <h2 class="h4 mb-4">{{ 'CHECKOUT.TITLE' | translate }}</h2>
+          <div class="checkout-items">
+            @for (item of resumen.items; track item.productId) {
+            <div class="checkout-item">
+              <div>
+                <h3 class="h6 mb-1">{{ item.name }}</h3>
+                <span class="checkout-muted">
+                  {{ 'CHECKOUT.QUANTITY' | translate }}: {{ item.quantity }}
+                </span>
               </div>
-              <div class="checkout-total">
-                <span>{{ 'CHECKOUT.TOTAL' | translate }}</span>
-                <strong>{{ resumen.subtotal | currency:'MXN' }}</strong>
-              </div>
-
-              @if (pago(); as pagoConfirmado) {
-                <p class="checkout-message checkout-success" role="status" aria-live="polite">
-                  {{ 'CHECKOUT.PAYMENT_SUCCESS' | translate: { orderId: pagoConfirmado.orderId } }}
-                </p>
-                <a class="btn btn-primary w-100" [routerLink]="['/mis-compras', pagoConfirmado.orderId]">
-                  {{ 'CHECKOUT.VIEW_CODES' | translate }}
-                </a>
-              } @else {
-                @if (mensajePago(); as mensaje) {
-                  <p class="checkout-message checkout-error" role="alert">{{ mensaje }}</p>
-                }
-                <app-paypal-button
-                  (paymentSuccess)="pagoExitoso($event)"
-                  (paymentCancelled)="pagoCancelado()"
-                  (paymentError)="pagoConError($event)"
-                />
-              }
-
-              <a class="btn btn-outline-black checkout-back" routerLink="/carrito">
-                {{ 'CHECKOUT.VIEW_CART' | translate }}
-              </a>
+              <strong>{{ item.quantity * item.salePrice | currency:'MXN' }}</strong>
             </div>
+            }
           </div>
-        </div>
-      } @else {
-        <div class="text-center py-5">
-          <h2 class="section-title mb-3">{{ 'CHECKOUT.EMPTY_TITLE' | translate }}</h2>
-          <p class="mb-4">{{ 'CHECKOUT.EMPTY_MESSAGE' | translate }}</p>
-          <a class="btn btn-primary" routerLink="/carrito">
+          <div class="checkout-total">
+            <span>{{ 'CHECKOUT.TOTAL' | translate }}</span>
+            <strong>{{ resumen.subtotal | currency:'MXN' }}</strong>
+          </div>
+
+          @if (pago(); as pagoConfirmado) {
+          <p class="checkout-message checkout-success" role="status" aria-live="polite">
+            {{ 'CHECKOUT.PAYMENT_SUCCESS' | translate: { orderId: pagoConfirmado.orderId } }}
+          </p>
+          <a class="btn btn-primary w-100" [routerLink]="['/mis-compras', pagoConfirmado.orderId]">
+            {{ 'CHECKOUT.VIEW_CODES' | translate }}
+          </a>
+          } @else {
+          <aside class="checkout-demo" role="note">
+            <svg lucideInfo [size]="20" aria-hidden="true"></svg>
+            <div>
+              <strong>{{ 'CHECKOUT.DEMO_TITLE' | translate }}</strong>
+              <p>{{ 'CHECKOUT.DEMO_TEXT' | translate }}</p>
+              <p>
+                {{ 'CHECKOUT.DEMO_CARD_HINT' | translate }}
+                <a href="https://developer.paypal.com/credit-card-number-generator" target="_blank"
+                  rel="noopener noreferrer">
+                  {{ 'CHECKOUT.DEMO_CARD_LINK' | translate }}
+                </a>
+              </p>
+            </div>
+          </aside>
+          @if (mensajePago(); as mensaje) {
+          <p class="checkout-message checkout-error" role="alert">{{ mensaje }}</p>
+          }
+          <app-paypal-button (paymentSuccess)="pagoExitoso($event)" (paymentCancelled)="pagoCancelado()"
+            (paymentError)="pagoConError($event)" />
+          }
+
+          <a class="btn btn-outline-black checkout-back" routerLink="/carrito">
             {{ 'CHECKOUT.VIEW_CART' | translate }}
           </a>
         </div>
-      }
-    } @else {
-      <div class="text-center py-5">
-        <h2 class="section-title mb-3">{{ 'CHECKOUT.EMPTY_TITLE' | translate }}</h2>
-        <p class="mb-4">{{ 'CHECKOUT.EMPTY_MESSAGE' | translate }}</p>
-        <a class="btn btn-primary" routerLink="/carrito">
-          {{ 'CHECKOUT.VIEW_CART' | translate }}
-        </a>
       </div>
+    </div>
+    } @else {
+    <div class="text-center py-5">
+      <h2 class="section-title mb-3">{{ 'CHECKOUT.EMPTY_TITLE' | translate }}</h2>
+      <p class="mb-4">{{ 'CHECKOUT.EMPTY_MESSAGE' | translate }}</p>
+      <a class="btn btn-primary" routerLink="/carrito">
+        {{ 'CHECKOUT.VIEW_CART' | translate }}
+      </a>
+    </div>
+    }
+    } @else {
+    <div class="text-center py-5">
+      <h2 class="section-title mb-3">{{ 'CHECKOUT.EMPTY_TITLE' | translate }}</h2>
+      <p class="mb-4">{{ 'CHECKOUT.EMPTY_MESSAGE' | translate }}</p>
+      <a class="btn btn-primary" routerLink="/carrito">
+        {{ 'CHECKOUT.VIEW_CART' | translate }}
+      </a>
+    </div>
     }
   </div>
 </section>

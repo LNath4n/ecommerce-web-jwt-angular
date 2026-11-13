@@ -235,7 +235,11 @@
     "RETRY": "Reintentar",
     "TITLE": "Pago",
     "TOTAL": "Total",
-    "VIEW_CART": "Volver al carrito"
+    "VIEW_CART": "Volver al carrito",
+    "DEMO_TITLE": "Proyecto de demostración",
+    "DEMO_TEXT": "Esta tienda es un proyecto de práctica: no se recaba información real, no se hace ningún cobro y todo lo que ves aquí son datos de prueba.",
+    "DEMO_CARD_HINT": "¿Quieres probar el pago? Genera una tarjeta de prueba en",
+    "DEMO_CARD_LINK": "el generador de PayPal"
   },
   "ORDERS": {
     "BACK_TO_ORDERS": "Volver a mis compras",
