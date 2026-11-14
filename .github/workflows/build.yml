@@ -52,4 +52,8 @@ jobs:
         run: aws s3 cp $OUTPUT_DIR/index.html s3://$BUCKET/index.html --cache-control "no-cache"
 
       - name: Invalidar CloudFront
+<<<<<<< HEAD
         run: aws cloudfront create-invalidation --distribution-id $DIST_ID --paths "/index.html" "/i18n/*"
+=======
+        run: aws cloudfront create-invalidation --distribution-id $DIST_ID --paths "/index.html"
+>>>>>>> origin/main
