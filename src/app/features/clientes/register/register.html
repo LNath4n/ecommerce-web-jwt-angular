@@ -10,18 +10,35 @@
         <div class="mb-3">
           <label class="form-label" for="email">{{ 'REGISTER_PAGE.EMAIL' | translate }}</label>
           <input id="email" type="email" class="form-control"
+            [class.is-invalid]="errores().email"
             [placeholder]="'REGISTER_PAGE.EMAIL_PLACEHOLDER' | translate"
-            autocomplete="email" [(ngModel)]="email" />
+            autocomplete="email" [(ngModel)]="email"
+            (ngModelChange)="limpiarError('email')" />
+          @if (errores().email; as msg) {
+            <div class="invalid-feedback">
+              {{ msg | translate }}
+            </div>
+          }
         </div>
 
         <div class="mb-4">
           <label class="form-label" for="password">{{ 'REGISTER_PAGE.PASSWORD' | translate }}</label>
           <input id="password" type="password" class="form-control"
+            [class.is-invalid]="errores().password"
             [placeholder]="'REGISTER_PAGE.PASSWORD_PLACEHOLDER' | translate"
-            autocomplete="new-password" [(ngModel)]="password" (keyup.enter)="registro()" />
+            autocomplete="new-password" [(ngModel)]="password"
+            (ngModelChange)="limpiarError('password')"
+            (keyup.enter)="registro()" />
+          @if (errores().password; as msg) {
+            <div class="invalid-feedback">
+              {{ msg | translate }}
+            </div>
+          }
         </div>
 
-        <button class="btn btn-primary w-100" (click)="registro()">{{ 'REGISTER_PAGE.SUBMIT' | translate }}</button>
+        <button class="btn btn-primary w-100" [disabled]="cargando()" (click)="registro()">
+          {{ 'REGISTER_PAGE.SUBMIT' | translate }}
+        </button>
 
         <p class="text-center mt-4 mb-2">
           {{ 'REGISTER_PAGE.HAVE_ACCOUNT' | translate }}

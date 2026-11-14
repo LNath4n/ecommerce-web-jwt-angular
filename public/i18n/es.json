@@ -113,7 +113,19 @@
     "YOUR_RATING": "Tu calificación",
     "VIEWS": "Vistas",
     "VIEW_PRODUCTS": "Ver productos",
-    "WRITE_REVIEW": "Escribe tu reseña"
+    "WRITE_REVIEW": "Escribe tu reseña",
+    "ERRORS": {
+  "NETWORK": "No se pudo conectar con el servidor. Revisa tu conexión.",
+  "SERVER": "Ocurrió un error en el servidor. Intenta más tarde.",
+  "BAD_REQUEST": "Los datos enviados no son válidos.",
+  "SESSION_EXPIRED": "Tu sesión expiró. Inicia sesión de nuevo.",
+  "REVIEW_NOT_PURCHASED": "Solo puedes reseñar productos que hayas comprado.",
+  "REVIEW_ALREADY_EXISTS": "Ya reseñaste este producto. Puedes editar tu reseña.",
+  "REVIEW_NOT_FOUND": "No encontramos tu reseña de este producto.",
+  "PRODUCT_NOT_FOUND": "Este producto ya no está disponible.",
+  "FIELD_RATING": "La calificación debe estar entre 1 y 5.",
+  "FIELD_COMMENT": "El comentario no puede superar los 1000 caracteres."
+}
   },
   "LOGIN_PAGE": {
     "BACK": "Regresar",
@@ -124,14 +136,21 @@
     "NO_ACCOUNT": "¿No tienes cuenta?",
     "PASSWORD": "Contraseña",
     "PASSWORD_PLACEHOLDER": "Tu contraseña",
-    "PROMO": "Todo para tu obra y tu hogar en un solo lugar. Inicia sesión para ver tu carrito y tu perfil.",
+    "PROMO": "Inicia sesión para ver tu carrito y tu perfil.",
     "REGISTER_LINK": "Regístrate",
     "SUBMIT": "Entrar",
     "SUBTITLE": "Ingresa tus datos para continuar.",
     "SUCCESS_MESSAGE": "Bienvenido de nuevo.",
     "SUCCESS_TITLE": "Inicio de sesión exitoso",
     "TITLE": "Bienvenido",
-    "VIEW_PRODUCTS": "Ver productos"
+    "VIEW_PRODUCTS": "Ver productos",
+    "ERRORS": {
+  "NETWORK": "No se pudo conectar con el servidor. Revisa tu conexión.",
+  "BAD_REQUEST": "Los datos enviados no son válidos.",
+  "SERVER": "Ocurrió un error en el servidor. Intenta más tarde.",
+  "FIELD_EMAIL": "El formato del correo no es válido.",
+  "FIELD_PASSWORD": "Ingresa tu contraseña."
+}
   },
   "REGISTER_PAGE": {
     "BACK": "Regresar",
@@ -149,7 +168,14 @@
     "SUCCESS_MESSAGE": "Ya puedes iniciar sesión.",
     "SUCCESS_TITLE": "¡Cuenta creada!",
     "TITLE": "Crea tu cuenta",
-    "VIEW_PRODUCTS": "Ver productos"
+    "VIEW_PRODUCTS": "Ver productos",
+    "ERRORS": {
+      "PASSWORD_LENGTH": "La contraseña debe tener entre 8 y 72 caracteres.",
+      "EMAIL_REQUIRED": "Ingresa tu correo electrónico.",
+      "EMAIL_INVALID": "El formato del correo no es válido.",
+      "PASSWORD_REQUIRED": "Ingresa una contraseña.",
+      "PASSWORD_INVALID": "La contraseña no es válida."
+    }
   },
   "PROFILE": {
     "ACCOUNT_DETAILS": "Datos de la cuenta",
@@ -197,7 +223,19 @@
     "SAVING": "Guardando...",
     "SELECT_PHOTO": "Seleccionar foto",
     "TITLE": "Mi perfil",
-    "UPLOADING_PHOTO": "Subiendo foto..."
+    "UPLOADING_PHOTO": "Subiendo foto...",
+    "ERRORS": {
+      "NETWORK": "No se pudo conectar con el servidor. Revisa tu conexión.",
+      "BAD_REQUEST": "Los datos enviados no son válidos.",
+      "SESSION_EXPIRED": "Tu sesión expiró. Inicia sesión de nuevo.",
+      "CURRENT_PASSWORD_WRONG": "La contraseña actual es incorrecta.",
+      "NOT_FOUND": "No encontramos tu cuenta.",
+      "EMAIL_TAKEN": "Ese correo ya está registrado con otra cuenta.",
+      "SERVER": "Ocurrió un error en el servidor. Intenta más tarde.",
+      "PHOTO_INVALID": "El archivo no es una imagen válida.",
+      "PHOTO_MISSING": "Selecciona una imagen para subir.",
+      "FIELD_NEWPASSWORD": "La nueva contraseña debe tener entre 8 y 72 caracteres."
+    }
   },
   "CART": {
     "CART_TOTAL": "Total del carrito",
@@ -219,7 +257,19 @@
     "TITLE": "Carrito",
     "TOTAL": "Total",
     "UPDATE_QUANTITY_ERROR": "No se pudo actualizar la cantidad. Revisa la cantidad y el stock disponible.",
-    "VIEW_PRODUCTS": "Ver productos"
+    "VIEW_PRODUCTS": "Ver productos",
+    "ERRORS": {
+  "NETWORK": "No se pudo conectar con el servidor. Revisa tu conexión.",
+  "BAD_REQUEST": "Los datos enviados no son válidos.",
+  "SESSION_EXPIRED": "Tu sesión expiró. Inicia sesión de nuevo.",
+  "SERVER": "Ocurrió un error en el servidor. Intenta más tarde.",
+  "PRODUCT_NOT_FOUND": "Este producto ya no está disponible.",
+  "PRODUCT_NOT_IN_CART": "Este producto ya no está en tu carrito.",
+  "CART_NOT_FOUND": "No encontramos tu carrito.",
+  "STOCK_EXCEEDED": "No hay suficiente stock de {{producto}}. Solo quedan {{stock}}.",
+  "CART_STOCK_EXCEEDED": "Ya tienes {{enCarrito}} de {{producto}} en tu carrito y solo hay {{stock}} en existencia. Puedes agregar {{disponibles}} más.",
+  "FIELD_QUANTITY": "La cantidad debe ser de al menos 1."
+}
   },
   "CHECKOUT": {
     "CANCELLED": "Se canceló el pago. Puedes volver a intentarlo cuando quieras.",
@@ -239,7 +289,23 @@
     "DEMO_TITLE": "Proyecto de demostración",
     "DEMO_TEXT": "Esta tienda es un proyecto de práctica: no se recaba información real, no se hace ningún cobro y todo lo que ves aquí son datos de prueba.",
     "DEMO_CARD_HINT": "¿Quieres probar el pago? Genera una tarjeta de prueba en",
-    "DEMO_CARD_LINK": "el generador de PayPal"
+    "DEMO_CARD_LINK": "el generador de PayPal",
+    "ERRORS": {
+  "NETWORK": "No se pudo conectar con el servidor. Revisa tu conexión.",
+  "BAD_REQUEST": "Los datos enviados no son válidos.",
+  "SESSION_EXPIRED": "Tu sesión expiró. Inicia sesión de nuevo.",
+  "EMPTY_CART": "Tu carrito está vacío.",
+  "STOCK_EXCEEDED": "No hay suficiente stock de {{producto}}. Solo quedan {{stock}}. Ajusta tu carrito e inténtalo de nuevo.",
+  "CART_NOT_FOUND": "No encontramos tu carrito.",
+  "PRODUCT_UNAVAILABLE": "Uno de los productos de tu carrito ya no está disponible. Revisa tu carrito.",
+  "ORDER_NOT_FOUND": "No encontramos la orden de pago.",
+  "ORDER_NOT_PAYABLE": "Esta orden ya no se puede pagar. Vuelve al carrito e inicia el pago de nuevo.",
+  "RESERVATION_EXPIRED": "Tu reserva expiró. Vuelve al carrito e inicia el pago de nuevo.",
+  "PAYMENT_NOT_COMPLETED": "PayPal no completó el pago. Inténtalo de nuevo.",
+  "PAYMENT_PROCESSING": "Tu pago aún se está procesando. Espera un momento y revisa «Mis compras» antes de volver a pagar.",
+  "SERVER_PAYMENT": "No pudimos completar el pago. Antes de reintentar, revisa en «Mis compras» si el cobro se registró.",
+  "FIELD_ORDERID": "No se pudo identificar la orden de pago."
+}
   },
   "ORDERS": {
     "BACK_TO_ORDERS": "Volver a mis compras",
@@ -386,5 +452,11 @@
     "UPLOAD_SUCCESS": "{{count}} códigos cargados para {{product}}.",
     "UPLOAD_TITLE": "Cargar códigos",
     "UPLOADING": "Cargando..."
-  }
+  },
+  "ERRORS": {
+  "NETWORK": "No se pudo conectar con el servidor. Revisa tu conexión.",
+  "BAD_REQUEST": "Los datos enviados no son válidos.",
+  "SESSION_EXPIRED": "Tu sesión expiró. Inicia sesión de nuevo.",
+  "SERVER": "Ocurrió un error en el servidor. Intenta más tarde."
+}
 }

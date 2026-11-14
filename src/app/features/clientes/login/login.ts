@@ -1,10 +1,10 @@
 import { Component, inject } from '@angular/core';
-import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ClientesService } from '@core/services/cliente/ClientesService';
 import { AuthService } from '@core/services/auth/auth';
 import { AlertaService } from '@core/services/modals/ModalsService';
+import { ErrorMensajesService, OpcionesError } from '@core/services/errores/ErrorMensajesService';
 import { Router } from '@angular/router';
 
 @Component({
@@ -20,9 +20,19 @@ export class Login {
   private alerta = inject(AlertaService);
   private router = inject(Router);
   private translate = inject(TranslateService);
+  private errores = inject(ErrorMensajesService);
 
   email = '';
   password = '';
+
+  private readonly opcionesError: OpcionesError = {
+    porDefecto: 'LOGIN_PAGE.ERROR',
+    prefijoCampos: 'LOGIN_PAGE.ERRORS.FIELD_',
+    reglas: [
+      // En el login, un 401 significa credenciales incorrectas (no sesión expirada)
+      { status: 401, clave: 'LOGIN_PAGE.INVALID_CREDENTIALS' },
+    ],
+  };
 
   login() {
     this.clientesService.login({ email: this.email, password: this.password })
@@ -36,10 +46,7 @@ export class Login {
           this.irProductos();
         },
         error: error => {
-          const mensajeDefault = error instanceof HttpErrorResponse && error.status === 401
-            ? 'LOGIN_PAGE.INVALID_CREDENTIALS'
-            : 'LOGIN_PAGE.ERROR';
-          this.alerta.error(this.translate.instant(mensajeDefault));
+          this.alerta.error(this.errores.resolver(error, this.opcionesError));
         }
       });
   }

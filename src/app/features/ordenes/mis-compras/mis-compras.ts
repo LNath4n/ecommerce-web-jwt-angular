@@ -1,5 +1,4 @@
 import { CurrencyPipe, DatePipe } from '@angular/common';
-import { HttpErrorResponse } from '@angular/common/http';
 import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ActivatedRoute, RouterLink } from '@angular/router';
@@ -7,6 +6,7 @@ import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { LucideEye, LucideEyeOff } from '@lucide/angular';
 import { OrderDetail, OrderSummary } from '@core/models/ordenes/ordenesModels';
 import { OrdenesService } from '@core/services/ordenes/OrdenesService';
+import { ErrorMensajesService, ReglaError } from '@core/services/errores/ErrorMensajesService';
 import {PageHero} from '../../layout/page-hero/page-hero';
 
 @Component({
@@ -20,6 +20,7 @@ export class MisCompras implements OnInit {
   private readonly ordenesService = inject(OrdenesService);
   private readonly translate = inject(TranslateService);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly errores = inject(ErrorMensajesService);
 
   readonly esDetalle = signal(false);
   readonly ordenActualId = signal<number | null>(null);
@@ -28,6 +29,13 @@ export class MisCompras implements OnInit {
   readonly cargando = signal(true);
   readonly errorCarga = signal<string | null>(null);
   private readonly codigosVisibles = signal<Set<string>>(new Set());
+
+  private readonly reglasError: ReglaError[] = [
+    // El ID de la orden no tiene un formato válido
+    { status: 400, clave: 'ORDERS.INVALID_ID' },
+    // "Order not found with ID: 42" (no existe o no es del cliente)
+    { status: 404, clave: 'ORDERS.NOT_FOUND' },
+  ];
 
   ordenCancelada(status: string): boolean {
     const normalizedStatus = status.trim().toUpperCase();
@@ -131,10 +139,9 @@ export class MisCompras implements OnInit {
   }
 
   private mensajeError(error: unknown, translationKey: string): string {
-    if (error instanceof HttpErrorResponse && error.status === 404) {
-      return this.translate.instant('ORDERS.NOT_FOUND');
-    }
-
-    return this.translate.instant(translationKey);
+    return this.errores.resolver(error, {
+      porDefecto: translationKey,
+      reglas: this.reglasError,
+    });
   }
 }

@@ -6,12 +6,19 @@ import { AuthService } from '@core/services/auth/auth';
 import { ClientesService } from '@core/services/cliente/ClientesService';
 import { AlertaService } from '@core/services/modals/ModalsService';
 import {
+  ErrorMensajesService,
+  OpcionesError,
+  ReglaError,
+} from '@core/services/errores/ErrorMensajesService';
+import {
   PublicCustomerResponse,
   UpdateCustomerRequest,
 } from '@core/models/cliente/clienteModels';
 import {PageHero} from '../../layout/page-hero/page-hero';
 
 import { LucideUser } from '@lucide/angular';
+
+type ContextoError = 'cargar' | 'guardar' | 'foto' | 'desactivar';
 
 @Component({
   selector: 'app-verperfil',
@@ -25,6 +32,7 @@ export class Verperfil implements OnInit, OnDestroy {
   private alerta = inject(AlertaService);
   private router = inject(Router);
   private translate = inject(TranslateService);
+  private errores = inject(ErrorMensajesService);
 
   perfil = signal<PublicCustomerResponse | null>(null);
   cargando = signal(true);
@@ -60,7 +68,7 @@ export class Verperfil implements OnInit, OnDestroy {
       },
       error: error => {
         this.cargando.set(false);
-        this.mostrarError(error, 'PROFILE.LOAD_ERROR');
+        this.mostrarError(error, 'PROFILE.LOAD_ERROR', 'cargar');
       }
     });
   }
@@ -122,13 +130,13 @@ export class Verperfil implements OnInit, OnDestroy {
           },
           error: error => {
             this.guardando.set(false);
-            this.mostrarError(error, 'PROFILE.LOAD_ERROR');
+            this.mostrarError(error, 'PROFILE.LOAD_ERROR', 'cargar');
           }
         });
       },
       error: error => {
         this.guardando.set(false);
-        this.mostrarError(error, 'PROFILE.SAVE_ERROR');
+        this.mostrarError(error, 'PROFILE.SAVE_ERROR', 'guardar');
       }
     });
   }
@@ -182,7 +190,7 @@ export class Verperfil implements OnInit, OnDestroy {
       error: error => {
         this.procesandoFoto.set(false);
         this.limpiarFotoPendiente();
-        this.mostrarError(error, 'PROFILE.PHOTO_UPLOAD_ERROR');
+        this.mostrarError(error, 'PROFILE.PHOTO_UPLOAD_ERROR', 'foto');
       }
     });
   }
@@ -197,7 +205,7 @@ export class Verperfil implements OnInit, OnDestroy {
       },
       error: error => {
         this.procesandoFoto.set(false);
-        this.mostrarError(error, 'PROFILE.PHOTO_REMOVE_ERROR');
+        this.mostrarError(error, 'PROFILE.PHOTO_REMOVE_ERROR', 'foto');
       }
     });
   }
@@ -216,7 +224,7 @@ export class Verperfil implements OnInit, OnDestroy {
           this.alerta.exito(this.translate.instant('PROFILE.DEACTIVATE_SUCCESS'));
           this.router.navigate(['/login']);
         },
-        error: error => this.mostrarError(error, 'PROFILE.DEACTIVATE_ERROR')
+        error: error => this.mostrarError(error, 'PROFILE.DEACTIVATE_ERROR', 'desactivar')
       });
     });
   }
@@ -235,8 +243,31 @@ export class Verperfil implements OnInit, OnDestroy {
     this.authService.setClientePublico(perfil);
   }
 
-  private mostrarError(_error: unknown, mensajePorDefecto: string) {
-    this.alerta.error(this.translate.instant(mensajePorDefecto));
+  private mostrarError(error: unknown, mensajePorDefecto: string, contexto?: ContextoError) {
+    this.alerta.error(this.errores.resolver(error, this.opcionesError(mensajePorDefecto, contexto)));
+  }
+
+  private opcionesError(porDefecto: string, contexto?: ContextoError): OpcionesError {
+    const reglas: ReglaError[] = [];
+
+    // Al guardar, un 401 significa que la contraseña actual es incorrecta
+    if (contexto === 'guardar') {
+      reglas.push({ status: 401, clave: 'PROFILE.ERRORS.CURRENT_PASSWORD_WRONG' });
+    }
+
+    reglas.push(
+      // Errores de foto (400)
+      { status: 400, contiene: 'Unsupported format', clave: 'PROFILE.PHOTO_FORMAT_ERROR' },
+      { status: 400, contiene: 'not a valid image', clave: 'PROFILE.ERRORS.PHOTO_INVALID' },
+      // {"message":"Parameter 'file' is required"}
+      { status: 400, contiene: "'file'", clave: 'PROFILE.ERRORS.PHOTO_MISSING' },
+
+      { status: 404, clave: 'PROFILE.ERRORS.NOT_FOUND' },
+      { status: 409, clave: 'PROFILE.ERRORS.EMAIL_TAKEN' },
+      { status: 413, clave: 'PROFILE.PHOTO_SIZE_ERROR' },
+    );
+
+    return { porDefecto, prefijoCampos: 'PROFILE.ERRORS.FIELD_', reglas };
   }
 
   private liberarVistaPrevia() {

@@ -19,6 +19,8 @@ import { ResenasService } from '@core/services/producto/ResenasService';
 import { AuthService } from '@core/services/auth/auth';
 import { CarritosService } from '@core/services/carrito/CarritosService';
 import { AlertaService } from '@core/services/modals/ModalsService';
+import { ErrorMensajesService, OpcionesError } from '@core/services/errores/ErrorMensajesService';
+import { reglasStock } from '@core/services/errores/reglas-error';
 
 type ProductoEstado =
   | { status: 'loading' }
@@ -42,6 +44,7 @@ export class UnProducto {
   private carritosService = inject(CarritosService);
   private alerta = inject(AlertaService);
   private translate = inject(TranslateService);
+  private errores = inject(ErrorMensajesService);
   private resenasProductId: number | null = null;
   private readonly pageSize = 10;
   readonly sesionActiva = this.authService.isLoggedIn;
@@ -85,13 +88,12 @@ export class UnProducto {
         }),
         startWith({ status: 'loading' } as const),
         catchError(error => {
-          const estado = error instanceof HttpErrorResponse && error.status === 404
-            ? 'not-found'
-            : 'error';
-          return of<ProductoEstado>({
-            status: estado,
-            message: null,
-          });
+          const noEncontrado = this.errores.tieneStatus(error, 404);
+          return of<ProductoEstado>(
+            noEncontrado
+              ? { status: 'not-found', message: null }
+              : { status: 'error', message: this.mensajeErrorProducto(error) }
+          );
         })
       );
     })
@@ -153,10 +155,17 @@ export class UnProducto {
         ));
         this.cargarResenas(productId);
       },
-      error: () => {
+      error: error => {
         if (this.resenasProductId !== productId) return;
         this.enviandoResena.set(false);
-        this.alerta.error(this.translate.instant('PRODUCT_DETAIL.REVIEW_SAVE_ERROR'));
+        this.alerta.error(this.errores.resolver(error, this.opcionesResena('PRODUCT_DETAIL.REVIEW_SAVE_ERROR')));
+
+        // 409: ya existía una reseña (pasamos a modo edición).
+        // 404 al editar: la reseña ya no existe (pasamos a modo crear).
+        if (this.errores.tieneStatus(error, 409)
+          || (this.errores.tieneStatus(error, 404) && existing)) {
+          this.cargarResenas(productId);
+        }
       },
     });
   }
@@ -179,10 +188,15 @@ export class UnProducto {
         this.alerta.exito(this.translate.instant('PRODUCT_DETAIL.REVIEW_DELETED'));
         this.cargarResenas(productId);
       },
-      error: () => {
+      error: error => {
         if (this.resenasProductId !== productId) return;
         this.eliminandoResena.set(false);
-        this.alerta.error(this.translate.instant('PRODUCT_DETAIL.REVIEW_DELETE_ERROR'));
+        this.alerta.error(this.errores.resolver(error, this.opcionesResena('PRODUCT_DETAIL.REVIEW_DELETE_ERROR')));
+
+        // 404: la reseña ya no existe, refrescamos para reflejar el estado real
+        if (this.errores.tieneStatus(error, 404)) {
+          this.cargarResenas(productId);
+        }
       },
     });
   }
@@ -264,7 +278,7 @@ export class UnProducto {
       },
       error: error => {
         if (this.resenasProductId !== productId) return;
-        if (error instanceof HttpErrorResponse && error.status === 404) {
+        if (this.errores.tieneStatus(error, 404)) {
           this.establecerMiResena(null);
         } else {
           this.errorElegibilidad.set(true);
@@ -312,13 +326,54 @@ export class UnProducto {
           this.alerta.exito(this.translate.instant('PRODUCT_DETAIL.ADDED_TO_CART'));
         },
         error: error => this.alerta.error(
-          this.carritosService.obtenerMensajeError(error)
-            ?? this.translate.instant('PRODUCT_DETAIL.ADD_TO_CART_ERROR')
+          this.errores.resolver(error, this.opcionesCarrito('PRODUCT_DETAIL.ADD_TO_CART_ERROR'))
         )
       });
   }
 
   regresar() {
     this.router.navigate(['/productos']);
+  }
+
+  // Mensaje para el estado 'error' al cargar el producto.
+  // Solo distingue red/servidor; para lo demás devuelve null y se usa el texto por defecto.
+  private mensajeErrorProducto(error: unknown): string | null {
+    if (this.errores.tieneStatus(error, 0)) {
+      return this.translate.instant('ERRORS.NETWORK');
+    }
+    if (error instanceof HttpErrorResponse && error.status >= 500) {
+      return this.translate.instant('ERRORS.SERVER');
+    }
+    return null;
+  }
+
+  // Errores de crear / editar / eliminar reseña
+  private opcionesResena(porDefecto: string): OpcionesError {
+    return {
+      porDefecto,
+      prefijoCampos: 'PRODUCT_DETAIL.ERRORS.FIELD_',
+      reglas: [
+        // "Solo puedes reseñar productos que hayas comprado (producto 7)"
+        { status: 403, clave: 'PRODUCT_DETAIL.ERRORS.REVIEW_NOT_PURCHASED' },
+        // "Product not found with ID: 7"
+        { status: 404, contiene: 'Product not found', clave: 'PRODUCT_DETAIL.ERRORS.PRODUCT_NOT_FOUND' },
+        // "No tienes una reseña para el producto 7"
+        { status: 404, contiene: 'reseña', clave: 'PRODUCT_DETAIL.ERRORS.REVIEW_NOT_FOUND' },
+        // "Ya reseñaste el producto 7"
+        { status: 409, clave: 'PRODUCT_DETAIL.ERRORS.REVIEW_ALREADY_EXISTS' },
+      ],
+    };
+  }
+
+  // Errores de agregar al carrito (reutiliza las traducciones de CART.ERRORS)
+  private opcionesCarrito(porDefecto: string): OpcionesError {
+    return {
+      porDefecto,
+      prefijoCampos: 'CART.ERRORS.FIELD_',
+      reglas: [
+        ...reglasStock(),
+        { status: 404, contiene: 'Product not found', clave: 'CART.ERRORS.PRODUCT_NOT_FOUND' },
+      ],
+    };
   }
 }

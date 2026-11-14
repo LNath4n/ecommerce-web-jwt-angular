@@ -27,7 +27,8 @@ jobs:
       - run: npm ci
 
       - name: Inyectar PayPal Client ID
-        run: sed -i "s|paypalClientId: ''|paypalClientId: '${{ secrets.PAYPAL_CLIENT_ID }}'|" src/environments/environment.ts
+        run: |
+          sed -i "s|paypalClientId: 'xd'|paypalClientId: '${{ secrets.PAYPAL_CLIENT_ID }}'|" src/environments/environment.ts
 
       - run: npm run build
 
@@ -37,10 +38,18 @@ jobs:
           aws-region: us-east-1
 
       - name: Subir archivos con caché larga
-        run: aws s3 sync $OUTPUT_DIR s3://$BUCKET --delete --exclude index.html --cache-control "public,max-age=31536000,immutable"
+        run: >
+          aws s3 sync $OUTPUT_DIR s3://$BUCKET --delete
+          --exclude index.html --exclude "i18n/*"
+          --cache-control "public,max-age=31536000,immutable"
+
+      - name: Subir traducciones sin caché
+        run: >
+          aws s3 cp $OUTPUT_DIR/i18n s3://$BUCKET/i18n --recursive
+          --cache-control "no-cache"
 
       - name: Subir index.html sin caché
         run: aws s3 cp $OUTPUT_DIR/index.html s3://$BUCKET/index.html --cache-control "no-cache"
 
       - name: Invalidar CloudFront
-        run: aws cloudfront create-invalidation --distribution-id $DIST_ID --paths "/index.html"
+        run: aws cloudfront create-invalidation --distribution-id $DIST_ID --paths "/index.html" "/i18n/*"

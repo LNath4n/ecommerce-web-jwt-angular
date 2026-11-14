@@ -1,12 +1,13 @@
 import { Component, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { BehaviorSubject, catchError, of, switchMap } from 'rxjs';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { LucideTrash2, LucidePackage } from '@lucide/angular';
 import { CarritosService } from '@core/services/carrito/CarritosService';
 import { AlertaService } from '@core/services/modals/ModalsService';
+import { ErrorMensajesService, OpcionesError } from '@core/services/errores/ErrorMensajesService';
+import { reglasStock } from '@core/services/errores/reglas-error';
 import { CartResponse } from '@core/models/carrito/carritoModels';
 import {PageHero} from '../../layout/page-hero/page-hero';
 type ItemCarrito = CartResponse['items'][number];
@@ -22,6 +23,7 @@ export class VerCarrito {
   private alerta = inject(AlertaService);
   private router = inject(Router);
   private translate = inject(TranslateService);
+  private errores = inject(ErrorMensajesService);
 
   // IDs de productos cuya imagen no cargó (se muestra el ícono de paquete)
   private imagenesFallidas = signal<Set<number>>(new Set());
@@ -34,11 +36,12 @@ export class VerCarrito {
       this.errorCarga.set(null);
       return this.carritoService.obtenerCarrito().pipe(
         catchError(error => {
-          if (error instanceof HttpErrorResponse && error.status === 404) {
+          // 404 = el cliente aún no tiene carrito: se trata como carrito vacío
+          if (this.errores.tieneStatus(error, 404)) {
             return of(null);
           }
 
-          this.errorCarga.set(this.translate.instant('CART.LOAD_ERROR'));
+          this.errorCarga.set(this.errores.resolver(error, this.opcionesError('CART.LOAD_ERROR')));
           return of(null);
         })
       );
@@ -61,10 +64,13 @@ export class VerCarrito {
 
     this.carritoService.actualizar(request).subscribe({
       next: () => this.recargar$.next(),
-      error: error => this.alerta.error(
-        this.carritoService.obtenerMensajeError(error)
-          ?? this.translate.instant('CART.UPDATE_QUANTITY_ERROR')
-      )
+      error: error => {
+        this.alerta.error(this.errores.resolver(error, this.opcionesError('CART.UPDATE_QUANTITY_ERROR')));
+        // Si el producto o el carrito ya no existen, refrescamos para mostrar el estado real
+        if (this.errores.tieneStatus(error, 404)) {
+          this.recargar$.next();
+        }
+      }
     });
   }
 
@@ -74,9 +80,12 @@ export class VerCarrito {
         this.alerta.exito(this.translate.instant('CART.REMOVE_SUCCESS'));
         this.recargar$.next();
       },
-      error: () => this.alerta.error(
-        this.translate.instant('CART.REMOVE_ERROR')
-      )
+      error: error => {
+        this.alerta.error(this.errores.resolver(error, this.opcionesError('CART.REMOVE_ERROR')));
+        if (this.errores.tieneStatus(error, 404)) {
+          this.recargar$.next();
+        }
+      }
     });
   }
 
@@ -92,4 +101,20 @@ export class VerCarrito {
     this.router.navigate(['/checkout']);
   }
 
+  private opcionesError(porDefecto: string): OpcionesError {
+    return {
+      porDefecto,
+      prefijoCampos: 'CART.ERRORS.FIELD_',
+      reglas: [
+        ...reglasStock(),
+        // "Product not found with ID: 2"
+        { status: 404, contiene: 'Product not found', clave: 'CART.ERRORS.PRODUCT_NOT_FOUND' },
+        // "Product with ID 2 is not in the cart"
+        { status: 404, contiene: 'not in the cart', clave: 'CART.ERRORS.PRODUCT_NOT_IN_CART' },
+        // "Cart not found: 42" / "No cart found for customer 42"
+        { status: 404, contiene: 'Cart not found', clave: 'CART.ERRORS.CART_NOT_FOUND' },
+        { status: 404, contiene: 'No cart found', clave: 'CART.ERRORS.CART_NOT_FOUND' },
+      ],
+    };
+  }
 }

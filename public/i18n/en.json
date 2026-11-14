@@ -113,7 +113,19 @@
     "YOUR_RATING": "Your rating",
     "VIEWS": "Views",
     "VIEW_PRODUCTS": "View products",
-    "WRITE_REVIEW": "Write your review"
+    "WRITE_REVIEW": "Write your review",
+    "ERRORS": {
+  "NETWORK": "Could not connect to the server. Check your connection.",
+  "SERVER": "A server error occurred. Please try again later.",
+  "BAD_REQUEST": "The submitted data is not valid.",
+  "SESSION_EXPIRED": "Your session expired. Please log in again.",
+  "REVIEW_NOT_PURCHASED": "You can only review products you have purchased.",
+  "REVIEW_ALREADY_EXISTS": "You already reviewed this product. You can edit your review.",
+  "REVIEW_NOT_FOUND": "We couldn't find your review for this product.",
+  "PRODUCT_NOT_FOUND": "This product is no longer available.",
+  "FIELD_RATING": "The rating must be between 1 and 5.",
+  "FIELD_COMMENT": "The comment cannot exceed 1000 characters."
+}
   },
   "LOGIN_PAGE": {
     "BACK": "Back",
@@ -124,14 +136,21 @@
     "NO_ACCOUNT": "Don't have an account?",
     "PASSWORD": "Password",
     "PASSWORD_PLACEHOLDER": "Your password",
-    "PROMO": "Everything for your home and projects in one place. Log in to view your cart and profile.",
+    "PROMO": "Log in to view your cart and profile.",
     "REGISTER_LINK": "Sign up",
     "SUBMIT": "Log in",
     "SUBTITLE": "Enter your details to continue.",
     "SUCCESS_MESSAGE": "Welcome back.",
     "SUCCESS_TITLE": "Login successful",
     "TITLE": "Welcome",
-    "VIEW_PRODUCTS": "View products"
+    "VIEW_PRODUCTS": "View products",
+    "ERRORS": {
+  "NETWORK": "Could not connect to the server. Check your connection.",
+  "BAD_REQUEST": "The submitted data is not valid.",
+  "SERVER": "A server error occurred. Please try again later.",
+  "FIELD_EMAIL": "The email format is not valid.",
+  "FIELD_PASSWORD": "Enter your password."
+}
   },
   "REGISTER_PAGE": {
     "BACK": "Back",
@@ -149,7 +168,14 @@
     "SUCCESS_MESSAGE": "You can now log in.",
     "SUCCESS_TITLE": "Account created!",
     "TITLE": "Create your account",
-    "VIEW_PRODUCTS": "View products"
+    "VIEW_PRODUCTS": "View products",
+    "ERRORS": {
+      "PASSWORD_LENGTH": "Password must be between 8 and 72 characters.",
+      "EMAIL_REQUIRED": "Enter your email address.",
+      "EMAIL_INVALID": "The email format is invalid.",
+      "PASSWORD_REQUIRED": "Enter a password.",
+      "PASSWORD_INVALID": "The password is not valid."
+    }
   },
   "PROFILE": {
     "ACCOUNT_DETAILS": "Account details",
@@ -197,7 +223,19 @@
     "SAVING": "Saving...",
     "SELECT_PHOTO": "Select photo",
     "TITLE": "My profile",
-    "UPLOADING_PHOTO": "Uploading photo..."
+    "UPLOADING_PHOTO": "Uploading photo...",
+    "ERRORS": {
+      "NETWORK": "Could not connect to the server. Check your connection.",
+      "BAD_REQUEST": "The submitted data is not valid.",
+      "SESSION_EXPIRED": "Your session expired. Please log in again.",
+      "CURRENT_PASSWORD_WRONG": "The current password is incorrect.",
+      "NOT_FOUND": "We couldn't find your account.",
+      "EMAIL_TAKEN": "That email is already registered to another account.",
+      "SERVER": "A server error occurred. Please try again later.",
+      "PHOTO_INVALID": "The file is not a valid image.",
+      "PHOTO_MISSING": "Select an image to upload.",
+      "FIELD_NEWPASSWORD": "The new password must be between 8 and 72 characters."
+    }
   },
   "CART": {
     "CART_TOTAL": "Cart total",
@@ -219,7 +257,19 @@
     "TITLE": "Cart",
     "TOTAL": "Total",
     "UPDATE_QUANTITY_ERROR": "Could not update the quantity. Check the quantity and available stock.",
-    "VIEW_PRODUCTS": "View products"
+    "VIEW_PRODUCTS": "View products",
+    "ERRORS": {
+  "NETWORK": "Could not connect to the server. Check your connection.",
+  "BAD_REQUEST": "The submitted data is not valid.",
+  "SESSION_EXPIRED": "Your session expired. Please log in again.",
+  "SERVER": "A server error occurred. Please try again later.",
+  "PRODUCT_NOT_FOUND": "This product is no longer available.",
+  "PRODUCT_NOT_IN_CART": "This product is no longer in your cart.",
+  "CART_NOT_FOUND": "We couldn't find your cart.",
+  "STOCK_EXCEEDED": "Not enough stock for {{producto}}. Only {{stock}} left.",
+  "CART_STOCK_EXCEEDED": "You already have {{enCarrito}} of {{producto}} in your cart and only {{stock}} are in stock. You can add {{disponibles}} more.",
+  "FIELD_QUANTITY": "Quantity must be at least 1."
+}
   },
   "CHECKOUT": {
     "CANCELLED": "Payment was cancelled. You can try again whenever you're ready.",
@@ -239,7 +289,23 @@
     "DEMO_TITLE": "Demo project",
     "DEMO_TEXT": "This store is a practice project: no real information is collected, no actual charges are made, and everything here is test data.",
     "DEMO_CARD_HINT": "Want to try the payment? Generate a test card with",
-    "DEMO_CARD_LINK": "PayPal's card generator"
+    "DEMO_CARD_LINK": "PayPal's card generator",
+    "ERRORS": {
+  "NETWORK": "Could not connect to the server. Check your connection.",
+  "BAD_REQUEST": "The submitted data is not valid.",
+  "SESSION_EXPIRED": "Your session expired. Please log in again.",
+  "EMPTY_CART": "Your cart is empty.",
+  "STOCK_EXCEEDED": "Not enough stock for {{producto}}. Only {{stock}} left. Adjust your cart and try again.",
+  "CART_NOT_FOUND": "We couldn't find your cart.",
+  "PRODUCT_UNAVAILABLE": "One of the products in your cart is no longer available. Please review your cart.",
+  "ORDER_NOT_FOUND": "We couldn't find the payment order.",
+  "ORDER_NOT_PAYABLE": "This order can no longer be paid. Go back to your cart and start the payment again.",
+  "RESERVATION_EXPIRED": "Your reservation expired. Go back to your cart and start the payment again.",
+  "PAYMENT_NOT_COMPLETED": "PayPal did not complete the payment. Please try again.",
+  "PAYMENT_PROCESSING": "Your payment is still being processed. Wait a moment and check \"My orders\" before paying again.",
+  "SERVER_PAYMENT": "We couldn't complete the payment. Before retrying, check \"My orders\" to see if the charge went through.",
+  "FIELD_ORDERID": "The payment order could not be identified."
+}
   },
   "ORDERS": {
     "BACK_TO_ORDERS": "Back to my orders",
@@ -386,5 +452,11 @@
     "UPLOAD_SUCCESS": "{{count}} codes uploaded for {{product}}.",
     "UPLOAD_TITLE": "Upload codes",
     "UPLOADING": "Uploading..."
-  }
+  },
+  "ERRORS": {
+  "NETWORK": "Could not connect to the server. Check your connection.",
+  "BAD_REQUEST": "The submitted data is not valid.",
+  "SESSION_EXPIRED": "Your session expired. Please log in again.",
+  "SERVER": "A server error occurred. Please try again later."
+}
 }
