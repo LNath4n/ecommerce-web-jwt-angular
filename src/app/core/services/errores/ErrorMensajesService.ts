@@ -44,10 +44,15 @@ export class ErrorMensajesService {
     }
 
     const body = error.error;
-    // Texto del error: body text/plain, o el campo "message" si el body es JSON
+    // Texto del error: body text/plain, o "message" / "error" si el body es JSON
     const texto = typeof body === 'string'
       ? body
-      : (typeof body?.message === 'string' ? body.message : '');
+      : typeof body?.message === 'string'
+        ? body.message
+        : typeof body?.error === 'string'
+          ? body.error
+          : '';
+
     const campos: Record<string, string> | undefined =
       body && typeof body === 'object' ? body.errors : undefined;
 
@@ -61,9 +66,10 @@ export class ErrorMensajesService {
     if (error.status === 0) return this.translate.instant('ERRORS.NETWORK');
 
     if (error.status === 400) {
-      return campos
-        ? this.mensajesPorCampo(campos, opciones.prefijoCampos)
-        : this.translate.instant('ERRORS.BAD_REQUEST');
+      if (campos) return this.mensajesPorCampo(campos, opciones.prefijoCampos);
+      // Sin regla ni campos: mostrar el texto real del backend en vez del genérico
+      if (texto) return texto;
+      return this.translate.instant('ERRORS.BAD_REQUEST');
     }
 
     if (error.status === 401) return this.translate.instant('ERRORS.SESSION_EXPIRED');

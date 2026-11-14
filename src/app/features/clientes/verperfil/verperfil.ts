@@ -255,17 +255,19 @@ export class Verperfil implements OnInit, OnDestroy {
       reglas.push({ status: 401, clave: 'PROFILE.ERRORS.CURRENT_PASSWORD_WRONG' });
     }
 
-    reglas.push(
-      // Errores de foto (400)
-      { status: 400, contiene: 'Unsupported format', clave: 'PROFILE.PHOTO_FORMAT_ERROR' },
-      { status: 400, contiene: 'not a valid image', clave: 'PROFILE.ERRORS.PHOTO_INVALID' },
-      // {"message":"Parameter 'file' is required"}
-      { status: 400, contiene: "'file'", clave: 'PROFILE.ERRORS.PHOTO_MISSING' },
+reglas.push(
+  { status: 400, contiene: 'Unsupported format', clave: 'PROFILE.PHOTO_FORMAT_ERROR' },
+  { status: 400, contiene: 'not a valid image', clave: 'PROFILE.ERRORS.PHOTO_INVALID' },
+  { status: 400, contiene: 'does not match its format', clave: 'PROFILE.ERRORS.PHOTO_MISMATCH' },
+  { status: 400, contiene: 'too large', clave: 'PROFILE.ERRORS.PHOTO_DIMENSIONS' },
+  { status: 400, contiene: 'Could not process', clave: 'PROFILE.ERRORS.PHOTO_PROCESS' },
+  { status: 400, contiene: 'must be provided', clave: 'PROFILE.ERRORS.PHOTO_MISSING' },
+  { status: 400, contiene: "'file'", clave: 'PROFILE.ERRORS.PHOTO_MISSING' },
 
-      { status: 404, clave: 'PROFILE.ERRORS.NOT_FOUND' },
-      { status: 409, clave: 'PROFILE.ERRORS.EMAIL_TAKEN' },
-      { status: 413, clave: 'PROFILE.PHOTO_SIZE_ERROR' },
-    );
+  { status: 404, clave: 'PROFILE.ERRORS.NOT_FOUND' },
+  { status: 409, clave: 'PROFILE.ERRORS.EMAIL_TAKEN' },
+  { status: 413, clave: 'PROFILE.PHOTO_SIZE_ERROR' },
+);
 
     return { porDefecto, prefijoCampos: 'PROFILE.ERRORS.FIELD_', reglas };
   }

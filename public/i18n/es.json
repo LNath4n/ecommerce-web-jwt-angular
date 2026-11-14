@@ -14,6 +14,7 @@
     "LOGIN": "Iniciar sesión",
     "LOGOUT": "Cerrar sesión",
     "MENU": "Menú",
+    "CLOSE": "Close",
     "ORDERS": "Mis compras",
     "PRODUCTS": "Productos",
     "PROFILE": "Mi perfil",
@@ -115,17 +116,17 @@
     "VIEW_PRODUCTS": "Ver productos",
     "WRITE_REVIEW": "Escribe tu reseña",
     "ERRORS": {
-  "NETWORK": "No se pudo conectar con el servidor. Revisa tu conexión.",
-  "SERVER": "Ocurrió un error en el servidor. Intenta más tarde.",
-  "BAD_REQUEST": "Los datos enviados no son válidos.",
-  "SESSION_EXPIRED": "Tu sesión expiró. Inicia sesión de nuevo.",
-  "REVIEW_NOT_PURCHASED": "Solo puedes reseñar productos que hayas comprado.",
-  "REVIEW_ALREADY_EXISTS": "Ya reseñaste este producto. Puedes editar tu reseña.",
-  "REVIEW_NOT_FOUND": "No encontramos tu reseña de este producto.",
-  "PRODUCT_NOT_FOUND": "Este producto ya no está disponible.",
-  "FIELD_RATING": "La calificación debe estar entre 1 y 5.",
-  "FIELD_COMMENT": "El comentario no puede superar los 1000 caracteres."
-}
+      "NETWORK": "No se pudo conectar con el servidor. Revisa tu conexión.",
+      "SERVER": "Ocurrió un error en el servidor. Intenta más tarde.",
+      "BAD_REQUEST": "Los datos enviados no son válidos.",
+      "SESSION_EXPIRED": "Tu sesión expiró. Inicia sesión de nuevo.",
+      "REVIEW_NOT_PURCHASED": "Solo puedes reseñar productos que hayas comprado.",
+      "REVIEW_ALREADY_EXISTS": "Ya reseñaste este producto. Puedes editar tu reseña.",
+      "REVIEW_NOT_FOUND": "No encontramos tu reseña de este producto.",
+      "PRODUCT_NOT_FOUND": "Este producto ya no está disponible.",
+      "FIELD_RATING": "La calificación debe estar entre 1 y 5.",
+      "FIELD_COMMENT": "El comentario no puede superar los 1000 caracteres."
+    }
   },
   "LOGIN_PAGE": {
     "BACK": "Regresar",
@@ -145,12 +146,12 @@
     "TITLE": "Bienvenido",
     "VIEW_PRODUCTS": "Ver productos",
     "ERRORS": {
-  "NETWORK": "No se pudo conectar con el servidor. Revisa tu conexión.",
-  "BAD_REQUEST": "Los datos enviados no son válidos.",
-  "SERVER": "Ocurrió un error en el servidor. Intenta más tarde.",
-  "FIELD_EMAIL": "El formato del correo no es válido.",
-  "FIELD_PASSWORD": "Ingresa tu contraseña."
-}
+      "NETWORK": "No se pudo conectar con el servidor. Revisa tu conexión.",
+      "BAD_REQUEST": "Los datos enviados no son válidos.",
+      "SERVER": "Ocurrió un error en el servidor. Intenta más tarde.",
+      "FIELD_EMAIL": "El formato del correo no es válido.",
+      "FIELD_PASSWORD": "Ingresa tu contraseña."
+    }
   },
   "REGISTER_PAGE": {
     "BACK": "Regresar",
@@ -225,6 +226,11 @@
     "TITLE": "Mi perfil",
     "UPLOADING_PHOTO": "Subiendo foto...",
     "ERRORS": {
+      "PHOTO_INVALID": "No pudimos leer la imagen. Puede ser un formato no compatible (HEIC, WebP) o estar dañada. Usa una foto JPG o PNG.",
+      "PHOTO_MISMATCH": "El contenido del archivo no coincide con su formato. Usa una foto JPG o PNG real.",
+      "PHOTO_DIMENSIONS": "La imagen es demasiado grande en resolución (máximo 4000x4000 px).",
+      "PHOTO_PROCESS": "No se pudo procesar la imagen. Intenta con otra.",
+      "PHOTO_MISSING": "No se recibió ninguna imagen. Selecciona una e intenta de nuevo.",
       "NETWORK": "No se pudo conectar con el servidor. Revisa tu conexión.",
       "BAD_REQUEST": "Los datos enviados no son válidos.",
       "SESSION_EXPIRED": "Tu sesión expiró. Inicia sesión de nuevo.",
@@ -232,8 +238,6 @@
       "NOT_FOUND": "No encontramos tu cuenta.",
       "EMAIL_TAKEN": "Ese correo ya está registrado con otra cuenta.",
       "SERVER": "Ocurrió un error en el servidor. Intenta más tarde.",
-      "PHOTO_INVALID": "El archivo no es una imagen válida.",
-      "PHOTO_MISSING": "Selecciona una imagen para subir.",
       "FIELD_NEWPASSWORD": "La nueva contraseña debe tener entre 8 y 72 caracteres."
     }
   },
@@ -259,17 +263,17 @@
     "UPDATE_QUANTITY_ERROR": "No se pudo actualizar la cantidad. Revisa la cantidad y el stock disponible.",
     "VIEW_PRODUCTS": "Ver productos",
     "ERRORS": {
-  "NETWORK": "No se pudo conectar con el servidor. Revisa tu conexión.",
-  "BAD_REQUEST": "Los datos enviados no son válidos.",
-  "SESSION_EXPIRED": "Tu sesión expiró. Inicia sesión de nuevo.",
-  "SERVER": "Ocurrió un error en el servidor. Intenta más tarde.",
-  "PRODUCT_NOT_FOUND": "Este producto ya no está disponible.",
-  "PRODUCT_NOT_IN_CART": "Este producto ya no está en tu carrito.",
-  "CART_NOT_FOUND": "No encontramos tu carrito.",
-  "STOCK_EXCEEDED": "No hay suficiente stock de {{producto}}. Solo quedan {{stock}}.",
-  "CART_STOCK_EXCEEDED": "Ya tienes {{enCarrito}} de {{producto}} en tu carrito y solo hay {{stock}} en existencia. Puedes agregar {{disponibles}} más.",
-  "FIELD_QUANTITY": "La cantidad debe ser de al menos 1."
-}
+      "NETWORK": "No se pudo conectar con el servidor. Revisa tu conexión.",
+      "BAD_REQUEST": "Los datos enviados no son válidos.",
+      "SESSION_EXPIRED": "Tu sesión expiró. Inicia sesión de nuevo.",
+      "SERVER": "Ocurrió un error en el servidor. Intenta más tarde.",
+      "PRODUCT_NOT_FOUND": "Este producto ya no está disponible.",
+      "PRODUCT_NOT_IN_CART": "Este producto ya no está en tu carrito.",
+      "CART_NOT_FOUND": "No encontramos tu carrito.",
+      "STOCK_EXCEEDED": "No hay suficiente stock de {{producto}}. Solo quedan {{stock}}.",
+      "CART_STOCK_EXCEEDED": "Ya tienes {{enCarrito}} de {{producto}} en tu carrito y solo hay {{stock}} en existencia. Puedes agregar {{disponibles}} más.",
+      "FIELD_QUANTITY": "La cantidad debe ser de al menos 1."
+    }
   },
   "CHECKOUT": {
     "CANCELLED": "Se canceló el pago. Puedes volver a intentarlo cuando quieras.",
@@ -291,21 +295,21 @@
     "DEMO_CARD_HINT": "¿Quieres probar el pago? Genera una tarjeta de prueba en",
     "DEMO_CARD_LINK": "el generador de PayPal",
     "ERRORS": {
-  "NETWORK": "No se pudo conectar con el servidor. Revisa tu conexión.",
-  "BAD_REQUEST": "Los datos enviados no son válidos.",
-  "SESSION_EXPIRED": "Tu sesión expiró. Inicia sesión de nuevo.",
-  "EMPTY_CART": "Tu carrito está vacío.",
-  "STOCK_EXCEEDED": "No hay suficiente stock de {{producto}}. Solo quedan {{stock}}. Ajusta tu carrito e inténtalo de nuevo.",
-  "CART_NOT_FOUND": "No encontramos tu carrito.",
-  "PRODUCT_UNAVAILABLE": "Uno de los productos de tu carrito ya no está disponible. Revisa tu carrito.",
-  "ORDER_NOT_FOUND": "No encontramos la orden de pago.",
-  "ORDER_NOT_PAYABLE": "Esta orden ya no se puede pagar. Vuelve al carrito e inicia el pago de nuevo.",
-  "RESERVATION_EXPIRED": "Tu reserva expiró. Vuelve al carrito e inicia el pago de nuevo.",
-  "PAYMENT_NOT_COMPLETED": "PayPal no completó el pago. Inténtalo de nuevo.",
-  "PAYMENT_PROCESSING": "Tu pago aún se está procesando. Espera un momento y revisa «Mis compras» antes de volver a pagar.",
-  "SERVER_PAYMENT": "No pudimos completar el pago. Antes de reintentar, revisa en «Mis compras» si el cobro se registró.",
-  "FIELD_ORDERID": "No se pudo identificar la orden de pago."
-}
+      "NETWORK": "No se pudo conectar con el servidor. Revisa tu conexión.",
+      "BAD_REQUEST": "Los datos enviados no son válidos.",
+      "SESSION_EXPIRED": "Tu sesión expiró. Inicia sesión de nuevo.",
+      "EMPTY_CART": "Tu carrito está vacío.",
+      "STOCK_EXCEEDED": "No hay suficiente stock de {{producto}}. Solo quedan {{stock}}. Ajusta tu carrito e inténtalo de nuevo.",
+      "CART_NOT_FOUND": "No encontramos tu carrito.",
+      "PRODUCT_UNAVAILABLE": "Uno de los productos de tu carrito ya no está disponible. Revisa tu carrito.",
+      "ORDER_NOT_FOUND": "No encontramos la orden de pago.",
+      "ORDER_NOT_PAYABLE": "Esta orden ya no se puede pagar. Vuelve al carrito e inicia el pago de nuevo.",
+      "RESERVATION_EXPIRED": "Tu reserva expiró. Vuelve al carrito e inicia el pago de nuevo.",
+      "PAYMENT_NOT_COMPLETED": "PayPal no completó el pago. Inténtalo de nuevo.",
+      "PAYMENT_PROCESSING": "Tu pago aún se está procesando. Espera un momento y revisa «Mis compras» antes de volver a pagar.",
+      "SERVER_PAYMENT": "No pudimos completar el pago. Antes de reintentar, revisa en «Mis compras» si el cobro se registró.",
+      "FIELD_ORDERID": "No se pudo identificar la orden de pago."
+    }
   },
   "ORDERS": {
     "BACK_TO_ORDERS": "Volver a mis compras",
@@ -454,9 +458,9 @@
     "UPLOADING": "Cargando..."
   },
   "ERRORS": {
-  "NETWORK": "No se pudo conectar con el servidor. Revisa tu conexión.",
-  "BAD_REQUEST": "Los datos enviados no son válidos.",
-  "SESSION_EXPIRED": "Tu sesión expiró. Inicia sesión de nuevo.",
-  "SERVER": "Ocurrió un error en el servidor. Intenta más tarde."
-}
+    "NETWORK": "No se pudo conectar con el servidor. Revisa tu conexión.",
+    "BAD_REQUEST": "Los datos enviados no son válidos.",
+    "SESSION_EXPIRED": "Tu sesión expiró. Inicia sesión de nuevo.",
+    "SERVER": "Ocurrió un error en el servidor. Intenta más tarde."
+  }
 }
