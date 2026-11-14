@@ -15,7 +15,7 @@ import { ClientesService } from '@core/services/cliente/ClientesService';
 import { Router } from '@angular/router';
 import { LucideLogIn } from '@lucide/angular';
 import { RouterOutlet, RouterLink, RouterLinkActive } from '@angular/router';
-import { LucideStore, LucideStar } from '@lucide/angular';
+import { LucideStore, LucideStar, LucideX } from '@lucide/angular';
 import {
   LucideUser,
   LucideShoppingCart,
@@ -33,7 +33,7 @@ import {
     MatToolbarModule,
     MatButtonModule, LucideUser, LucideShoppingCart, LucideLogOut, LucidePackage,
     MatSidenavModule,
-    MatListModule,LucideStore , LucideStar,
+    MatListModule, LucideStore, LucideStar, LucideX,
     MatIconModule,
     AsyncPipe,
     TranslatePipe,

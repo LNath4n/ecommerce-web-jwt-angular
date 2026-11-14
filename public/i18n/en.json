@@ -14,6 +14,7 @@
     "LOGIN": "Log in",
     "LOGOUT": "Log out",
     "MENU": "Menu",
+    "CLOSE": "Cerrar",
     "ORDERS": "My orders",
     "PRODUCTS": "Products",
     "PROFILE": "My profile",
@@ -115,17 +116,17 @@
     "VIEW_PRODUCTS": "View products",
     "WRITE_REVIEW": "Write your review",
     "ERRORS": {
-  "NETWORK": "Could not connect to the server. Check your connection.",
-  "SERVER": "A server error occurred. Please try again later.",
-  "BAD_REQUEST": "The submitted data is not valid.",
-  "SESSION_EXPIRED": "Your session expired. Please log in again.",
-  "REVIEW_NOT_PURCHASED": "You can only review products you have purchased.",
-  "REVIEW_ALREADY_EXISTS": "You already reviewed this product. You can edit your review.",
-  "REVIEW_NOT_FOUND": "We couldn't find your review for this product.",
-  "PRODUCT_NOT_FOUND": "This product is no longer available.",
-  "FIELD_RATING": "The rating must be between 1 and 5.",
-  "FIELD_COMMENT": "The comment cannot exceed 1000 characters."
-}
+      "NETWORK": "Could not connect to the server. Check your connection.",
+      "SERVER": "A server error occurred. Please try again later.",
+      "BAD_REQUEST": "The submitted data is not valid.",
+      "SESSION_EXPIRED": "Your session expired. Please log in again.",
+      "REVIEW_NOT_PURCHASED": "You can only review products you have purchased.",
+      "REVIEW_ALREADY_EXISTS": "You already reviewed this product. You can edit your review.",
+      "REVIEW_NOT_FOUND": "We couldn't find your review for this product.",
+      "PRODUCT_NOT_FOUND": "This product is no longer available.",
+      "FIELD_RATING": "The rating must be between 1 and 5.",
+      "FIELD_COMMENT": "The comment cannot exceed 1000 characters."
+    }
   },
   "LOGIN_PAGE": {
     "BACK": "Back",
@@ -145,12 +146,12 @@
     "TITLE": "Welcome",
     "VIEW_PRODUCTS": "View products",
     "ERRORS": {
-  "NETWORK": "Could not connect to the server. Check your connection.",
-  "BAD_REQUEST": "The submitted data is not valid.",
-  "SERVER": "A server error occurred. Please try again later.",
-  "FIELD_EMAIL": "The email format is not valid.",
-  "FIELD_PASSWORD": "Enter your password."
-}
+      "NETWORK": "Could not connect to the server. Check your connection.",
+      "BAD_REQUEST": "The submitted data is not valid.",
+      "SERVER": "A server error occurred. Please try again later.",
+      "FIELD_EMAIL": "The email format is not valid.",
+      "FIELD_PASSWORD": "Enter your password."
+    }
   },
   "REGISTER_PAGE": {
     "BACK": "Back",
@@ -225,6 +226,11 @@
     "TITLE": "My profile",
     "UPLOADING_PHOTO": "Uploading photo...",
     "ERRORS": {
+      "PHOTO_INVALID": "We couldn't read the image. It may be an unsupported format (HEIC, WebP) or corrupted. Use a JPG or PNG photo.",
+      "PHOTO_MISMATCH": "The file content doesn't match its format. Use a real JPG or PNG photo.",
+      "PHOTO_DIMENSIONS": "The image resolution is too large (maximum 4000x4000 px).",
+      "PHOTO_PROCESS": "The image could not be processed. Try another one.",
+      "PHOTO_MISSING": "No image was received. Select one and try again.",
       "NETWORK": "Could not connect to the server. Check your connection.",
       "BAD_REQUEST": "The submitted data is not valid.",
       "SESSION_EXPIRED": "Your session expired. Please log in again.",
@@ -232,8 +238,6 @@
       "NOT_FOUND": "We couldn't find your account.",
       "EMAIL_TAKEN": "That email is already registered to another account.",
       "SERVER": "A server error occurred. Please try again later.",
-      "PHOTO_INVALID": "The file is not a valid image.",
-      "PHOTO_MISSING": "Select an image to upload.",
       "FIELD_NEWPASSWORD": "The new password must be between 8 and 72 characters."
     }
   },
@@ -259,17 +263,17 @@
     "UPDATE_QUANTITY_ERROR": "Could not update the quantity. Check the quantity and available stock.",
     "VIEW_PRODUCTS": "View products",
     "ERRORS": {
-  "NETWORK": "Could not connect to the server. Check your connection.",
-  "BAD_REQUEST": "The submitted data is not valid.",
-  "SESSION_EXPIRED": "Your session expired. Please log in again.",
-  "SERVER": "A server error occurred. Please try again later.",
-  "PRODUCT_NOT_FOUND": "This product is no longer available.",
-  "PRODUCT_NOT_IN_CART": "This product is no longer in your cart.",
-  "CART_NOT_FOUND": "We couldn't find your cart.",
-  "STOCK_EXCEEDED": "Not enough stock for {{producto}}. Only {{stock}} left.",
-  "CART_STOCK_EXCEEDED": "You already have {{enCarrito}} of {{producto}} in your cart and only {{stock}} are in stock. You can add {{disponibles}} more.",
-  "FIELD_QUANTITY": "Quantity must be at least 1."
-}
+      "NETWORK": "Could not connect to the server. Check your connection.",
+      "BAD_REQUEST": "The submitted data is not valid.",
+      "SESSION_EXPIRED": "Your session expired. Please log in again.",
+      "SERVER": "A server error occurred. Please try again later.",
+      "PRODUCT_NOT_FOUND": "This product is no longer available.",
+      "PRODUCT_NOT_IN_CART": "This product is no longer in your cart.",
+      "CART_NOT_FOUND": "We couldn't find your cart.",
+      "STOCK_EXCEEDED": "Not enough stock for {{producto}}. Only {{stock}} left.",
+      "CART_STOCK_EXCEEDED": "You already have {{enCarrito}} of {{producto}} in your cart and only {{stock}} are in stock. You can add {{disponibles}} more.",
+      "FIELD_QUANTITY": "Quantity must be at least 1."
+    }
   },
   "CHECKOUT": {
     "CANCELLED": "Payment was cancelled. You can try again whenever you're ready.",
@@ -291,21 +295,21 @@
     "DEMO_CARD_HINT": "Want to try the payment? Generate a test card with",
     "DEMO_CARD_LINK": "PayPal's card generator",
     "ERRORS": {
-  "NETWORK": "Could not connect to the server. Check your connection.",
-  "BAD_REQUEST": "The submitted data is not valid.",
-  "SESSION_EXPIRED": "Your session expired. Please log in again.",
-  "EMPTY_CART": "Your cart is empty.",
-  "STOCK_EXCEEDED": "Not enough stock for {{producto}}. Only {{stock}} left. Adjust your cart and try again.",
-  "CART_NOT_FOUND": "We couldn't find your cart.",
-  "PRODUCT_UNAVAILABLE": "One of the products in your cart is no longer available. Please review your cart.",
-  "ORDER_NOT_FOUND": "We couldn't find the payment order.",
-  "ORDER_NOT_PAYABLE": "This order can no longer be paid. Go back to your cart and start the payment again.",
-  "RESERVATION_EXPIRED": "Your reservation expired. Go back to your cart and start the payment again.",
-  "PAYMENT_NOT_COMPLETED": "PayPal did not complete the payment. Please try again.",
-  "PAYMENT_PROCESSING": "Your payment is still being processed. Wait a moment and check \"My orders\" before paying again.",
-  "SERVER_PAYMENT": "We couldn't complete the payment. Before retrying, check \"My orders\" to see if the charge went through.",
-  "FIELD_ORDERID": "The payment order could not be identified."
-}
+      "NETWORK": "Could not connect to the server. Check your connection.",
+      "BAD_REQUEST": "The submitted data is not valid.",
+      "SESSION_EXPIRED": "Your session expired. Please log in again.",
+      "EMPTY_CART": "Your cart is empty.",
+      "STOCK_EXCEEDED": "Not enough stock for {{producto}}. Only {{stock}} left. Adjust your cart and try again.",
+      "CART_NOT_FOUND": "We couldn't find your cart.",
+      "PRODUCT_UNAVAILABLE": "One of the products in your cart is no longer available. Please review your cart.",
+      "ORDER_NOT_FOUND": "We couldn't find the payment order.",
+      "ORDER_NOT_PAYABLE": "This order can no longer be paid. Go back to your cart and start the payment again.",
+      "RESERVATION_EXPIRED": "Your reservation expired. Go back to your cart and start the payment again.",
+      "PAYMENT_NOT_COMPLETED": "PayPal did not complete the payment. Please try again.",
+      "PAYMENT_PROCESSING": "Your payment is still being processed. Wait a moment and check \"My orders\" before paying again.",
+      "SERVER_PAYMENT": "We couldn't complete the payment. Before retrying, check \"My orders\" to see if the charge went through.",
+      "FIELD_ORDERID": "The payment order could not be identified."
+    }
   },
   "ORDERS": {
     "BACK_TO_ORDERS": "Back to my orders",
@@ -454,9 +458,9 @@
     "UPLOADING": "Uploading..."
   },
   "ERRORS": {
-  "NETWORK": "Could not connect to the server. Check your connection.",
-  "BAD_REQUEST": "The submitted data is not valid.",
-  "SESSION_EXPIRED": "Your session expired. Please log in again.",
-  "SERVER": "A server error occurred. Please try again later."
-}
+    "NETWORK": "Could not connect to the server. Check your connection.",
+    "BAD_REQUEST": "The submitted data is not valid.",
+    "SESSION_EXPIRED": "Your session expired. Please log in again.",
+    "SERVER": "A server error occurred. Please try again later."
+  }
 }

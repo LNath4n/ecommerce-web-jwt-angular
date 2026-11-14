@@ -3,7 +3,13 @@
   <!-- Drawer (solo mobile): lo secundario -->
   <mat-sidenav #drawer class="sidenav" fixedInViewport [attr.role]="(isHandset$ | async) ? 'dialog' : 'navigation'"
     [mode]="'over'" [opened]="false">
-    <mat-toolbar>{{ 'NAV.MENU' | translate }}</mat-toolbar>
+    <mat-toolbar class="drawer-header">
+      <span>{{ 'NAV.MENU' | translate }}</span>
+      <button type="button" mat-icon-button class="drawer-close"
+        [attr.aria-label]="'NAV.CLOSE' | translate" (click)="drawer.close()">
+        <svg lucideX [size]="22"></svg>
+      </button>
+    </mat-toolbar>
     <mat-nav-list>
 
       @if (isLoggedIn()) {
