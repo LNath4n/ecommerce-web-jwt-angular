@@ -4,12 +4,33 @@
   gap: 1rem;
 }
 
-.productos-hero h1 {
-  font-size: clamp(2.5rem, 5vw, 3.5rem);
-}
-
 .product-section .product-item {
   height: 100%;
+}
+
+.producto-entrada {
+  animation: producto-aparecer 800ms cubic-bezier(0.2, 0.75, 0.3, 1) both;
+}
+
+.producto-entrada:nth-child(1) { animation-delay: 0ms; }
+.producto-entrada:nth-child(2) { animation-delay: 70ms; }
+.producto-entrada:nth-child(3) { animation-delay: 140ms; }
+.producto-entrada:nth-child(4) { animation-delay: 210ms; }
+.producto-entrada:nth-child(5) { animation-delay: 280ms; }
+.producto-entrada:nth-child(6) { animation-delay: 350ms; }
+.producto-entrada:nth-child(7) { animation-delay: 420ms; }
+.producto-entrada:nth-child(8) { animation-delay: 490ms; }
+
+@keyframes producto-aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .product-section .product-item .product-thumbnail {
@@ -45,11 +66,6 @@
 .Repetible {
   padding: 1rem;
   border: 1px solid #ccc;
-}
-.buscador-barra {
-  display: flex;
-  align-items: center;
-  gap: 12px;
 }
 
 .buscador-campo {
@@ -88,4 +104,170 @@
   background-color: #3b5d50;
   border-color: #3b5d50;
   color: #fff;
+}
+
+
+@media (prefers-reduced-motion: reduce) {
+  .producto-entrada {
+    animation: none;
+  }
+}
+
+
+.product-section {
+  padding: 2.5rem 0 3rem;
+}
+
+@media (min-width: 992px) {
+  .product-section {
+    padding: 3rem 0 4rem;
+  }
+}
+
+.productos-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.productos-toolbar h2 {
+  margin: 0;
+}
+
+.buscador-barra {
+  display: flex;
+  flex: 1 1 460px;
+  align-items: center;
+  gap: 12px;
+  max-width: 760px;
+}
+
+.orden-productos {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 0;
+  white-space: nowrap;
+}
+
+.orden-productos .form-select {
+  width: 12.5rem;
+  max-width: none;
+  border-radius: 30px;
+}
+
+@media (max-width: 767.98px) {
+  .buscador-barra {
+    flex-wrap: wrap;
+    flex-basis: 100%;
+    max-width: none;
+  }
+
+  .buscador-campo {
+    flex: 1 1 100%;
+  }
+
+  .orden-productos,
+  .orden-productos .form-select {
+    width: 100%;
+  }
+}
+
+.product-section .product-item .icon-cross {
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+@media (hover: none) {
+  .product-section .product-item {
+    padding-bottom: 64px;
+  }
+
+  .product-section .product-item .icon-cross {
+    bottom: 0;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    margin-bottom: 0;
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%);
+    transition: transform 150ms ease;
+  }
+
+  .product-section .product-item .icon-cross:active {
+    transform: translateX(-50%) scale(0.9);
+  }
+}
+
+@media (hover: none) {
+  .product-section .product-item:hover::before {
+    height: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .producto-entrada { animation: none; }
+  .product-section .product-item .icon-cross { transition: none; }
+}
+
+@media (hover: none), (max-width: 991.98px) {
+  .product-section .product-item {
+    padding-bottom: 64px;
+  }
+
+  .product-section .product-item .icon-cross {
+    bottom: 0;
+    left: 50%;
+    width: 44px;
+    height: 44px;
+    margin-bottom: 0;
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(-50%);
+    transition: transform 150ms ease;
+  }
+
+  .product-section .product-item .icon-cross:active {
+    transform: translateX(-50%) scale(0.9);
+  }
+}
+
+.product-section .product-item .icon-cross.exito {
+  opacity: 1;
+  visibility: visible;
+  background-color: #2f8f5b;
+  transition: background-color 250ms ease;
+}
+
+.icon-cross .icon-check {
+  animation: check-pop 400ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.icon-cross .icon-check path {
+  stroke-dasharray: 24;
+  stroke-dashoffset: 24;
+  animation: check-dibujar 350ms ease-out 120ms forwards;
+}
+
+@keyframes check-pop {
+  from { scale: 0.3; opacity: 0; }
+  to   { scale: 1;   opacity: 1; }
+}
+
+@keyframes check-dibujar {
+  to { stroke-dashoffset: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .icon-cross .icon-check,
+  .icon-cross .icon-check path {
+    animation: none;
+    stroke-dashoffset: 0;
+  }
 }

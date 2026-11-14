@@ -1,8 +1,9 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { of } from 'rxjs';
-import { AlertaService } from '@core/services/Modals/ModalsService';
-import { ProductosService } from '@core/services/Producto/ProductosService';
-import { CodigosAdminService } from '@core/services/admin/CodigosAdminService/codigos-admin-service';
+import { provideTranslateService } from '@ngx-translate/core';
+import { AlertaService } from '@core/services/modals/ModalsService';
+import { ProductosService } from '@core/services/producto/ProductosService';
+import { CodigosAdminService } from '@core/services/admin/codigosadminservice/codigos-admin-service';
 import { AdministrarCodigos } from './administrar-codigos';
 
 describe('AdministrarCodigos', () => {
@@ -27,6 +28,7 @@ describe('AdministrarCodigos', () => {
           provide: AlertaService,
           useValue: { error: () => undefined, exito: () => undefined },
         },
+        provideTranslateService(),
       ],
     }).compileComponents();
 

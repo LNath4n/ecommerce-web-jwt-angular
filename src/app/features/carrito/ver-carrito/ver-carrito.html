@@ -1,15 +1,5 @@
 <!-- Start Hero Section -->
-<div class="hero">
-  <div class="container">
-    <div class="row justify-content-between">
-      <div class="col-lg-5">
-        <div class="intro-excerpt">
-          <h1>Carrito</h1>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+<app-page-hero titulo="CART.TITLE" />
 <!-- End Hero Section -->
 
 @let carrito = carrito$ | async;
@@ -17,7 +7,16 @@
 <div class="untree_co-section before-footer-section">
   <div class="container">
 
-    @if (carrito && carrito.productos.length > 0) {
+    @if (errorCarga()) {
+
+    <div class="text-center py-5" role="alert">
+      <p class="mb-4">{{ errorCarga() }}</p>
+      <button class="btn btn-primary" type="button" (click)="reintentarCarga()">
+        {{ 'CART.RETRY' | translate }}
+      </button>
+    </div>
+
+    } @else if (carrito && carrito.items.length > 0) {
 
     <div class="row mb-5">
       <div class="col-md-12">
@@ -25,48 +24,59 @@
           <table class="table">
             <thead>
               <tr>
-                <th class="product-thumbnail">Imagen</th>
-                <th class="product-name">Producto</th>
-                <th class="product-price">Precio</th>
-                <th class="product-quantity">Cantidad</th>
-                <th class="product-total">Total</th>
-                <th class="product-remove">Quitar</th>
+                <th class="product-thumbnail">{{ 'CART.IMAGE' | translate }}</th>
+                <th class="product-name">{{ 'CART.PRODUCT' | translate }}</th>
+                <th class="product-price">{{ 'CART.PRICE' | translate }}</th>
+                <th class="product-quantity">{{ 'CART.QUANTITY' | translate }}</th>
+                <th class="product-total">{{ 'CART.TOTAL' | translate }}</th>
+                <th class="product-remove">{{ 'CART.REMOVE' | translate }}</th>
               </tr>
             </thead>
             <tbody>
-              @for (item of carrito.productos; track item.productoId) {
+              @for (item of carrito.items; track item.productId) {
               <tr>
                 <td class="product-thumbnail">
-                  @if (item.imagenUrl && !imagenFallida(item.productoId)) {
-                  <img [src]="item.imagenUrl" [alt]="item.nombre" class="img-fluid"
-                    (error)="marcarImagenFallida(item.productoId)">
+                  @if (item.imageUrl && !imagenFallida(item.productId)) {
+                  <img [src]="item.imageUrl" [alt]="item.name" class="img-fluid"
+                    (error)="marcarImagenFallida(item.productId)">
                   } @else {
                   <svg lucidePackage color="#3b5d50" [size]="48" [strokeWidth]="1.25"></svg>
                   }
                 </td>
                 <td class="product-name">
-                  <h2 class="h5 text-black">{{ item.nombre }}</h2>
+                  <h2 class="h5 text-black">{{ item.name }}</h2>
                   <small>{{ item.sku }}</small>
                 </td>
-                <td>{{ item.precioVenta | currency:'MXN' }}</td>
-                <td>
+                <td class="product-price" [attr.data-label]="'CART.PRICE' | translate"
+                  [attr.aria-label]="'CART.PRICE' | translate">
+                  {{ item.salePrice | currency:'MXN' }}
+                </td>
+                <td class="product-quantity" [attr.data-label]="'CART.QUANTITY' | translate"
+                  [attr.aria-label]="'CART.QUANTITY' | translate">
                   <div class="input-group mb-3 d-flex align-items-center quantity-container" style="max-width: 120px;">
                     <div class="input-group-prepend">
-                      <button class="btn btn-outline-black decrease" type="button" [disabled]="item.cantidad <= 1"
+                      <button class="btn btn-outline-black decrease" type="button"
+                        [attr.aria-label]="'CART.DECREASE_QUANTITY' | translate" [disabled]="item.quantity <= 1"
                         (click)="cambiarCantidad(item, -1)">&minus;</button>
                     </div>
-                    <input type="text" class="form-control text-center quantity-amount" [value]="item.cantidad" readonly
-                      aria-label="Cantidad">
+                    <input type="text" class="form-control text-center quantity-amount" [value]="item.quantity" readonly
+                      [attr.aria-label]="'CART.QUANTITY' | translate">
                     <div class="input-group-append">
                       <button class="btn btn-outline-black increase" type="button"
+                        [attr.aria-label]="'CART.INCREASE_QUANTITY' | translate"
                         (click)="cambiarCantidad(item, 1)">&plus;</button>
                     </div>
                   </div>
                 </td>
-                <td>{{ item.cantidad * item.precioVenta | currency:'MXN' }}</td>
-                <td>
-                  <button type="button" class="btn-quitar-carrito" aria-label="Quitar del carrito"
-                    (click)="eliminar(item.productoId)">
+                <td class="product-total" [attr.data-label]="'CART.TOTAL' | translate"
+                  [attr.aria-label]="'CART.TOTAL' | translate">
+                  {{ item.quantity * item.salePrice | currency:'MXN' }}
+                </td>
+                <td class="product-remove" [attr.data-label]="'CART.REMOVE' | translate"
+                  [attr.aria-label]="'CART.REMOVE' | translate">
+                  <button type="button" class="btn-quitar-carrito"
+                    [attr.aria-label]="'CART.REMOVE_FROM_CART' | translate"
+                    (click)="eliminar(item.productId)">
                     <svg lucideTrash2 color="#fff" [size]="16"></svg>
                   </button>
                 </td>
@@ -87,15 +97,22 @@
           <div class="col-md-7">
             <div class="row">
               <div class="col-md-12 text-right border-bottom mb-4">
-                <h3 class="text-black h4 text-uppercase">Total del carrito</h3>
+                <h3 class="text-black h4 text-uppercase">{{ 'CART.CART_TOTAL' | translate }}</h3>
               </div>
             </div>
             <div class="row mb-3">
               <div class="col-6">
-                <span class="text-black">Subtotal</span>
+                <span class="text-black">{{ 'CART.SUBTOTAL' | translate }}</span>
               </div>
               <div class="col-6 text-end">
                 <strong class="text-black">{{ carrito.subtotal | currency:'MXN' }}</strong>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col-12">
+                <button class="btn btn-primary w-100" type="button" (click)="irACheckout()">
+                  {{ 'CHECKOUT.CONTINUE_TO_PAYMENT' | translate }}
+                </button>
               </div>
             </div>
           </div>
@@ -106,9 +123,9 @@
     } @else {
 
     <div class="text-center py-5">
-      <h2 class="section-title mb-3">Tu carrito está vacío</h2>
-      <p class="mb-4">Agrega productos para verlos aquí.</p>
-      <button class="btn btn-primary" (click)="seguirComprando()">Ver productos</button>
+      <h2 class="section-title mb-3">{{ 'CART.EMPTY_TITLE' | translate }}</h2>
+      <p class="mb-4">{{ 'CART.EMPTY_MESSAGE' | translate }}</p>
+      <button class="btn btn-primary" (click)="seguirComprando()">{{ 'CART.VIEW_PRODUCTS' | translate }}</button>
     </div>
 
     }

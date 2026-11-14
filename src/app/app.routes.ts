@@ -29,6 +29,11 @@ export const routes: Routes = [
           .then(m => m.TodosLosProductos)
       },
       {
+        path: 'productos/destacados',
+        loadComponent: () => import('./features/productos/productos-destacados/productos-destacados')
+          .then(m => m.ProductosDestacados)
+      },
+      {
         path: 'productos/:slug',
         loadComponent: () => import('./features/productos/un-producto/un-producto')
           .then(m => m.UnProducto)
@@ -38,6 +43,24 @@ export const routes: Routes = [
         canActivate: [authGuard],
         loadComponent: () => import('./features/carrito/ver-carrito/ver-carrito')
           .then(m => m.VerCarrito)
+      },
+      {
+        path: 'checkout',
+        canActivate: [authGuard],
+        loadComponent: () => import('./features/checkout/checkout')
+          .then(m => m.Checkout)
+      },
+      {
+        path: 'mis-compras/:id',
+        canActivate: [authGuard],
+        loadComponent: () => import('./features/ordenes/mis-compras/mis-compras')
+          .then(m => m.MisCompras)
+      },
+      {
+        path: 'mis-compras',
+        canActivate: [authGuard],
+        loadComponent: () => import('./features/ordenes/mis-compras/mis-compras')
+          .then(m => m.MisCompras)
       },
       {
         path: 'perfil',

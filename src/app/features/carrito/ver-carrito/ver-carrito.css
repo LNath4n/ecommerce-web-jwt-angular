@@ -10,8 +10,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px !important;
+  width: 40px;
+  height: 40px !important;
   padding: 0;
   border: 0;
   border-radius: 6px;
@@ -24,9 +24,170 @@
   background-color: #2f4b40;
 }
 
-/* Por si style.css define otro verde para btn-primary */
 .btn-primary {
   background-color: #3b5d50;
   border-color: #3b5d50;
   color: #fff;
+}
+
+@media (min-width: 992px) {
+  .site-blocks-table th,
+  .site-blocks-table td {
+    text-align: center;
+    vertical-align: middle;
+  }
+
+  .site-blocks-table td.product-name h2 {
+    margin-bottom: 0.25rem;
+  }
+
+  /* Quita el mb-3 de Bootstrap que subía el stepper */
+  .site-blocks-table .quantity-container {
+    margin: 0 auto !important;
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .site-blocks-table tbody {
+    max-width: 560px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .before-footer-section {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+  }
+
+  .site-blocks-table {
+    overflow: visible;
+  }
+
+  .site-blocks-table table {
+    display: block;
+    width: 100%;
+    margin-bottom: 0;
+  }
+
+  .site-blocks-table thead {
+    display: none;
+  }
+
+  .site-blocks-table tbody {
+    display: grid;
+    gap: 1rem;
+  }
+
+  .site-blocks-table tbody tr {
+    display: grid;
+    grid-template-areas:
+      "image name"
+      "price price"
+      "quantity quantity"
+      "total total"
+      "remove remove";
+    grid-template-columns: 76px minmax(0, 1fr);
+    align-items: center;
+    overflow: hidden;
+    border: 1px solid #e1e8e5;
+    border-radius: 0.75rem;
+    background: #fff;
+    box-shadow: 0 2px 8px rgb(35 54 46 / 6%);
+  }
+
+  .site-blocks-table tbody tr:first-child td {
+    border-top: 0 !important;
+  }
+
+  .site-blocks-table tbody td {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid #edf1ef;
+    text-align: right;
+  }
+
+  .site-blocks-table tbody td::before {
+    flex: 0 0 auto;
+    color: #626b67;
+    font-size: 0.875rem;
+    font-weight: 500;
+    text-align: left;
+  }
+
+  .site-blocks-table td.product-thumbnail {
+    grid-area: image;
+    width: auto;
+    justify-content: center;
+    padding: 0.75rem 0.25rem 0.75rem 0.75rem;
+  }
+
+  .site-blocks-table td.product-thumbnail img {
+    width: 64px;
+    height: 64px;
+    object-fit: contain;
+  }
+
+  .site-blocks-table td.product-name {
+    grid-area: name;
+    display: block;
+    padding: 0.75rem 1rem 0.75rem 0.5rem;
+    text-align: left;
+    overflow-wrap: anywhere;
+  }
+
+  .site-blocks-table td.product-name h2 {
+    margin-bottom: 0.25rem;
+    font-size: 1rem;
+  }
+
+  .site-blocks-table td.product-price {
+    grid-area: price;
+  }
+
+  .site-blocks-table td.product-price::before,
+  .site-blocks-table td.product-quantity::before,
+  .site-blocks-table td.product-total::before,
+  .site-blocks-table td.product-remove::before {
+    content: attr(data-label);
+  }
+
+  .site-blocks-table td.product-quantity {
+    grid-area: quantity;
+    justify-content: space-between;
+  }
+
+  .site-blocks-table td.product-total {
+    grid-area: total;
+    justify-content: flex-end;
+    font-weight: 600;
+  }
+
+  .site-blocks-table td.product-quantity .quantity-container {
+    max-width: 100% !important;
+    margin-bottom: 0 !important;
+  }
+
+  .site-blocks-table td.product-quantity .quantity-container button {
+    min-width: 38px;
+    min-height: 40px;
+  }
+
+  .site-blocks-table td.product-quantity .quantity-amount {
+    min-width: 2.5rem;
+  }
+
+  .site-blocks-table td.product-remove {
+    grid-area: remove;
+    justify-content: space-between;
+    border-bottom: 0;
+  }
+
+  .site-blocks-table .btn-quitar-carrito {
+    flex: 0 0 40px;
+  }
 }

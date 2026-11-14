@@ -1,0 +1,98 @@
+<app-page-hero titulo="PRODUCTS_PAGE.SPECIAL_SELECTIONS">
+  @if (isLoggedIn() && nombreUsuario()) {
+  <p>{{ 'PRODUCTS_PAGE.GREETING_USER' | translate: { name: nombreUsuario() } }}</p>
+  } @else {
+  <p>{{ 'PRODUCTS_PAGE.GREETING_GUEST' | translate }}</p>
+  }
+</app-page-hero>
+
+<section class="product-section productos-destacados">
+  <div class="container">
+
+    @for (seccion of secciones; track seccion.id) {
+    @if (seccion.cargando() || seccion.error() || seccion.productos().length > 0) {
+    <div class="top-seccion" #seccionEl>
+      <div class="top-seccion-cabecera">
+        <h2>{{ seccion.titulo | translate }}</h2>
+        @if (seccion.productos().length > 0) {
+        <div class="top-carrusel-controles">
+          <button type="button" class="top-carrusel-flecha" (click)="desplazarCarrusel(seccionEl, -1)"
+            [attr.aria-label]="'PRODUCTS_PAGE.PREVIOUS' | translate">&larr;</button>
+          <button type="button" class="top-carrusel-flecha" (click)="desplazarCarrusel(seccionEl, 1)"
+            [attr.aria-label]="'PRODUCTS_PAGE.NEXT' | translate">&rarr;</button>
+        </div>
+        }
+      </div>
+
+      @if (seccion.cargando()) {
+      <div class="text-center py-4" role="status">
+        <span class="spinner-border text-success" aria-hidden="true"></span>
+        <p class="mt-3 mb-0">{{ 'PRODUCT_DETAIL.LOADING' | translate }}</p>
+      </div>
+      } @else if (seccion.error()) {
+      <div class="text-center py-4">
+        <p role="alert">{{ 'PRODUCTS_PAGE.TOP_LOAD_ERROR' | translate }}</p>
+        <button type="button" class="btn btn-primary" (click)="seccion.cargar()">
+          {{ 'PRODUCTS_PAGE.RETRY' | translate }}
+        </button>
+      </div>
+      } @else {
+      <div class="top-carrusel" role="region" [attr.aria-label]="seccion.titulo | translate">
+        @for (producto of seccion.productos(); track producto.id) {
+        <div class="top-carrusel-slide" [class.producto-entrada]="animarEntrada()">
+          <a class="product-item" (click)="verDetalle(producto.slug)">
+            @if (producto.imageUrl && !imagenFallida(producto.id)) {
+            <img [src]="producto.imageUrl" [alt]="producto.name" class="img-fluid product-thumbnail" loading="lazy"
+              (error)="marcarImagenFallida(producto.id)">
+            } @else {
+            <div class="product-thumbnail producto-imagen-fallback">
+              <svg lucidePackage color="#3b5d50" [size]="72" [strokeWidth]="1.25"></svg>
+            </div>
+            }
+
+            <h3 class="product-title">{{ producto.name }}</h3>
+            <p class="mb-1 product-description">{{ producto.description || '' }}</p>
+            <p class="mb-1 product-meta">
+              {{ producto.platform || producto.type }} · {{ producto.region || ('PRODUCTS_PAGE.GLOBAL' | translate) }}
+            </p>
+            <p class="mb-1 product-meta">
+              {{ 'PRODUCTS_PAGE.STOCK' | translate }}: {{ producto.stock }}
+            </p>
+
+            @switch (seccion.id) {
+            @case ('vistas') {
+            <span class="producto-top-meta">{{ producto.views }} {{ 'PRODUCTS_PAGE.VIEWS' | translate }}</span>
+            }
+            @case ('calificacion') {
+            <span class="producto-top-meta">
+              {{ producto.averageRating }} ★ · {{ producto.totalReviews }} {{ 'PRODUCTS_PAGE.REVIEWS' | translate }}
+            </span>
+            }
+            @default {
+            <span class="producto-top-meta">{{ producto.totalReviews }} {{ 'PRODUCTS_PAGE.REVIEWS' | translate }}</span>
+            }
+            }
+
+            <strong class="product-price">${{ producto.salePrice }}</strong>
+          </a>
+        </div>
+        }
+      </div>
+      }
+
+    </div>
+    }
+    }
+
+    @if (todoVacio()) {
+    <p class="top-carrusel-vacio text-center">{{ 'PRODUCTS_PAGE.NO_SPECIAL_PRODUCTS' | translate }}</p>
+    }
+
+    <div class="text-center mt-4">
+      <a class="btn btn-primary" routerLink="/productos">
+        {{ 'PRODUCTS_PAGE.BACK_TO_PRODUCTS' | translate }}
+      </a>
+    </div>
+
+  </div>
+</section>

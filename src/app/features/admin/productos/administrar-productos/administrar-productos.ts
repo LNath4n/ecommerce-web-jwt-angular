@@ -1,6 +1,7 @@
 import { Component, inject, signal, computed, OnInit, OnDestroy } from '@angular/core';
 import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import {
   LucidePencil,
   LucideTrash2,
@@ -10,23 +11,28 @@ import {
   LucideImageOff,
 } from '@lucide/angular';
 import {
-  CategoriaOpcionResponse,
-  ProductoPublicoResponse,
-  ProductoRequest,
-  TipoProducto,
-} from '@core/models/Producto/productoModels';
-import { ProductosService } from '@core/services/Producto/ProductosService';
-import { ProductoAdminService } from '@core/services/admin/ProductoAdminService/ProductoAdminService';
-import { AlertaService } from '@core/services/Modals/ModalsService';
+  CategoryOptionResponse,
+  CategoryRequest,
+  ProductRequest,
+  ProductType,
+  PublicProductResponse,
+} from '@core/models/producto/productoModels';
+import {PageHero} from '../../../layout/page-hero/page-hero';
+
+import { ProductosService } from '@core/services/producto/ProductosService';
+import { ProductoAdminService } from '@core/services/admin/productoadminservice/ProductoAdminService';
+import { AlertaService } from '@core/services/modals/ModalsService';
 import { ComponenteConCambios } from '@core/guard/cambios-sin-guardar-guard';
 import { switchMap, of, catchError, throwError } from 'rxjs';
 
 @Component({
   imports: [
     FormsModule,
+    TranslatePipe,
     LucidePencil,
     LucideTrash2,
     LucideSearch,
+    PageHero,
     LucideChevronLeft,
     LucideChevronRight,
     LucideImageOff,
@@ -39,10 +45,16 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
   private productosService = inject(ProductosService);
   private adminService = inject(ProductoAdminService);
   private alerta = inject(AlertaService);
+  private translate = inject(TranslateService);
 
-  productos = signal<ProductoPublicoResponse[]>([]);
-  categorias = signal<CategoriaOpcionResponse[]>([]);
-  readonly tiposProducto: TipoProducto[] = [
+  productos = signal<PublicProductResponse[]>([]);
+  categorias = signal<CategoryOptionResponse[]>([]);
+  categoriaEditandoId = signal<number | null>(null);
+  categoriaGuardando = signal(false);
+  categoriaEliminandoId = signal<number | null>(null);
+  nombreCategoria = '';
+  private nombreCategoriaInicial = '';
+  readonly tiposProducto: ProductType[] = [
     'GIFT_CARD',
     'CLAVE_JUEGO',
     'LICENCIA_SOFTWARE',
@@ -51,7 +63,7 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
   ];
   editandoId = signal<number | null>(null);
 
-  form: ProductoRequest = this.formularioVacio();
+  form: ProductRequest = this.formularioVacio();
   private inicial = JSON.stringify(this.form);
 
   //  Imagen 
@@ -78,9 +90,13 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
 
   ngOnInit() {
     this.cargar();
+    this.cargarCategorias();
+  }
+
+  cargarCategorias() {
     this.productosService.obtenerListaDeCategorias().subscribe({
       next: categorias => this.categorias.set(categorias),
-      error: err => this.mostrarError(err, 'No se pudieron cargar las categorías'),
+      error: err => this.mostrarError(err, 'ADMIN_PRODUCTS.CATEGORIES_LOAD_ERROR'),
     });
   }
 
@@ -101,7 +117,7 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
           this.productos.set(res.content);
           this.totalPaginas.set(Math.max(res.totalPages, 1));
         },
-        error: err => this.mostrarError(err, 'No se pudieron cargar los productos'),
+        error: err => this.mostrarError(err, 'ADMIN_PRODUCTS.PRODUCTS_LOAD_ERROR'),
       });
   }
 
@@ -126,12 +142,12 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
     const archivo = input.files?.[0] ?? null;
 
     if (archivo && !['image/jpeg', 'image/png'].includes(archivo.type)) {
-      this.alerta.error('La imagen debe estar en formato JPG o PNG.');
+      this.alerta.error(this.translate.instant('ADMIN_PRODUCTS.IMAGE_FORMAT_ERROR'));
       input.value = '';
       return;
     }
     if (archivo && archivo.size > this.maxBytesImagen) {
-      this.alerta.error('La imagen no debe pasar de 5 MB.');
+      this.alerta.error(this.translate.instant('ADMIN_PRODUCTS.IMAGE_SIZE_ERROR'));
       input.value = '';
       return;
     }
@@ -162,67 +178,83 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
             this.editandoId.set(producto.id);
             this.inicial = JSON.stringify(this.form);
             this.cargar();
-            this.alerta.advertencia('El producto se guardó, pero la imagen no se pudo subir. Vuelve a intentarlo.');
+            this.alerta.advertencia(this.translate.instant('ADMIN_PRODUCTS.IMAGE_UPLOAD_RETRY'));
             return throwError(() => err);
           })
         );
       })
     ).subscribe({
       next: () => {
-        this.alerta.exito(id !== null ? 'Producto actualizado.' : 'Producto creado.');
+        this.alerta.exito(this.translate.instant(
+          id !== null ? 'ADMIN_PRODUCTS.UPDATE_SUCCESS' : 'ADMIN_PRODUCTS.CREATE_SUCCESS'
+        ));
         this.cancelar();
         this.cargar();
       },
-      error: err => this.mostrarError(err, 'No se pudo guardar el producto'),
+      error: err => this.mostrarError(err, 'ADMIN_PRODUCTS.SAVE_ERROR'),
     });
   }
 
-  editar(p: ProductoPublicoResponse) {
+  editar(p: PublicProductResponse) {
     this.adminService.obtener(p.id).subscribe({
-      next: ({ id, imagenUrl, slug, stock, fechaCreacion, ...datos }) => {
-        this.editandoId.set(id);
-        this.reiniciarForm(datos);
-        this.reiniciarImagen(imagenUrl);
+      next: producto => {
+        this.editandoId.set(producto.id);
+        this.reiniciarForm({
+          sku: producto.sku,
+          name: producto.name,
+          description: producto.description,
+          platform: producto.platform,
+          type: producto.type,
+          region: producto.region,
+          faceValue: producto.faceValue,
+          currency: producto.currency,
+          salePrice: producto.salePrice,
+          costPrice: producto.costPrice,
+          redemptionInstructions: producto.redemptionInstructions,
+          active: producto.active,
+          categoryId: producto.categoryId,
+        });
+        this.reiniciarImagen(producto.imageUrl);
       },
-      error: err => this.mostrarError(err, 'No se pudo cargar el producto'),
+      error: err => this.mostrarError(err, 'ADMIN_PRODUCTS.PRODUCT_LOAD_ERROR'),
     });
   }
 
   borrar(id: number) {
-    if (!confirm('¿Borrar producto?')) return;
+    if (!confirm(this.translate.instant('ADMIN_PRODUCTS.DELETE_CONFIRM'))) return;
     this.adminService.borrar(id).subscribe({
       next: () => {
-        this.alerta.exito('Producto borrado.');
+        this.alerta.exito(this.translate.instant('ADMIN_PRODUCTS.DELETE_SUCCESS'));
         if (this.editandoId() === id) this.cancelar();
         this.cargar();
       },
-      error: err => this.mostrarError(err, 'No se pudo borrar el producto'),
+      error: err => this.mostrarError(err, 'ADMIN_PRODUCTS.DELETE_ERROR'),
     });
   }
 
   desactivar(id: number) {
-    if (!confirm('¿Desactivar producto? Dejará de aparecer en el catálogo público.')) return;
+    if (!confirm(this.translate.instant('ADMIN_PRODUCTS.DEACTIVATE_CONFIRM'))) return;
     this.adminService.desactivar(id).subscribe({
       next: () => {
-        this.alerta.exito('Producto desactivado.');
+        this.alerta.exito(this.translate.instant('ADMIN_PRODUCTS.DEACTIVATE_SUCCESS'));
         if (this.editandoId() === id) this.cancelar();
         this.cargar();
       },
-      error: err => this.mostrarError(err, 'No se pudo desactivar el producto'),
+      error: err => this.mostrarError(err, 'ADMIN_PRODUCTS.DEACTIVATE_ERROR'),
     });
   }
 
   quitarImagen() {
     const id = this.editandoId();
     if (id === null || !this.vistaPrevia()) return;
-    if (!confirm('¿Quitar la imagen de este producto?')) return;
+    if (!confirm(this.translate.instant('ADMIN_PRODUCTS.REMOVE_IMAGE_CONFIRM'))) return;
 
     this.adminService.quitarImagen(id).subscribe({
       next: () => {
         this.reiniciarImagen(null);
-        this.alerta.exito('Imagen eliminada.');
+        this.alerta.exito(this.translate.instant('ADMIN_PRODUCTS.REMOVE_IMAGE_SUCCESS'));
       },
-      error: err => this.mostrarError(err, 'No se pudo quitar la imagen'),
+      error: err => this.mostrarError(err, 'ADMIN_PRODUCTS.REMOVE_IMAGE_ERROR'),
     });
   }
 
@@ -233,10 +265,74 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
   }
 
   hayCambiosSinGuardar(): boolean {
-    return JSON.stringify(this.form) !== this.inicial || this.archivoImagen !== null;
+    return JSON.stringify(this.form) !== this.inicial
+      || this.archivoImagen !== null
+      || this.nombreCategoria !== this.nombreCategoriaInicial;
   }
 
-  private reiniciarForm(valor: ProductoRequest) {
+  guardarCategoria() {
+    const nombre = this.nombreCategoria.trim();
+    if (!nombre) {
+      this.alerta.error(this.translate.instant('ADMIN_PRODUCTS.CATEGORY_NAME_REQUIRED'));
+      return;
+    }
+
+    const id = this.categoriaEditandoId();
+    const request: CategoryRequest = { name: nombre };
+    const guardar$ = id === null
+      ? this.adminService.crearCategoria(request)
+      : this.adminService.editarCategoria(id, request);
+
+    this.categoriaGuardando.set(true);
+    guardar$.subscribe({
+      next: () => {
+        this.alerta.exito(this.translate.instant(
+          id === null ? 'ADMIN_PRODUCTS.CATEGORY_CREATE_SUCCESS' : 'ADMIN_PRODUCTS.CATEGORY_UPDATE_SUCCESS'
+        ));
+        this.cancelarEdicionCategoria();
+        this.cargarCategorias();
+        this.categoriaGuardando.set(false);
+      },
+      error: err => {
+        this.mostrarErrorCategoria(err, 'ADMIN_PRODUCTS.CATEGORY_SAVE_ERROR', 'ADMIN_PRODUCTS.CATEGORY_NAME_CONFLICT');
+        this.categoriaGuardando.set(false);
+      },
+    });
+  }
+
+  editarCategoria(categoria: CategoryOptionResponse) {
+    this.categoriaEditandoId.set(categoria.id);
+    this.nombreCategoria = categoria.name;
+    this.nombreCategoriaInicial = categoria.name;
+  }
+
+  cancelarEdicionCategoria() {
+    this.categoriaEditandoId.set(null);
+    this.nombreCategoria = '';
+    this.nombreCategoriaInicial = '';
+  }
+
+  borrarCategoria(categoria: CategoryOptionResponse) {
+    if (!confirm(this.translate.instant('ADMIN_PRODUCTS.CATEGORY_DELETE_CONFIRM', { nombre: categoria.name }))) {
+      return;
+    }
+
+    this.categoriaEliminandoId.set(categoria.id);
+    this.adminService.borrarCategoria(categoria.id).subscribe({
+      next: () => {
+        this.alerta.exito(this.translate.instant('ADMIN_PRODUCTS.CATEGORY_DELETE_SUCCESS'));
+        if (this.categoriaEditandoId() === categoria.id) this.cancelarEdicionCategoria();
+        this.cargarCategorias();
+        this.categoriaEliminandoId.set(null);
+      },
+      error: err => {
+        this.mostrarErrorCategoria(err, 'ADMIN_PRODUCTS.CATEGORY_DELETE_ERROR', 'ADMIN_PRODUCTS.CATEGORY_DELETE_CONFLICT');
+        this.categoriaEliminandoId.set(null);
+      },
+    });
+  }
+
+  private reiniciarForm(valor: ProductRequest) {
     this.form = valor;
     this.inicial = JSON.stringify(valor);
   }
@@ -248,13 +344,13 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
     this.inputKey.update(k => k + 1); // recrea el input y borra el nombre del archivo
   }
 
-  private formularioVacio(): ProductoRequest {
+  private formularioVacio(): ProductRequest {
     return {
       sku: '',
-      nombre: '',
-      tipo: 'GIFT_CARD',
-      precioVenta: 0,
-      activo: true,
+      name: '',
+      type: 'GIFT_CARD',
+      salePrice: 0,
+      active: true,
     };
   }
 
@@ -265,11 +361,15 @@ export class AdministrarProductos implements OnInit, OnDestroy, ComponenteConCam
     }
   }
 
-  private mostrarError(err: unknown, mensajeDefault: string) {
-    if (err instanceof HttpErrorResponse && typeof err.error === 'string') {
-      this.alerta.error(err.error);
+  private mostrarError(_err: unknown, mensajeDefaultKey: string) {
+    this.alerta.error(this.translate.instant(mensajeDefaultKey));
+  }
+
+  private mostrarErrorCategoria(err: unknown, mensajeDefaultKey: string, conflictoKey: string) {
+    if (err instanceof HttpErrorResponse && err.status === 409) {
+      this.alerta.error(this.translate.instant(conflictoKey));
       return;
     }
-    this.alerta.error(mensajeDefault);
+    this.alerta.error(this.translate.instant(mensajeDefaultKey));
   }
 }

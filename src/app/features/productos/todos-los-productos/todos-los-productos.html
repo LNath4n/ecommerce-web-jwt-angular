@@ -1,86 +1,118 @@
 <!-- Start Hero Section -->
-<div class="hero productos-hero">
-  <div class="container">
-    <div class="row justify-content-between">
-      <div class="col-lg-5">
-        <div class="intro-excerpt">
-          <h1>Productos</h1>
-          @if (isLoggedIn() && nombreUsuario()) {
-          <p class="mb-4">¡Hola, {{ nombreUsuario() }}! Encuentra tus productos favoritos.</p>
-          } @else {
-          <p class="mb-4">¡Bienvenido a FerreViky! Encuentra tus productos favoritos.</p>
-          }
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+<app-page-hero titulo="PRODUCTS_PAGE.TITLE">
+  @if (isLoggedIn() && nombreUsuario()) {
+  <p>{{ 'PRODUCTS_PAGE.GREETING_USER' | translate: { name: nombreUsuario() } }}</p>
+  } @else {
+  <p>{{ 'PRODUCTS_PAGE.GREETING_GUEST' | translate }}</p>
+  }
+</app-page-hero>
 <!-- End Hero Section -->
 
 <!-- Start Product Section -->
 <div class="product-section">
   <div class="container">
-
     <!-- Buscador -->
-    <div class="row mb-5 justify-content-end">
-      <div class="col-12 col-lg-6">
-        <div class="buscador-barra">
-          <div class="buscador-campo">
-            <svg lucideSearch [size]="18"></svg>
-            <input type="text" class="form-control" placeholder="Buscar por nombre, SKU, plataforma o descripción."
-              name="busqueda" [(ngModel)]="textoBusqueda" (keyup.enter)="buscar()" />
-            @if (textoBusqueda) {
-            <button type="button" class="buscador-limpiar" aria-label="Limpiar búsqueda"
-              (click)="limpiarBusqueda()">&times;</button>
-            }
-          </div>
-          <button type="button" class="btn btn-primary" (click)="buscar()">Buscar</button>
+    <div class="productos-toolbar">
+      <h2>{{ 'PRODUCTS_PAGE.ALL_PRODUCTS' | translate }}</h2>
+
+      <div class="buscador-barra">
+        <div class="buscador-campo">
+          <svg lucideSearch [size]="18"></svg>
+          <input type="text" class="form-control" [placeholder]="'PRODUCTS_PAGE.SEARCH_PLACEHOLDER' | translate"
+            name="busqueda" [(ngModel)]="textoBusqueda" (ngModelChange)="programarBusqueda($event)"
+            (keyup.enter)="buscar()" />
+          @if (textoBusqueda) {
+          <button type="button" class="buscador-limpiar" [attr.aria-label]="'PRODUCTS_PAGE.CLEAR_SEARCH' | translate"
+            (click)="limpiarBusqueda()">&times;</button>
+          }
         </div>
+
+        <label class="orden-productos">
+          <span class="d-none d-lg-inline">{{ 'PRODUCTS_PAGE.SORT_BY' | translate }}</span>
+          <select class="form-select" [attr.aria-label]="'PRODUCTS_PAGE.SORT_BY' | translate"
+            [(ngModel)]="ordenSeleccionado" (ngModelChange)="cambiarOrden($event)">
+            <option value="">{{ 'PRODUCTS_PAGE.SORT_DEFAULT' | translate }}</option>
+            <option value="calificacion">{{ 'PRODUCTS_PAGE.SORT_RATING' | translate }}</option>
+            <option value="vistas">{{ 'PRODUCTS_PAGE.SORT_VIEWS' | translate }}</option>
+            <option value="resenas">{{ 'PRODUCTS_PAGE.SORT_REVIEWS' | translate }}</option>
+            <option value="precio_asc">{{ 'PRODUCTS_PAGE.SORT_PRICE_ASC' | translate }}</option>
+            <option value="precio_desc">{{ 'PRODUCTS_PAGE.SORT_PRICE_DESC' | translate }}</option>
+          </select>
+        </label>
       </div>
     </div>
+
 
     <div class="row">
 
       @for (producto of productos(); track producto.id) {
-      <div class="col-12 col-md-4 col-lg-3 mb-5">
+      <div class="col-12 col-md-4 col-lg-3 mb-5" [class.producto-entrada]="animarEntrada()">
         <a class="product-item" style="cursor: pointer" (click)="verDetalle(producto.slug)">
 
-          @if (producto.imagenUrl && !imagenFallida(producto.id)) {
-          <img [src]="producto.imagenUrl" [alt]="producto.nombre" class="img-fluid product-thumbnail"
-            loading="lazy" (error)="marcarImagenFallida(producto.id)">
+          @if (producto.imageUrl && !imagenFallida(producto.id)) {
+          <img [src]="producto.imageUrl" [alt]="producto.name" class="img-fluid product-thumbnail" loading="lazy"
+            (error)="marcarImagenFallida(producto.id)">
           } @else {
           <div class="product-thumbnail d-flex justify-content-center align-items-center mb-3">
             <svg lucidePackage color="#3b5d50" [size]="96" [strokeWidth]="1.25"></svg>
           </div>
           }
 
-          <h3 class="product-title">{{ producto.nombre }}</h3>
-          <p class="mb-1 product-description">{{ producto.descripcion || '' }}</p>
-          <p class="mb-1 product-meta">{{ producto.plataforma || producto.tipo }} · {{ producto.region || 'Global' }}</p>
-          <p class="mb-1 product-meta">SKU: {{ producto.sku }} · Stock: {{ producto.stock }}</p>
-          <strong class="product-price">${{ producto.precioVenta }}</strong>
+          <h3 class="product-title">{{ producto.name }}</h3>
+          <p class="mb-1 product-description">{{ producto.description || '' }}</p>
+          <p class="mb-1 product-meta">
+            {{ producto.platform || producto.type }} · {{ producto.region || ('PRODUCTS_PAGE.GLOBAL' | translate) }}
+          </p>
+          <p class="mb-1 product-meta">
+            {{ 'PRODUCTS_PAGE.STOCK' | translate }}: {{ producto.stock }}
+          </p>
+          <strong class="product-price">${{ producto.salePrice }}</strong>
 
-          <span class="icon-cross" (click)="$event.stopPropagation(); agregarAlCarrito(producto.id)">
-            <img src="images/cross.svg" class="img-fluid">
-          </span>
+          <button type="button" class="icon-cross" [class.exito]="CarritoIdSuccess() === producto.id"
+            [attr.aria-label]="'PRODUCTS_PAGE.ADD_TO_CART' | translate"
+            (click)="$event.stopPropagation(); $event.preventDefault(); agregarAlCarrito(producto.id)">
+            @if (CarritoIdSuccess() === producto.id) {
+            <svg lucideCheck color="#fff" [size]="20" [strokeWidth]="3" class="icon-check"></svg>
+            } @else {
+            <img src="images/cross.svg" class="img-fluid" alt="">
+            }
+          </button>
         </a>
       </div>
       } @empty {
       <div class="col-12 text-center">
-        <p>No hay productos disponibles.</p>
+        @if (errorCarga()) {
+        <p>{{ errorCarga() }}</p>
+        <button type="button" class="btn btn-primary" (click)="reintentarCarga()">
+          {{ 'PRODUCTS_PAGE.RETRY' | translate }}
+        </button>
+        } @else if (cargando()) {
+        <p class="text-center" role="status">{{ 'PRODUCTS_PAGE.LOADING_MORE' | translate }}</p>
+        } @else {
+        <p>{{ 'PRODUCTS_PAGE.EMPTY' | translate }}</p>
+        }
       </div>
       }
 
     </div>
 
+    @if (errorCarga() && productos().length > 0) {
+    <div class="text-center">
+      <p>{{ errorCarga() }}</p>
+      <button type="button" class="btn btn-primary" (click)="reintentarCarga()">
+        {{ 'PRODUCTS_PAGE.RETRY' | translate }}
+      </button>
+    </div>
+    }
+
     <div #centinela style="height: 1px;"></div>
 
-    @if (cargando()) {
-    <p class="text-center">Cargando más productos...</p>
+    @if (cargando() && productos().length > 0 && !reemplazandoResultados()) {
+    <p class="text-center">{{ 'PRODUCTS_PAGE.LOADING_MORE' | translate }}</p>
     }
 
     @if (!hayMasPaginas && !cargando() && productos().length > 0) {
-    <p class="text-center">— Fin de productos —</p>
+    <p class="text-center">{{ 'PRODUCTS_PAGE.END_OF_PRODUCTS' | translate }}</p>
     }
   </div>
 </div>

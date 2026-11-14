@@ -1,10 +1,29 @@
 .detalle-imagen {
+  position: relative;
   display: flex;
   align-items: center;
   justify-content: center;
   aspect-ratio: 1 / 1;
   background: #dce5e4;
   border-radius: 20px;
+}
+
+.detalle-vistas {
+  position: absolute;
+  bottom: 12px;
+  left: 12px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: #3b5d50;
+  color: #fff;
+  font-size: 13px;
+}
+
+.detalle-vistas strong {
+  font-weight: 700;
 }
 
 .detalle-marca {
@@ -54,4 +73,215 @@
   background-color: #3b5d50;
   border-color: #3b5d50;
   color: #fff;
+}
+
+.resenas-section {
+  margin: 4rem 0 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid #dce5e4;
+}
+
+.resenas-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.resenas-heading h2 {
+  margin: 0;
+  color: #263f36;
+  font-size: 1.75rem;
+}
+
+.resenas-promedio {
+  display: grid;
+  justify-items: end;
+  color: #626b67;
+}
+
+.resenas-promedio strong,
+.resena-meta strong {
+  color: #3b5d50;
+  font-size: 1.1rem;
+}
+
+.resenas-lista {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.resena-editor {
+  position: sticky;
+  top: 1.5rem;
+  margin-top: 0;
+}
+
+.resena-card,
+.resenas-feedback,
+.resena-form {
+  padding: 1.25rem;
+  border: 1px solid #e1e8e5;
+  border-radius: 0.75rem;
+  background: #fff;
+}
+
+.resena-meta {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.5rem 1rem;
+  color: #626b67;
+}
+
+.resena-comentario,
+.resena-sin-comentario {
+  margin: 0.8rem 0 0;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.resena-sin-comentario {
+  color: #626b67;
+  font-style: italic;
+}
+
+.resenas-feedback {
+  color: #626b67;
+}
+
+.resenas-feedback p {
+  margin-bottom: 0.75rem;
+}
+
+.resenas-error {
+  margin: 0;
+  color: #8a3c35;
+}
+
+.resenas-paginacion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+}
+
+.resena-form {
+  display: grid;
+  gap: 0.65rem;
+  width: 100%;
+  background: #fbfcfb;
+}
+
+.resena-form h3 {
+  margin: 0 0 0.4rem;
+  color: #263f36;
+  font-size: 1.2rem;
+}
+
+.resena-form label {
+  margin-top: 0.35rem;
+  color: #263f36;
+  font-weight: 600;
+}
+
+.resena-form textarea {
+  width: 100%;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid #bdcbc4;
+  border-radius: 0.45rem;
+  background: #fff;
+  color: #263f36;
+}
+
+.resena-form textarea:focus-visible {
+  outline: 3px solid #7d9d8e;
+  outline-offset: 2px;
+}
+
+.rating-label {
+  color: #263f36;
+  font-weight: 600;
+}
+
+.rating-picker {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.15rem;
+}
+
+.rating-star {
+  padding: 0 0.15rem;
+  border: 0;
+  background: transparent;
+  color: #c6cec9;
+  font-size: 2rem;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: color 140ms ease, transform 140ms ease;
+}
+
+.rating-star.selected,
+.rating-star:hover {
+  color: #c58b22;
+}
+
+.rating-star:hover {
+  transform: scale(1.12);
+}
+
+.rating-star:focus-visible {
+  border-radius: 0.25rem;
+  outline: 3px solid #7d9d8e;
+  outline-offset: 2px;
+}
+
+.rating-value {
+  margin-left: 0.65rem;
+  color: #626b67;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.resena-form small {
+  justify-self: end;
+  color: #626b67;
+}
+
+.resena-form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.resenas-section button:focus-visible,
+.resenas-section a:focus-visible {
+  outline: 3px solid #7d9d8e;
+  outline-offset: 3px;
+}
+
+@media (max-width: 575.98px) {
+  .resenas-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .resenas-promedio {
+    justify-items: start;
+  }
+
+  .resena-editor {
+    position: static;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rating-star {
+    transition: none;
+  }
 }

@@ -1,48 +1,71 @@
-import { Component, inject, signal, AfterViewInit, OnDestroy } from '@angular/core';
+import { AfterViewInit, Component, inject, OnDestroy, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { HttpErrorResponse } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Subscription } from 'rxjs';
-import { LucidePackage, LucideSearch } from '@lucide/angular';
-import { ProductosService } from '@core/services/Producto/ProductosService';
-import { CarritosService } from '@core/services/Carrito/CarritosService';
-import { AuthService } from '@core/services/Auth/auth';
-import { ProductoPublicoResponse } from '@core/models/Producto/productoModels';
-import { AlertaService } from '@core/services/Modals/ModalsService';
+import { debounceTime, distinctUntilChanged, Subject, Subscription } from 'rxjs';
+import { LucidePackage, LucideSearch,LucideCheck } from '@lucide/angular';
+import { TranslatePipe, TranslateService } from '@ngx-translate/core';
+import { ProductosService } from '@core/services/producto/ProductosService';
+import { CarritosService } from '@core/services/carrito/CarritosService';
+import { AuthService } from '@core/services/auth/auth';
+import { ProductOrder, PublicProductResponse } from '@core/models/producto/productoModels';
+import { AlertaService } from '@core/services/modals/ModalsService';
+import {PageHero} from '../../layout/page-hero/page-hero';
 
 @Component({
   selector: 'app-todos-los-productos',
-  imports: [CommonModule, FormsModule, LucideSearch, LucidePackage],
+  imports: [CommonModule, FormsModule, LucideSearch, LucidePackage, TranslatePipe,LucideCheck, PageHero],
   templateUrl: './todos-los-productos.html',
   styleUrl: './todos-los-productos.css',
 })
-export class TodosLosProductos implements AfterViewInit, OnDestroy {
+export class TodosLosProductos implements OnInit, AfterViewInit, OnDestroy {
 
   private productosService = inject(ProductosService);
   private router = inject(Router);
   private authService = inject(AuthService);
   private carritosService = inject(CarritosService);
   private alerta = inject(AlertaService);
+  private translate = inject(TranslateService);
 
   isLoggedIn = this.authService.isLoggedIn;
   nombreUsuario = this.authService.nombre;
 
   private readonly tamanoPagina = 24;   // múltiplo de 2, 3 y 4: filas completas en cualquier ancho
-  productos = signal<ProductoPublicoResponse[]>([]);
+  productos = signal<PublicProductResponse[]>([]);
+  animarEntrada = signal(true);
+  CarritoIdSuccess = signal<number | null>(null);
+  reemplazandoResultados = signal(false);
   cargando = signal(false);
+  errorCarga = signal<string | null>(null);
   paginaActual = 0;
   hayMasPaginas = true;
 
   textoBusqueda = '';              // lo que el usuario está escribiendo
+  ordenSeleccionado: ProductOrder = '';
   private busquedaActiva = '';     // lo que realmente se buscó (para las páginas siguientes)
   private peticion?: Subscription;
+  private readonly cambiosBusqueda = new Subject<string>();
+  private readonly lucideCheck = LucideCheck;
+  private suscripcionBusqueda?: Subscription;
+  private animacionInicialTimer?: ReturnType<typeof setTimeout>;
+  private reemplazarProductosAlCargar = false;
 
   // IDs de productos cuya imagen no existe (se muestra el ícono de paquete)
   private imagenesFallidas = signal<Set<number>>(new Set());
 
   private scrollListener!: () => void;
   private sidenavContent!: Element;
+
+  ngOnInit() {
+    this.suscripcionBusqueda = this.cambiosBusqueda.pipe(
+      debounceTime(350),
+      distinctUntilChanged()
+    ).subscribe(termino => {
+      if (termino !== this.busquedaActiva) {
+        this.ejecutarBusqueda(termino);
+      }
+    });
+  }
 
   ngAfterViewInit() {
     this.cargarMas(); // Carga inicial
@@ -57,6 +80,8 @@ export class TodosLosProductos implements AfterViewInit, OnDestroy {
 
   ngOnDestroy() {
     this.peticion?.unsubscribe();
+    this.suscripcionBusqueda?.unsubscribe();
+    this.detenerAnimacionEntrada();
     this.sidenavContent?.removeEventListener('scroll', this.scrollListener);
   }
 
@@ -75,31 +100,81 @@ export class TodosLosProductos implements AfterViewInit, OnDestroy {
 
     this.cargando.set(true);
     this.peticion = this.productosService
-      .buscar({ q: this.busquedaActiva }, this.paginaActual, this.tamanoPagina)
+      .buscar({ q: this.busquedaActiva, orden: this.ordenSeleccionado }, this.paginaActual, this.tamanoPagina)
       .subscribe({
         next: (page) => {
-          this.productos.update(actual => [...actual, ...page.content]);
+          if (this.reemplazarProductosAlCargar) {
+            this.productos.set(page.content);
+            this.reemplazarProductosAlCargar = false;
+          } else {
+            this.productos.update(actual => [...actual, ...page.content]);
+          }
+          this.reemplazandoResultados.set(false);
+          this.programarFinAnimacionInicial();
           this.hayMasPaginas = this.paginaActual < page.totalPages - 1;
           this.paginaActual++;
           this.cargando.set(false);
+          this.errorCarga.set(null);
         },
-        error: () => this.cargando.set(false)
+        error: () => {
+          this.cargando.set(false);
+          this.reemplazandoResultados.set(false);
+          this.errorCarga.set(this.translate.instant('PRODUCTS_PAGE.LOAD_ERROR'));
+        }
       });
   }
 
   buscar() {
+    this.detenerAnimacionEntrada();
+    this.cambiosBusqueda.next(this.textoBusqueda);
+    this.ejecutarBusqueda(this.textoBusqueda);
+  }
+
+  cambiarOrden(orden: ProductOrder) {
+    this.detenerAnimacionEntrada();
+    this.ordenSeleccionado = orden;
+    this.ejecutarBusqueda(this.textoBusqueda);
+  }
+
+  programarBusqueda(termino: string) {
+    this.detenerAnimacionEntrada();
+    this.cambiosBusqueda.next(termino);
+  }
+
+  private ejecutarBusqueda(termino: string) {
+    this.detenerAnimacionEntrada();
     this.peticion?.unsubscribe();           // descarta una respuesta vieja que siga en camino
-    this.busquedaActiva = this.textoBusqueda;
-    this.productos.set([]);
+    this.busquedaActiva = termino;
+    this.reemplazarProductosAlCargar = true;
+    this.reemplazandoResultados.set(true);
     this.paginaActual = 0;
     this.hayMasPaginas = true;
+    this.errorCarga.set(null);
     this.cargando.set(false);
     this.cargarMas();
+  }
+
+  private programarFinAnimacionInicial() {
+    if (!this.animarEntrada() || this.animacionInicialTimer) return;
+    this.animacionInicialTimer = setTimeout(() => this.detenerAnimacionEntrada(), 1400);
+  }
+
+  private detenerAnimacionEntrada() {
+    if (this.animacionInicialTimer) {
+      clearTimeout(this.animacionInicialTimer);
+      this.animacionInicialTimer = undefined;
+    }
+    this.animarEntrada.set(false);
   }
 
   limpiarBusqueda() {
     this.textoBusqueda = '';
     this.buscar();
+  }
+
+  reintentarCarga() {
+    this.errorCarga.set(null);
+    this.cargarMas();
   }
 
 
@@ -117,39 +192,25 @@ export class TodosLosProductos implements AfterViewInit, OnDestroy {
 
   agregarAlCarrito(idProducto: number) {
     if (!this.authService.getToken()) {
-      this.alerta.advertencia('Debes de iniciar sesion');
+      this.alerta.advertencia(this.translate.instant('PRODUCT_DETAIL.LOGIN_REQUIRED'));
       return;
     }
 
-    this.carritosService.agregar({ idProducto, cantidad: 1 })
+    this.carritosService.agregar({ productId: idProducto, quantity: 1 })
       .subscribe({
         next: () => {
-          this.alerta.exito('Se agregó correctamente al carrito.');
+          this.alerta.exito(this.translate.instant('PRODUCT_DETAIL.ADDED_TO_CART'));
+          this.marcarExitoCarrito(idProducto);
         },
-        error: error => {
-          const mensaje = this.mensajeError(error);
-          this.alerta.error(
-            mensaje ?? 'No se pudo agregar el producto al carrito. Revisa su disponibilidad e intenta de nuevo.'
-          );
-        }
+        error: error => this.alerta.error(
+          this.carritosService.obtenerMensajeError(error)
+            ?? this.translate.instant('PRODUCT_DETAIL.ADD_TO_CART_ERROR')
+        )
       });
   }
 
-  private mensajeError(error: unknown): string | null {
-    if (!(error instanceof HttpErrorResponse)) return null;
-
-    const cuerpo: unknown = error.error;
-    if (typeof cuerpo === 'string' && cuerpo.trim()) return cuerpo.trim();
-
-    if (typeof cuerpo === 'object' && cuerpo !== null) {
-      if ('error' in cuerpo && typeof cuerpo.error === 'string' && cuerpo.error.trim()) {
-        return cuerpo.error.trim();
-      }
-      if ('message' in cuerpo && typeof cuerpo.message === 'string' && cuerpo.message.trim()) {
-        return cuerpo.message.trim();
-      }
-    }
-
-    return null;
-  }
+  private marcarExitoCarrito(id: number) {
+  this.CarritoIdSuccess.set(id);
+  setTimeout(() => this.CarritoIdSuccess.set(null), 1800);
+}
 }
