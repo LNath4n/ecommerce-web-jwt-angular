@@ -27,15 +27,26 @@
         <div class="mb-4">
           <label class="form-label" for="password">{{ 'LOGIN_PAGE.PASSWORD' | translate }}</label>
           <input id="password" type="password" class="form-control"
-            [placeholder]="'LOGIN_PAGE.PASSWORD_PLACEHOLDER' | translate"
-            autocomplete="current-password" [(ngModel)]="password" (keyup.enter)="login()" />
+            [placeholder]="'LOGIN_PAGE.PASSWORD_PLACEHOLDER' | translate" autocomplete="current-password"
+            [(ngModel)]="password" (keyup.enter)="login()" />
         </div>
 
         <button class="btn btn-primary w-100" (click)="login()">{{ 'LOGIN_PAGE.SUBMIT' | translate }}</button>
 
+        @if (correoNoVerificado()) {
+        <div class="alert alert-warning mt-3 mb-0 text-center" role="alert">
+          <p class="mb-2">{{ 'LOGIN_PAGE.EMAIL_NOT_VERIFIED' | translate }}</p>
+          <button class="btn btn-outline-black btn-sm" type="button" [disabled]="reenviando()"
+            (click)="reenviarVerificacion()">
+            {{ 'LOGIN_PAGE.RESEND_VERIFICATION' | translate }}
+          </button>
+        </div>
+        }
+
         <p class="text-center mt-4 mb-2">
           {{ 'LOGIN_PAGE.NO_ACCOUNT' | translate }}
-          <a class="more" style="cursor: pointer" (click)="irRegistro()">{{ 'LOGIN_PAGE.REGISTER_LINK' | translate }}</a>
+          <a class="more" style="cursor: pointer" (click)="irRegistro()">{{ 'LOGIN_PAGE.REGISTER_LINK' | translate
+            }}</a>
         </p>
         <p class="text-center mb-0">
           <a class="more" style="cursor: pointer" (click)="regresar()">{{ 'LOGIN_PAGE.BACK' | translate }}</a>

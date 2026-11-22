@@ -1,0 +1,50 @@
+<div class="verify-page">
+  <div class="verify-card text-center">
+
+    @switch (estado()) {
+
+      @case ('cargando') {
+        <div role="status" aria-live="polite">
+          <div class="spinner-border mb-4" style="color: #3b5d50" aria-hidden="true"></div>
+          <h2 class="section-title mb-2">{{ 'VERIFY_EMAIL.LOADING_TITLE' | translate }}</h2>
+          <p class="mb-0">{{ 'VERIFY_EMAIL.LOADING_MESSAGE' | translate }}</p>
+        </div>
+      }
+
+      @case ('exito') {
+        <div role="status">
+          <div class="verify-icon verify-icon-ok" aria-hidden="true">&#10003;</div>
+          <h2 class="section-title mb-2">{{ 'VERIFY_EMAIL.SUCCESS_TITLE' | translate }}</h2>
+          <p class="mb-4">{{ 'VERIFY_EMAIL.SUCCESS_MESSAGE' | translate }}</p>
+          <button class="btn btn-primary w-100" type="button" (click)="irALogin()">
+            {{ 'VERIFY_EMAIL.GO_TO_LOGIN' | translate }}
+          </button>
+        </div>
+      }
+
+      @case ('error') {
+        <div role="alert">
+          <div class="verify-icon verify-icon-error" aria-hidden="true">&#10005;</div>
+          <h2 class="section-title mb-2">{{ 'VERIFY_EMAIL.ERROR_TITLE' | translate }}</h2>
+          <p class="mb-4">{{ claveError() | translate }}</p>
+          <button class="btn btn-primary w-100" type="button" (click)="irALogin()">
+            {{ 'VERIFY_EMAIL.GO_TO_LOGIN' | translate }}
+          </button>
+        </div>
+      }
+
+      @case ('sinToken') {
+        <div role="alert">
+          <div class="verify-icon verify-icon-error" aria-hidden="true">&#10005;</div>
+          <h2 class="section-title mb-2">{{ 'VERIFY_EMAIL.NO_TOKEN_TITLE' | translate }}</h2>
+          <p class="mb-4">{{ 'VERIFY_EMAIL.NO_TOKEN_MESSAGE' | translate }}</p>
+          <button class="btn btn-primary w-100" type="button" (click)="irALogin()">
+            {{ 'VERIFY_EMAIL.GO_TO_LOGIN' | translate }}
+          </button>
+        </div>
+      }
+
+    }
+
+  </div>
+</div>

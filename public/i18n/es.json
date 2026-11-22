@@ -129,6 +129,9 @@
     }
   },
   "LOGIN_PAGE": {
+    "EMAIL_NOT_VERIFIED": "Tu correo aún no está verificado. Revisa tu bandeja de entrada o solicita un nuevo enlace.",
+"RESEND_VERIFICATION": "Reenviar correo de verificación",
+"RESEND_SUCCESS": "Si la cuenta existe y no está verificada, te enviamos un nuevo correo.",
     "BACK": "Regresar",
     "EMAIL": "Correo electrónico",
     "EMAIL_PLACEHOLDER": "correo@ejemplo.com",
@@ -462,5 +465,20 @@
     "BAD_REQUEST": "Los datos enviados no son válidos.",
     "SESSION_EXPIRED": "Tu sesión expiró. Inicia sesión de nuevo.",
     "SERVER": "Ocurrió un error en el servidor. Intenta más tarde."
-  }
+  },
+  "VERIFY_EMAIL": {
+  "PROMO": "Estás a un paso de empezar a comprar en FerreViky.",
+  "VIEW_PRODUCTS": "Ver productos",
+  "LOADING_TITLE": "Verificando tu correo",
+  "LOADING_MESSAGE": "Un momento, por favor...",
+  "SUCCESS_TITLE": "¡Correo verificado!",
+  "SUCCESS_MESSAGE": "Tu cuenta ya está activa. Ya puedes iniciar sesión.",
+  "GO_TO_LOGIN": "Ir a iniciar sesión",
+  "ERROR_TITLE": "No pudimos verificar tu correo",
+  "INVALID_TOKEN": "El enlace es inválido, ya expiró o ya fue utilizado. Inicia sesión para recibir uno nuevo.",
+  "GENERIC_ERROR": "Ocurrió un error inesperado. Inténtalo de nuevo más tarde.",
+  "NO_TOKEN_TITLE": "Enlace incompleto",
+  "NO_TOKEN_MESSAGE": "No encontramos el código de verificación en el enlace. Revisa que lo hayas copiado completo.",
+  "BACK": "Volver al inicio"
+}
 }

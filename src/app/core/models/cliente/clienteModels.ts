@@ -22,3 +22,15 @@ export interface UpdateCustomerRequest {
   phone?: string;
   closeSessions?: boolean;
 }
+
+export interface CustomerCreatedResponse {
+  email: string;
+}
+
+export interface VerifyEmailRequest {
+  token: string;
+}
+
+export interface ResendVerificationRequest {
+  email: string;
+}
