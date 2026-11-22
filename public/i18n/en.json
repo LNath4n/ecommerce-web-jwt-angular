@@ -129,6 +129,9 @@
     }
   },
   "LOGIN_PAGE": {
+    "EMAIL_NOT_VERIFIED": "Your email is not verified yet. Check your inbox or request a new link.",
+"RESEND_VERIFICATION": "Resend verification email",
+"RESEND_SUCCESS": "If the account exists and isn't verified, we sent a new email.",
     "BACK": "Back",
     "EMAIL": "Email",
     "EMAIL_PLACEHOLDER": "name@example.com",
@@ -462,5 +465,20 @@
     "BAD_REQUEST": "The submitted data is not valid.",
     "SESSION_EXPIRED": "Your session expired. Please log in again.",
     "SERVER": "A server error occurred. Please try again later."
-  }
+  },
+  "VERIFY_EMAIL": {
+  "PROMO": "You're one step away from shopping at FerreViky.",
+  "VIEW_PRODUCTS": "View products",
+  "LOADING_TITLE": "Verifying your email",
+  "LOADING_MESSAGE": "Just a moment, please...",
+  "SUCCESS_TITLE": "Email verified!",
+  "SUCCESS_MESSAGE": "Your account is now active. You can log in.",
+  "GO_TO_LOGIN": "Go to login",
+  "ERROR_TITLE": "We couldn't verify your email",
+  "INVALID_TOKEN": "The link is invalid, has expired, or has already been used. Log in to receive a new one.",
+  "GENERIC_ERROR": "An unexpected error occurred. Please try again later.",
+  "NO_TOKEN_TITLE": "Incomplete link",
+  "NO_TOKEN_MESSAGE": "We couldn't find the verification code in the link. Make sure you copied it completely.",
+  "BACK": "Back to home"
+}
 }

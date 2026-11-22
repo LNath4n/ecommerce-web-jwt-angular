@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { TranslatePipe, TranslateService } from '@ngx-translate/core';
 import { ClientesService } from '@core/services/cliente/ClientesService';
@@ -25,6 +25,10 @@ export class Login {
   email = '';
   password = '';
 
+  // true cuando el backend respondió 403 (correo sin verificar)
+  correoNoVerificado = signal(false);
+  reenviando = signal(false);
+
   private readonly opcionesError: OpcionesError = {
     porDefecto: 'LOGIN_PAGE.ERROR',
     prefijoCampos: 'LOGIN_PAGE.ERRORS.FIELD_',
@@ -35,6 +39,8 @@ export class Login {
   };
 
   login() {
+    this.correoNoVerificado.set(false);
+
     this.clientesService.login({ email: this.email, password: this.password })
       .subscribe({
         next: (res) => {
@@ -46,9 +52,30 @@ export class Login {
           this.irProductos();
         },
         error: error => {
+          // 403 = correo sin verificar: mostramos el aviso con el botón de reenviar
+          if (this.errores.tieneStatus(error, 403)) {
+            this.correoNoVerificado.set(true);
+            return;
+          }
           this.alerta.error(this.errores.resolver(error, this.opcionesError));
         }
       });
+  }
+
+  reenviarVerificacion() {
+    if (this.reenviando()) return;
+    this.reenviando.set(true);
+
+    this.clientesService.resendVerification(this.email).subscribe({
+      next: () => {
+        this.reenviando.set(false);
+        this.alerta.exito(this.translate.instant('LOGIN_PAGE.RESEND_SUCCESS'));
+      },
+      error: error => {
+        this.reenviando.set(false);
+        this.alerta.error(this.errores.resolver(error, this.opcionesError));
+      }
+    });
   }
 
   irProductos() {

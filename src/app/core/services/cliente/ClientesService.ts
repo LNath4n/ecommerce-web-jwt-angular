@@ -4,11 +4,13 @@ import { Observable } from 'rxjs';
 import { environment } from '@environments/environment';
 import {
   AuthResponse,
+  CustomerCreatedResponse,
   CustomerLoginRequest,
   PublicCustomerResponse,
+  ResendVerificationRequest,
   UpdateCustomerRequest,
+  VerifyEmailRequest,
 } from '@core/models/cliente/clienteModels';
-
 
 @Injectable({ providedIn: 'root' })
 export class ClientesService {
@@ -21,8 +23,21 @@ export class ClientesService {
     return this.http.post<AuthResponse>(`${this.url}/login`, dto);
   }
 
-  create(dto: CustomerLoginRequest): Observable<AuthResponse> {
-    return this.http.post<AuthResponse>(this.url, dto);
+  // 201 -> { email }. Ya no devuelve token: hay que verificar el correo antes de loguearse
+  create(dto: CustomerLoginRequest): Observable<CustomerCreatedResponse> {
+    return this.http.post<CustomerCreatedResponse>(this.url, dto);
+  }
+
+  // 204 sin body
+  verifyEmail(token: string): Observable<void> {
+    const body: VerifyEmailRequest = { token };
+    return this.http.post<void>(`${this.url}/verify-email`, body);
+  }
+
+  // 202 sin body (siempre responde igual, exista o no el correo)
+  resendVerification(email: string): Observable<void> {
+    const body: ResendVerificationRequest = { email };
+    return this.http.post<void>(`${this.url}/resend-verification`, body);
   }
 
   obtenerPerfil(): Observable<PublicCustomerResponse> {

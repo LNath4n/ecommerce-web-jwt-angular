@@ -14,6 +14,11 @@ export const routes: Routes = [
       .then(m => m.Register)
   },
   {
+    path: 'verify-email',
+    loadComponent: () => import('./features/clientes/verificar-correo/verificar-correo')
+      .then(m => m.VerificarCorreo)
+  },
+  {
     path: '',
     loadComponent: () => import('./features/layout/app-nav/app-nav.component')
       .then(m => m.AppNavComponent),
